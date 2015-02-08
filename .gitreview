@@ -1,0 +1,5 @@
+[gerrit]
+host=dev.lel.lu
+port=29418
+project=HPC-power-management/back-end
+defaultbranch=master
