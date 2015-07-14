@@ -56,10 +56,11 @@ ifneq ($(wildcard /usr/bin/apt-get),)
     $(eval $(call deb-dep, python-virtualenv, /usr/bin/virtualenv))
 endif
 
-$(VENV_BIN)/activate: dev_requirements.txt
+$(VENV_BIN)/activate: dev_requirements.txt requirements.txt
 	test -d $(VENV) || $(VIRTUALENV) $(VENV)
-	test -n "$(NO_PIP_INSTALL)" || $(PYTHON) -m pip install -U pip
-	test -n "$(NO_PIP_INSTALL)" || $(PIP) install -Ur dev_requirements.txt
+	$(PYTHON) -m pip install -U pip
+	$(PIP) install -Ur dev_requirements.txt
+	$(PIP) install -Ur requirements.txt
 	touch $(VENV_BIN)/activate
 
 venv: $(VENV_BIN)/activate
@@ -73,13 +74,13 @@ dist: devenv
 	$(PYTHON) setup.py sdist --formats=gztar,zip bdist_wheel
 
 pep8: venv
-	$(PEP8) $(PY_FILES)
+	$(PEP8) --config=pep8.cfg $(PY_FILES)
 
 lint_pyflakes: venv
 	$(PYFLAKES) $(PY_FILES)
 
 lint_pylint: venv
-	$(PYLINT) $(PROJ_DIR) $(TEST_DIR)
+	$(PYLINT) --rcfile=pylintrc -r n $(PROJ_DIR) $(TEST_DIR)
 
 lint: pep8 lint_pyflakes lint_pylint
 
@@ -90,7 +91,7 @@ install: venv
 	$(PIP) install -U $(shell find ./dist -name "*$(PROJ_NAME)*whl")
 
 run: devenv
-	. $(VENV_BIN)/activate && hpc-power-management-api
+	. $(VENV_BIN)/activate && hpc-power-management-api $(RUN_PARAMS)
 
 clean:
 	rm -rf *.pyc
