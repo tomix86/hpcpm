@@ -20,7 +20,6 @@ setup(name='hpc-power-management-api',
 	url='dev.lel.lu',
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     include_package_data=True,
-    namespace_packages=['hpcpm'],
     entry_points={
         'console_scripts': ['hpc-power-management-api=hpcpm.api.main:main']
     },
