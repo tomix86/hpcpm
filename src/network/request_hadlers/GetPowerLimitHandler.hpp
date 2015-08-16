@@ -10,16 +10,13 @@ public:
 	}
 
 private:
-	http_response process( http_request request ) final {
-		http_response response;
-
-		response.set_status_code( status_code::OK );
-		response.set_body( U( "GET POWER LIMIT WORKS!" ) );
+	std::vector<core::Query> splitIntoQueries( http_request request ) final {
+		std::vector<core::Query> queries;
 
 		// tmp to avoid -Wunused-parameter
-		request.body();
+		(void)request;
 
-		return response;
+		return queries;
 	}
 };
 } // namespace handlers

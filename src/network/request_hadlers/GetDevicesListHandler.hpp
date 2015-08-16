@@ -9,31 +9,18 @@ public:
 	Handler{ queryExecutor } {
 	}
 
-private: //TODO: remember to handle malformed query when parsing, but it's not the case for this particular handler
-	http_response process( http_request request ) final {
-		http_response response;
+private:
+	std::vector<core::Query> splitIntoQueries( http_request request ) final {
+		std::vector<core::Query> queries;
 
-		try {
-			core::Query query( core::Query::Type::GetNodeInformation );
-			auto result = queryExecutor->execute( query );
+		// tmp to avoid -Wunused-parameter
+		(void)request;
 
-			response.set_status_code( status_code::OK );
-			response.set_body( U( result ) );
+		queries.push_back( core::Query::Type::GetNodeInformation );
 
-			// tmp to avoid -Wunused-parameter
-			request.body();
-		}
-		catch ( devices::DeviceNotFoundException& ex ) {
-			response.set_status_code( status_code::BadRequest );
-			response.set_body( U( ex.info() ) );
-			LOG ( WARNING ) << ex.traceWithMessages();
-		}
-		catch ( ... ) {
-			response.set_status_code( status_code::InternalError );
-			LOG ( ERROR ) << "Unknown exception occured when processing request"; //TODO: add diagnostic log dump here
-		}
+	//	throw MalformedQueryException("GetDevicesListHandler::splitIntoQueries", "test");
 
-		return response;
+		return queries;
 	}
 };
 } // namespace handlers

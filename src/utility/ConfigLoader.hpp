@@ -3,9 +3,11 @@
 #include <functional>
 #include <map>
 #include <string>
-#include "InvalidKeyException.hpp"
+#include "utility/Exceptions.hpp"
 
 namespace utility {
+DEFINE_RUNTIME_ERROR_DERIVATIVE ( InvalidKeyException )
+
 class ConfigLoader {
 public:
 	static std::string getStringParam( const std::string& key );

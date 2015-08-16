@@ -8,9 +8,9 @@ QueryExecutor::QueryExecutor( void ) {
 }
 
 Query::Result QueryExecutor::execute( Query query ) {
-	LOG ( INFO ) << "Executing query[" << query.getDeviceIdentifier() << ']'
-				 << '[' << Query::typeName( query.getType() ) << ", "
-				 << ( query.getArgument().empty() ? "NO_ARG" : query.getArgument() ) << ']';
+	LOG ( INFO ) << "Executing query \"" << Query::typeName( query.getType() )
+				 << "\" [" << query.getDeviceIdentifier() << "]: "
+				 << ( query.getArgument().empty() ? "NO_ARG" : query.getArgument() );
 
 	using t = Query::Type;
 	switch ( query.getType() ) {

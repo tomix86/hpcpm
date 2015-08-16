@@ -1,9 +1,11 @@
 #pragma once
 #include <vector>
 #include "Device.hpp"
-#include "DeviceNotFoundException.hpp"
+#include "utility/Exceptions.hpp"
 
 namespace devices {
+
+DEFINE_RUNTIME_ERROR_DERIVATIVE( DeviceNotFoundException )
 
 class DevicesManager {
 public:

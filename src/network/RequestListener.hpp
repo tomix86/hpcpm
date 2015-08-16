@@ -21,8 +21,5 @@ private:
 	void addListener( std::string resource, handlers::Handler::Ptr GETHandler, handlers::Handler::Ptr PUTHandler );
 };
 
-class ListenerLaunchFailedException : public utility::RuntimeError {
-public:
-	ListenerLaunchFailedException( std::string src, std::string msg ) : utility::RuntimeError( src, msg) { }
-};
+DEFINE_RUNTIME_ERROR_DERIVATIVE ( ListenerLaunchFailedException )
 } // namespace network

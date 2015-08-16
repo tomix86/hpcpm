@@ -11,7 +11,6 @@
 #include <memory>
 #include "core/QueryExecutor.hpp"
 #include "utility/Logging.hpp"
-//TODO: consider moving most of the algorithm to handle() and do the parsing and type determination in derived classes ( template method )
 
 /* error handling:
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
@@ -23,8 +22,10 @@
 namespace network {
 namespace handlers {
 
-typedef web::http::http_request http_request;
-typedef web::http::http_response http_response;
+DEFINE_RUNTIME_ERROR_DERIVATIVE( MalformedQueryException )
+
+using web::http::http_request;
+using web::http::http_response;
 
 class Handler {
 public:
@@ -38,15 +39,69 @@ public:
 		//TODO: remember to get all of the useful data from the request
 		LOG ( INFO ) << "Handling " << request.method() << request.request_uri().to_string();
 
-		return process( request );
+		try {
+			return process( request );
+		}
+		catch ( ... ) {
+			return handleExceptions();
+		}
 	}
 
 protected:
 	typedef web::http::status_codes status_code;
 
-	virtual http_response process( http_request request ) = 0;
+	virtual std::vector<core::Query> splitIntoQueries( http_request request ) = 0;
 
 	core::QueryExecutor::Ptr queryExecutor;
+
+private:
+	http_response process( http_request request ) {
+		auto queries = splitIntoQueries( request );
+
+		core::Query::Result result;  //TODO: we must decide whether we want to send multiple queries in single request or not
+		for ( auto& query : queries ) { //TODO: if the response requires it we will send a json, otherwise a string will be sent
+			result = queryExecutor->execute( query ); //TODO: management node will discern between those two based on Content-Type HTTP header
+		}
+
+		http_response response;
+		response.set_status_code( status_code::OK );
+		response.set_body( U( result ) );
+
+		return response;
+	}
+
+	http_response handleExceptions( void ) {
+		http_response response;
+
+		try {
+			throw;
+		}
+		catch ( MalformedQueryException& ex ) {
+			response.set_status_code( status_code::BadRequest );
+			response.set_body( U( ex.info() ) );
+			LOG ( WARNING ) << ex.traceWithMessages();
+		}
+		catch ( devices::DeviceNotFoundException& ex ) {
+			response.set_status_code( status_code::BadRequest );
+			response.set_body( U( ex.info() ) );
+			LOG ( WARNING ) << ex.traceWithMessages();
+		}
+		catch ( utility::Exception& ex ) {
+			response.set_status_code( status_code::InternalError );
+			response.set_body( U( ex.info() ) );
+			LOG ( WARNING ) << ex.traceWithMessages();
+		}
+		catch ( std::exception& ex ) {
+			response.set_status_code( status_code::InternalError );
+			LOG ( WARNING ) << "std::exception with description: " << ex.what() << " thrown when processing a request"; //TODO: add diagnostic log dump here
+		}
+		catch ( ... ) {
+			response.set_status_code( status_code::InternalError );
+			LOG ( ERROR ) << "Unknown exception occured when processing a request"; //TODO: add diagnostic log dump here
+		}
+
+		return response;
+	}
 };
 } // namespace handlers
 } // namespace network

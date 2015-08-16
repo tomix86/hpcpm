@@ -3,7 +3,6 @@
 #include <iostream>
 #include "ConfigLoader.hpp"
 #include "Functional.hpp"
-#include "InvalidKeyException.hpp"
 #include "Logging.hpp"
 
 //TODO: should we use std::cerr instead of logging library here?
