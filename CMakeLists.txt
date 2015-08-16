@@ -25,6 +25,14 @@ set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_EXTENSIVE_ERROR_CHECKS}" )
 include_directories ( ${CMAKE_SOURCE_DIR}/include )
 include_directories ( ${CMAKE_SOURCE_DIR}/src )
 
+# http://www.cmake.org/cmake/help/v2.8.8/cmake.html#module%3aFindBoost
+find_package ( Boost )
+if ( Boost_FOUND )
+	include_directories ( ${Boost_INCLUDE_DIRS} )
+else ()
+	message ( FATAL_ERROR "Could not find Boost" )
+endif()
+
 file ( GLOB_RECURSE SRCS "${CMAKE_SOURCE_DIR}/src/*.cpp" )
 
 set ( CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${CMAKE_SOURCE_DIR}/lib/ )
