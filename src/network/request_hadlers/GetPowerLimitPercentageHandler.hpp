@@ -9,7 +9,7 @@ public:
 	Handler{ queryExecutor } {
 	}
 
-private:
+protected:
 	std::vector<core::Query> splitIntoQueries( http_request request ) final {
 		std::vector<core::Query> queries;
 

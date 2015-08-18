@@ -11,7 +11,7 @@ public:
 
 	QueryExecutor( void );
 
-	Query::Result execute( Query query );
+	virtual Query::Result execute( Query query );
 
 private:
 	devices::DevicesManager devicesManager;

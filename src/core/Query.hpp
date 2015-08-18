@@ -8,7 +8,7 @@ namespace core {
 class Query {
 public:
 	enum class Type {
-		GetNodeInformation,
+		GetNodeInformation, //TODO: rename to GetDevicesList?
 		SetPowerLimitAbsolute,
 		SetPowerLimitPercentage,
 		GetPowerLimit,
