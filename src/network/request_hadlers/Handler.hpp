@@ -1,25 +1,10 @@
 #pragma once
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-#pragma GCC diagnostic ignored "-Wswitch-default"
-#pragma GCC diagnostic ignored "-Wswitch-enum"
-#pragma GCC diagnostic ignored "-Wshadow"
-	#include <cpprest/http_listener.h>
-#pragma GCC diagnostic pop
-
 #include <memory>
 #include "core/QueryExecutor.hpp"
+#include "network/cpprest.hpp"
 #include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
-/* error handling:
- * http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
- * 400 BadRequest
- * 403 Forbidden
- * 500 InternalError
- * casablanca/Release/include/cpprest/details/http_constants.dat
- */
 namespace network {
 namespace handlers {
 
@@ -64,8 +49,7 @@ private:
 			result = queryExecutor->execute( query ); //TODO: management node will discern between those two based on Content-Type HTTP header
 		}
 
-		http_response response;
-		response.set_status_code( status_code::OK );
+		http_response response( status_code::OK );
 		response.set_body( U( result ) );
 
 		return response;
