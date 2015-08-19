@@ -10,15 +10,14 @@ public:
 	}
 
 protected:
+	// Query string syntax: should be empty
 	std::vector<core::Query> splitIntoQueries( http_request request ) final {
-		std::vector<core::Query> queries;
+		if ( ! request.request_uri().query().empty() ) {
+			LOG( WARNING ) << "Query string should be empty but it's not, it contains: "
+						   << request.request_uri().query();
+		}
 
-		// tmp to avoid -Wunused-parameter
-		(void)request;
-
-		queries.push_back( core::Query::Type::GetNodeInformation );
-
-	//	throw MalformedQueryException("GetDevicesListHandler::splitIntoQueries", "test");
+		std::vector<core::Query> queries{ 1, core::Query::Type::GetNodeInformation };
 
 		return queries;
 	}

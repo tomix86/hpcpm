@@ -1,9 +1,11 @@
 #pragma once
 #include <algorithm>
+#include <boost/tokenizer.hpp>
 #include <initializer_list>
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <vector>
 #include "Exceptions.hpp"
 
 namespace utility {
@@ -30,5 +32,7 @@ template <typename T>
 bool isNotOneOf( const T& value, std::initializer_list<T> set ) {
 	return !isOneOf( value, set );
 }
+
+std::vector<std::string> tokenizeString( std::string input, char separator );
 
 } // namespace utility

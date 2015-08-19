@@ -31,7 +31,7 @@ protected:
 	virtual void SetUp() {
 		ConfigLoaderAccessor::setInitialized( false );
 		ConfigLoaderAccessor::clearConfig();
-		filename = std::tmpnam( nullptr );
+		filename = std::tmpnam( nullptr ); //TODO: switch to mkstemp() ?
 		file.open( filename, std::ios_base::out | std::ios_base::trunc );
 	}
 

@@ -10,6 +10,7 @@
 
 #include <memory>
 #include "core/QueryExecutor.hpp"
+#include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
 /* error handling:

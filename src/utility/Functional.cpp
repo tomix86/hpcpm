@@ -32,4 +32,16 @@ int tryParseInt( std::string value, int minLegalValue, int maxLegalValue ) {
 	}
 }
 
+std::vector<std::string> tokenizeString( std::string input, char separator ) {
+	boost::char_separator<char> sep( &separator );
+	boost::tokenizer<boost::char_separator<char> > tokenizer( input, sep );
+
+	std::vector<std::string> tokens;
+	for( auto token : tokenizer ) {
+		tokens.push_back( token );
+	}
+
+	return tokens;
+}
+
 } // namespace utility

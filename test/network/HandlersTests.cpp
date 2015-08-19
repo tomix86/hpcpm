@@ -1,5 +1,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <sstream>
 #include "network/request_hadlers/GetDevicesListHandler.hpp"
 #include "network/request_hadlers/GetPowerLimitConstraintsHandler.hpp"
 #include "network/request_hadlers/GetPowerLimitHandler.hpp"
@@ -30,11 +31,15 @@ public:
 class RequestHandlersTestSuite : public ::testing::Test {
 protected:
 	static void SetUpTestCase() {
-		oldCoutBuf = std::cout.rdbuf( nullptr );
+		oldCoutBuf = std::cout.rdbuf( sink.rdbuf() );
 	}
 
 	static void TearDownTestCase() {
 		std::cout.rdbuf( oldCoutBuf );
+	}
+
+	void SetUp( void ) {
+		sink.str( "" );
 	}
 
 	RequestHandlersTestSuite( void ) :
@@ -43,10 +48,12 @@ protected:
 	}
 
 	static std::streambuf* oldCoutBuf;
+	static std::ostringstream sink;
 	std::shared_ptr<MockQueryExecutor> queryExecutor;
 	MockHandler handler;
 };
 std::streambuf* RequestHandlersTestSuite::oldCoutBuf;
+std::ostringstream RequestHandlersTestSuite::sink;
 
 TEST_F( RequestHandlersTestSuite, StringResponseTest ) {
 	EXPECT_CALL( handler, splitIntoQueries( testing::_ ) )
@@ -111,8 +118,8 @@ TEST_F( RequestHandlersTestSuite, StdExceptionTest ) {
 		.WillOnce( testing::Throw( std::exception() ) );
 
 	http_response result;
-	ASSERT_NO_THROW( result = handler.handle( http_request{} ) );
 
+	ASSERT_NO_THROW( result = handler.handle( http_request{} ) );
 	ASSERT_EQ( status_codes::InternalError, result.status_code() );
 }
 
@@ -121,16 +128,16 @@ TEST_F( RequestHandlersTestSuite, UnknownExceptionTest ) {
 		.WillOnce( testing::Throw( int{} ) );
 
 	http_response result;
-	ASSERT_NO_THROW( result = handler.handle( http_request{} ) );
 
+	ASSERT_NO_THROW( result = handler.handle( http_request{} ) );
 	ASSERT_EQ( status_codes::InternalError, result.status_code() );
 }
 
 
 
 template <typename HandlerType>
-struct GetDevicesListHandlerAccessor : public HandlerType {
-	GetDevicesListHandlerAccessor( std::shared_ptr<MockQueryExecutor> queryExecutor ) :
+struct HandlerAccessor : public HandlerType {
+	HandlerAccessor( std::shared_ptr<MockQueryExecutor> queryExecutor ) :
 		HandlerType( queryExecutor ) {
 	}
 
@@ -139,51 +146,64 @@ struct GetDevicesListHandlerAccessor : public HandlerType {
 	}
 };
 
-TEST_F( RequestHandlersTestSuite, GetDevicesListHandler_SplittingTest ) {
+TEST_F( RequestHandlersTestSuite, GetDevicesListHandler_ValidURISplittingTest ) {
 	std::vector<Query> queries;
-	GetDevicesListHandlerAccessor<GetDevicesListHandler> handler{ queryExecutor };
-	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
+	HandlerAccessor<GetDevicesListHandler> handler{ queryExecutor };
 
+	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
 	ASSERT_EQ( 1, queries.size() );
 	ASSERT_EQ( Query::Type::GetNodeInformation, queries[0].getType() );
 }
 
+TEST_F( RequestHandlersTestSuite, GetDevicesListHandler_InvalidURISplittingTest ) {
+	std::vector<Query> queries;
+	HandlerAccessor<GetDevicesListHandler> handler{ queryExecutor };
+
+	http_request req;
+	req.set_request_uri( "http://localhost:1234/list_devices?test" );
+
+	ASSERT_NO_THROW( queries = handler.split( req ) );
+	ASSERT_EQ( 1, queries.size() );
+	ASSERT_EQ( Query::Type::GetNodeInformation, queries[0].getType() );
+	ASSERT_STREQ( "WARN : Query string should be empty but it's not, it contains: test\n", sink.str().c_str() );
+}
+
 TEST_F( RequestHandlersTestSuite, GetPowerLimitHandler_SplittingTest ) {
 	std::vector<Query> queries;
-	GetDevicesListHandlerAccessor<GetPowerLimitHandler> handler{ queryExecutor };
-	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
+	HandlerAccessor<GetPowerLimitHandler> handler{ queryExecutor };
 
+	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
 	ASSERT_EQ( 0, queries.size() );
 }
 
 TEST_F( RequestHandlersTestSuite, GetPowerLimitConstraintsHandler_SplittingTest ) {
 	std::vector<Query> queries;
-	GetDevicesListHandlerAccessor<GetPowerLimitConstraintsHandler> handler{ queryExecutor };
-	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
+	HandlerAccessor<GetPowerLimitConstraintsHandler> handler{ queryExecutor };
 
+	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
 	ASSERT_EQ( 0, queries.size() );
 }
 
 TEST_F( RequestHandlersTestSuite, GetPowerLimitPercentageHandler_SplittingTest ) {
 	std::vector<Query> queries;
-	GetDevicesListHandlerAccessor<GetPowerLimitPercentageHandler> handler{ queryExecutor };
-	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
+	HandlerAccessor<GetPowerLimitPercentageHandler> handler{ queryExecutor };
 
+	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
 	ASSERT_EQ( 0, queries.size() );
 }
 
 TEST_F( RequestHandlersTestSuite, SetPowerLimitHandler_SplittingTest ) {
 	std::vector<Query> queries;
-	GetDevicesListHandlerAccessor<SetPowerLimitHandler> handler{ queryExecutor };
-	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
+	HandlerAccessor<SetPowerLimitHandler> handler{ queryExecutor };
 
+	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
 	ASSERT_EQ( 0, queries.size() );
 }
 
 TEST_F( RequestHandlersTestSuite, SetPowerLimitPercentageHandler_SplittingTest ) {
 	std::vector<Query> queries;
-	GetDevicesListHandlerAccessor<SetPowerLimitPercentageHandler> handler{ queryExecutor };
-	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
+	HandlerAccessor<SetPowerLimitPercentageHandler> handler{ queryExecutor };
 
+	ASSERT_NO_THROW( queries = handler.split( http_request{} ) );
 	ASSERT_EQ( 0, queries.size() );
 }
