@@ -1,9 +1,10 @@
 #include "Core.hpp"
 #include "utility/Logging.hpp"
+#include "utility/make_unique.hpp"
 
 namespace core {
 core::Core::Core() :
-requestListener{ std::make_shared<core::QueryExecutor>() } {
+requestListener{ std::make_shared<core::QueryExecutor>( utility::make_unique<devices::DevicesManager>() ) } {
 
 }
 

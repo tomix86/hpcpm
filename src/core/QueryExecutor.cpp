@@ -2,9 +2,10 @@
 #include "utility/Logging.hpp"
 
 namespace core {
-QueryExecutor::QueryExecutor( void ) {
-	devicesManager.init();
-	devicesManager.updateDevicesList();
+QueryExecutor::QueryExecutor( std::unique_ptr<devices::DevicesManager> devicesMgr ) :
+devicesManager{ std::move( devicesMgr ) } {
+	devicesManager->init();
+	devicesManager->updateDevicesList();
 }
 
 Query::Result QueryExecutor::execute( Query query ) {
@@ -32,15 +33,28 @@ Query::Result QueryExecutor::execute( Query query ) {
 	}
 }
 
+//TODO: add method serializeToJson to Device class?
+//TODO: should we switch to json here?
 Query::Result QueryExecutor::handleGetNodeInformation( void ) {
 	// should return list of devices and information about the host(node) itself (like for example OS version)
-	return Query::Result("It seems that it works\n");
+	std::ostringstream ss;
+	auto devices = devicesManager->getDevicesList() ;
+	ss << "[ ";
+	for ( size_t i = 0; i < devices.size(); ++i ) {
+		ss << "{ " << devices[i]->getInfo().identifier << " }";
+		if ( i != devices.size() - 1 ) {
+			ss << ", ";
+		}
+	}
+	ss << " ]";
+
+	return Query::Result( ss.str() );
 }
 
 Query::Result QueryExecutor::handleGetPowerLimit( Query query ) {
 	Query::Result result;
 
-	devicesManager.getDeviceByIdentifier( query.getDeviceIdentifier() );
+	devicesManager->getDeviceByIdentifier( query.getDeviceIdentifier() );
 
 	return result;
 }

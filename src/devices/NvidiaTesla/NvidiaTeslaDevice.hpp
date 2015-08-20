@@ -8,6 +8,8 @@ class NvidiaTeslaDevice : public Device {
 public:
 	static void setCommunicationProvider( TeslaCommunicationProvider::Ptr provider ) { communicationProvider = std::move( provider ); }
 
+	NvidiaTeslaDevice( DeviceIdentifier::idType id );
+
 	static std::vector<Device::Ptr> getAvailableDevices( void );
 
 	void setPowerLimit( Power ) final;

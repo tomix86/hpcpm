@@ -13,6 +13,8 @@ public:
 
 	devices::Device& getDeviceByIdentifier( devices::DeviceIdentifier deviceIdentifier );
 
+	virtual const std::vector<devices::Device::Ptr>& getDevicesList( void ) const;
+
 	void updateDevicesList( void );
 
 private:

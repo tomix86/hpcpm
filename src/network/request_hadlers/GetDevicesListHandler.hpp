@@ -23,8 +23,10 @@ protected:
 	}
 
 	http_response serializeQueriesResults( std::vector<core::Query::Result> result ) {
-		(void) result;
-		return http_response{};
+		auto json = web::json::value::parse( result[0] );
+		http_response response;
+		response.set_body( json);
+		return response;
 	}
 };
 } // namespace handlers

@@ -6,6 +6,8 @@
 namespace devices {
 class IntelXeonDevice : public Device {
 public:
+	IntelXeonDevice( DeviceIdentifier::idType id );
+
 	static void setCommunicationProvider( XeonCommunicationProvider provider ) { communicationProvider = provider; }
 
 	static std::vector<Device::Ptr> getAvailableDevices( void );

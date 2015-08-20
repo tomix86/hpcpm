@@ -9,12 +9,12 @@ class QueryExecutor : public boost::noncopyable {
 public:
 	typedef std::shared_ptr<QueryExecutor> Ptr;
 
-	QueryExecutor( void );
+	QueryExecutor( std::unique_ptr<devices::DevicesManager> devicesManager );
 
 	virtual Query::Result execute( Query query );
 
-private:
-	devices::DevicesManager devicesManager;
+protected:
+	std::unique_ptr<devices::DevicesManager> devicesManager;
 
 	//TODO: switch to polymorphism?
 	Query::Result handleGetNodeInformation( void );

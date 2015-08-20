@@ -7,6 +7,7 @@
 #include "utility/Logging.hpp"
 #include "utility/make_unique.hpp"
 
+//TODO: redesign?
 namespace devices {
 void DevicesManager::init( void ) {
 	LOG ( INFO ) << "Initializing devices manager";
@@ -16,6 +17,7 @@ void DevicesManager::init( void ) {
 	LOG ( INFO ) << "Devices manager initialized";
 }
 
+//TODO: add unit tests for this method
 devices::Device& DevicesManager::getDeviceByIdentifier( devices::DeviceIdentifier deviceIdentifier ){
 	auto result = std::find_if( devicesList.begin(), devicesList.end(), [=]( devices::Device::Ptr dev ) {
 		auto devInfo = dev->getInfo();
@@ -27,6 +29,10 @@ devices::Device& DevicesManager::getDeviceByIdentifier( devices::DeviceIdentifie
 	}
 
 	return **result;
+}
+
+const std::vector<devices::Device::Ptr>& DevicesManager::getDevicesList( void ) const {
+	return devicesList;
 }
 
 void DevicesManager::updateDevicesList( void ) {

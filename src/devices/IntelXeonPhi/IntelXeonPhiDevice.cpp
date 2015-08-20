@@ -3,6 +3,10 @@
 namespace devices {
 XeonPhiCommunicationProvider IntelXeonPhiDevice::communicationProvider;
 
+IntelXeonPhiDevice::IntelXeonPhiDevice( DeviceIdentifier::idType id ) {
+	info.identifier = { DeviceType::IntelXeonPhi, id };
+}
+
 std::vector<Device::Ptr> IntelXeonPhiDevice::getAvailableDevices( void ) {
 	return std::vector<Device::Ptr>();
 }

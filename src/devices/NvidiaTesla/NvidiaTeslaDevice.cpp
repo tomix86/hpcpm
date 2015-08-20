@@ -3,6 +3,11 @@
 namespace devices {
 TeslaCommunicationProvider::Ptr NvidiaTeslaDevice::communicationProvider;
 
+NvidiaTeslaDevice::NvidiaTeslaDevice( DeviceIdentifier::idType id ) {
+	info.identifier = { DeviceType::NvidiaTesla, id };
+}
+
+
 std::vector<Device::Ptr> NvidiaTeslaDevice::getAvailableDevices( void ) {
 	auto list = communicationProvider->listDevices();
 	(void)list;

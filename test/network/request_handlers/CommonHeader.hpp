@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include <sstream>
 #include "network/request_hadlers/Handler.hpp"
+#include "utility/make_unique.hpp"
 
 using namespace network::handlers;
 using web::http::http_request;
@@ -11,6 +12,10 @@ using core::Query;
 
 class MockQueryExecutor : public core::QueryExecutor {
 public:
+	MockQueryExecutor( void ) :
+	core::QueryExecutor{ utility::make_unique<devices::DevicesManager>() } {
+	}
+
 	MOCK_METHOD1( execute, Query::Result( Query ) );
 };
 

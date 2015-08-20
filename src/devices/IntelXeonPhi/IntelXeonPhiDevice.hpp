@@ -8,6 +8,8 @@ class IntelXeonPhiDevice : public Device {
 public:
 	static void setCommunicationProvider( XeonPhiCommunicationProvider provider ) { communicationProvider = provider; }
 
+	IntelXeonPhiDevice( DeviceIdentifier::idType id );
+
 	static std::vector<Device::Ptr> getAvailableDevices( void );
 
 	void setPowerLimit( Power ) final;
