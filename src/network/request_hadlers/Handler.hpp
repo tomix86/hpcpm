@@ -38,19 +38,21 @@ protected:
 
 	virtual std::vector<core::Query> splitIntoQueries( http_request request ) = 0;
 
+	virtual http_response serializeQueriesResults( std::vector<core::Query::Result> result ) = 0;
+
 	core::QueryExecutor::Ptr queryExecutor;
 
 private:
 	http_response process( http_request request ) {
 		auto queries = splitIntoQueries( request );
 
-		core::Query::Result result;  //TODO: we must decide whether we want to send multiple queries in single request or not
+		std::vector<core::Query::Result> results;  //TODO: we must decide whether we want to send multiple queries in single request or not
 		for ( auto& query : queries ) { //TODO: if the response requires it we will send a json, otherwise a string will be sent
-			result = queryExecutor->execute( query ); //TODO: management node will discern between those two based on Content-Type HTTP header
+			results.push_back( queryExecutor->execute( query ) ); //TODO: management node will discern between those two based on Content-Type HTTP header
 		}
 
-		http_response response( status_code::OK );
-		response.set_body( U( result ) );
+		auto response = serializeQueriesResults( results );
+		response.set_status_code( status_code::OK );
 
 		return response;
 	}

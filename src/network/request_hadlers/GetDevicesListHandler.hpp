@@ -21,6 +21,11 @@ protected:
 
 		return queries;
 	}
+
+	http_response serializeQueriesResults( std::vector<core::Query::Result> result ) {
+		(void) result;
+		return http_response{};
+	}
 };
 } // namespace handlers
 } // namespace network
