@@ -19,7 +19,7 @@ protected:
 		return queries;
 	}
 
-	http_response serializeQueriesResults( std::vector<core::Query::Result> result ) {
+	http_response serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr> result ) final {
 		(void) result;
 		return http_response{};
 	}

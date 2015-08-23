@@ -10,7 +10,7 @@ public:
 	utility::ApplicationExitCode run( void );
 
 private:
+	std::shared_ptr<devices::DevicesManager> devicesManager;
 	network::RequestListener requestListener;
-
 };
 } // namespace core

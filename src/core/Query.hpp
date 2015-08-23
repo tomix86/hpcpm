@@ -8,6 +8,7 @@ namespace core {
 class Query {
 public:
 	enum class Type {
+		None,
 		GetNodeInformation, //TODO: rename to GetDevicesList?
 		SetPowerLimitAbsolute,
 		SetPowerLimitPercentage,
@@ -15,21 +16,6 @@ public:
 		GetPowerLimitPercentage,
 		GetPowerLimitConstraints
 	};
-
-	static std::string typeName( Type type ) {
-		std::string names[] = {
-			"GetNodeInformation",
-			"SetPowerLimitAbsolute",
-			"SetPowerLimitPercentage",
-			"GetPowerLimit",
-			"GetPowerLimitPercentage",
-			"GetPowerLimitConstraints"
-		};
-
-		return names[ static_cast<int>(type) ];
-	}
-
-	typedef std::string Result;
 
 	Query( Type type ) : type{ type } {}
 
@@ -40,6 +26,20 @@ public:
 
 	void setArgument( std::string argument ) { this->argument = argument; }
 	std::string getArgument( void ) const { return argument; }
+
+	std::string getTypeName( void ) const {
+		std::string names[] = {
+			"None",
+			"GetNodeInformation",
+			"SetPowerLimitAbsolute",
+			"SetPowerLimitPercentage",
+			"GetPowerLimit",
+			"GetPowerLimitPercentage",
+			"GetPowerLimitConstraints"
+		};
+
+		return names[ static_cast<int>( type ) ];
+	}
 
 private:
 	Type type;

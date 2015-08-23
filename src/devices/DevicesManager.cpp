@@ -17,7 +17,6 @@ void DevicesManager::init( void ) {
 	LOG ( INFO ) << "Devices manager initialized";
 }
 
-//TODO: add unit tests for this method
 devices::Device& DevicesManager::getDeviceByIdentifier( devices::DeviceIdentifier deviceIdentifier ){
 	auto result = std::find_if( devicesList.begin(), devicesList.end(), [=]( devices::Device::Ptr dev ) {
 		auto devInfo = dev->getInfo();

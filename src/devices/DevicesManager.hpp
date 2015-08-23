@@ -1,4 +1,5 @@
 #pragma once
+#include <boost/noncopyable.hpp>
 #include <vector>
 #include "Device.hpp"
 #include "utility/Exceptions.hpp"
@@ -7,7 +8,7 @@ namespace devices {
 
 DEFINE_RUNTIME_ERROR_DERIVATIVE( DeviceNotFoundException )
 
-class DevicesManager {
+class DevicesManager : public boost::noncopyable {
 public:
 	void init( void );
 
@@ -17,7 +18,7 @@ public:
 
 	void updateDevicesList( void );
 
-private:
+protected:
 	std::vector<devices::Device::Ptr> devicesList;
 };
 } // namespace devices

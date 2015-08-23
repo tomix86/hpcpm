@@ -22,10 +22,9 @@ protected:
 		return queries;
 	}
 
-	http_response serializeQueriesResults( std::vector<core::Query::Result> result ) {
-		auto json = web::json::value::parse( result[0] );
+	http_response serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr> result ) final {
 		http_response response;
-		response.set_body( json);
+		response.set_body( result[0]->serialize(), "application/json" );
 		return response;
 	}
 };

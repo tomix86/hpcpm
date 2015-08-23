@@ -28,14 +28,20 @@ struct DeviceIdentifier {
 		id{ id } {
 	}
 
-	friend std::ostream& operator<<( std::ostream& s, const DeviceIdentifier& obj ) {
+	std::string typeName( void ) const {
 		std::string names[] = {
 			"None",
 			"IntelXeon",
 			"NvidiaTesla",
 			"IntelXeonPhi"
 		};
-		return s << '\"' << names[ static_cast<int>( obj.type ) ] << "\": \"" << obj.id << '\"';
+
+		return names[ static_cast<int>( type ) ];
+	}
+
+	friend std::ostream& operator<<( std::ostream& s, const DeviceIdentifier& obj ) {
+
+		return s << '\"' << obj.typeName() << "\": \"" << obj.id << '\"';
 	}
 };
 

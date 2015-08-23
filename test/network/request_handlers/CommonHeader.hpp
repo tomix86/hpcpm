@@ -10,23 +10,28 @@ using web::http::http_response;
 using web::http::status_codes;
 using core::Query;
 
+class MockDevicesManager : public devices::DevicesManager {
+public:
+	MOCK_CONST_METHOD0( getDevicesList, const std::vector<devices::Device::Ptr>& ( void ) );
+};
+
 class MockQueryExecutor : public core::QueryExecutor {
 public:
 	MockQueryExecutor( void ) :
-	core::QueryExecutor{ utility::make_unique<devices::DevicesManager>() } {
+	core::QueryExecutor{ std::make_shared<MockDevicesManager>() } {
 	}
 
-	MOCK_METHOD1( execute, Query::Result( Query ) );
+	MOCK_METHOD1( execute, core::QueryHandler::Result::Ptr( Query ) );
 };
 
 class MockHandler : public Handler {
 public:
-	MockHandler( std::shared_ptr<MockQueryExecutor> queryExecutor ) :
+	MockHandler( core::QueryExecutor::Ptr queryExecutor ) :
 		Handler( queryExecutor ) {
 	}
 
 	MOCK_METHOD1( splitIntoQueries, std::vector<Query>( http_request request ) );
-	MOCK_METHOD1( serializeQueriesResults, http_response( std::vector<core::Query::Result> ) );
+	MOCK_METHOD1( serializeQueriesResults, http_response( std::vector<core::QueryHandler::Result::Ptr> ) );
 };
 
 class RequestHandlersTestSuite : public ::testing::Test {

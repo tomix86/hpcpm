@@ -4,8 +4,10 @@
 
 namespace core {
 core::Core::Core() :
-requestListener{ std::make_shared<core::QueryExecutor>( utility::make_unique<devices::DevicesManager>() ) } {
-
+devicesManager { std::make_shared<devices::DevicesManager>() },
+requestListener{ std::make_shared<QueryExecutor>( devicesManager ) } {
+	devicesManager->init();
+	devicesManager->updateDevicesList();
 }
 
 utility::ApplicationExitCode Core::run( void ) {
