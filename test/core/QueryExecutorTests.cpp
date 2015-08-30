@@ -4,6 +4,7 @@
 #include "core/query_handlers/GetNodeInformationHandler.hpp"
 #include "devices/IntelXeon/IntelXeonDevice.hpp"
 #include "devices/IntelXeonPhi/IntelXeonPhiDevice.hpp"
+#include "devices/NvidiaTesla/MockNVMLCommunicationProvider.hpp"
 #include "devices/NvidiaTesla/NvidiaTeslaDevice.hpp"
 #include "utility/make_unique.hpp"
 
@@ -20,7 +21,7 @@ struct MockQueryExecutor : public QueryExecutor {
 	}
 };
 
-TEST( QueryExecutorTestSuite, InvalidQueryTypeExecutionTest ) {
+TEST( QueryExecutorTestSuite, DISABLED_InvalidQueryTypeExecutionTest ) {
 	MockQueryExecutor queryExecutor;
 	std::ostringstream sink;
 	auto oldBuf = std::cout.rdbuf( sink.rdbuf() );
@@ -40,7 +41,7 @@ TEST( QueryExecutorTestSuite, GetNodeInformation ) {
 	std::vector<devices::Device::Ptr> devs;
 	devs.push_back( std::make_shared<devices::IntelXeonDevice>( "123" ) );
 	devs.push_back( std::make_shared<devices::IntelXeonPhiDevice>( "456" ) );
-	devs.push_back( std::make_shared<devices::NvidiaTeslaDevice>( "789" ) );
+	devs.push_back( std::make_shared<devices::NvidiaTeslaDevice<devices::MockNVMLCommunicationProvider>>( "789" ) );
 
 	EXPECT_CALL( *devMgr, getDevicesList() )
 		.WillOnce( ::testing::ReturnRef( devs ) );

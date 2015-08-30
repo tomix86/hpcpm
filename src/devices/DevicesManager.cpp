@@ -4,16 +4,14 @@
 #include "IntelXeonPhi/IntelXeonPhiDevice.hpp"
 #include "NvidiaTesla/NvidiaTeslaDevice.hpp"
 #include "NvidiaTesla/MockNVMLCommunicationProvider.hpp"
+#include "NvidiaTesla/NVMLCommunicationProvider.hpp"
 #include "utility/Logging.hpp"
 #include "utility/make_unique.hpp"
 
-//TODO: redesign?
 namespace devices {
 void DevicesManager::init( void ) {
 	LOG ( INFO ) << "Initializing devices manager";
-	devices::IntelXeonDevice::setCommunicationProvider( devices::XeonCommunicationProvider{} );
-	devices::IntelXeonPhiDevice::setCommunicationProvider( devices::XeonPhiCommunicationProvider{} );
-	devices::NvidiaTeslaDevice::setCommunicationProvider( utility::make_unique<devices::MockNVMLCommunicationProvider>() );
+//TODO: initialize libraries like NVML here?
 	LOG ( INFO ) << "Devices manager initialized";
 }
 
@@ -40,7 +38,7 @@ void DevicesManager::updateDevicesList( void ) {
 	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
 	list = devices::IntelXeonPhiDevice::getAvailableDevices();
 //	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
-	list = devices::NvidiaTeslaDevice::getAvailableDevices();
+	list = devices::NvidiaTeslaDevice<devices::MockNVMLCommunicationProvider>::getAvailableDevices();
 //	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
 
 	LOG ( INFO ) << "Devices list updated";

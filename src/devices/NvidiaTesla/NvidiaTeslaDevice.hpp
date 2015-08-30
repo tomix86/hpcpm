@@ -1,26 +1,44 @@
 #pragma once
 #include <vector>
 #include "devices/Device.hpp"
-#include "devices/NvidiaTesla/NvidiaTeslaCommunicationProvider.hpp"
 
 namespace devices {
+
+template <typename CommunicationProvider>
 class NvidiaTeslaDevice : public Device {
 public:
-	static void setCommunicationProvider( TeslaCommunicationProvider::Ptr provider ) { communicationProvider = std::move( provider ); }
+	NvidiaTeslaDevice( DeviceIdentifier::idType id ) :
+	communicationProvider{ id } {
+		info.identifier = { DeviceType::NvidiaTesla, id };
+	}
 
-	NvidiaTeslaDevice( DeviceIdentifier::idType id );
+	static std::vector<Device::Ptr> getAvailableDevices( void ) {
+		auto list = CommunicationProvider::listDevices();
+		(void)list;
+		return std::vector<Device::Ptr>();
+	}
 
-	static std::vector<Device::Ptr> getAvailableDevices( void );
+	void setPowerLimit( Power ) final {
 
-	void setPowerLimit( Power ) final;
-	void setPowerLimit( Percentage ) final;
+	}
 
-	Power getCurrentPowerLimit( void ) const final;
-	Percentage getCurrentPowerLimitPercentage( void ) const final;
+	void setPowerLimit( Percentage ) final {
 
-	PowerLimitConstraints getPowerLimitConstraints( void ) const final;
+	}
+
+	Power getCurrentPowerLimit( void ) const final {
+		return Power{};
+	}
+
+	Percentage getCurrentPowerLimitPercentage( void ) const final {
+		return Percentage{};
+	}
+
+	PowerLimitConstraints getPowerLimitConstraints( void ) const final {
+		return PowerLimitConstraints();
+	}
 
 private:
-	static TeslaCommunicationProvider::Ptr communicationProvider;
+	CommunicationProvider communicationProvider;
 };
 } // namespace devices
