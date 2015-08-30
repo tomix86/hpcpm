@@ -6,12 +6,17 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 
 from hpcpm.api import log
+from hpcpm.api.helpers.database import Database
+from hpcpm.api.resources.ApiSpec import ApiSpec
 
 flask_app = Flask(__name__)  # pylint: disable=invalid-name
 
 
-def initialize(_):
-    pass
+def initialize(config):
+    database = Database(config["database"])
+    log.info(database)  # to avoid "unused variable" warning :D
+    api_spec = ApiSpec(config["host"])
+    flask_app.register_blueprint(api_spec.blueprint, url_prefix='/api/hpcpm')
 
 
 def run(port):
@@ -38,8 +43,3 @@ def end_request(response_class):
     log.info("REQUEST FINISHED (took %s seconds): %s %s %s", request_processing_time, request.real_ip, request.method,
              request.url)
     return response_class
-
-
-@flask_app.route('/')
-def hello():
-    return "Hello world!!!"

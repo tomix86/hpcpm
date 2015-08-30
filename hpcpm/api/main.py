@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Module for entry point of API application"""
 import argparse
 import configparser

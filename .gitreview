@@ -1,5 +1,5 @@
 [gerrit]
-host=dev.lel.lu
+host=gerrit.dev.lel.lu
 port=29418
 project=HPC-power-management/API
 defaultbranch=master
