@@ -18,6 +18,5 @@ class Status(Resource):
             }
         ]
     )
-    @staticmethod
-    def get():
+    def get(self):
         return "ok"

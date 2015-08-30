@@ -44,8 +44,8 @@ endef
 
 
 .PHONY: all debs venv devenv rebuild_venv dist pep8 lint_pyflakes lint_pylint lint \
-    test install run clean clean_venv clean_all
-	
+    test install run clean clean_venv clean_all unit_tests
+
 
 all: dist test
 
@@ -84,7 +84,9 @@ lint_pylint: venv
 
 lint: pep8 lint_pyflakes lint_pylint
 
-test: venv lint
+test: venv lint unit_tests
+
+unit_tests:
 	$(PYTEST) $(PYTESTOPTS) $(TEST_DIR)
 
 install: venv
