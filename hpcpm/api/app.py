@@ -6,14 +6,14 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 
 from hpcpm.api import log
-from hpcpm.api.helpers.database import Database
+from hpcpm.api.helpers.database import database
 from hpcpm.api.resources.ApiSpec import ApiSpec
 
 flask_app = Flask(__name__)  # pylint: disable=invalid-name
 
 
 def initialize(config):
-    database = Database(config["database"])
+    database.configure(config["database"])
     log.info(database)  # to avoid "unused variable" warning :D
     api_spec = ApiSpec(config["host"])
     flask_app.register_blueprint(api_spec.blueprint, url_prefix='/api/hpcpm')

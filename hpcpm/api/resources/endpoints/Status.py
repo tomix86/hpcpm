@@ -11,10 +11,6 @@ class Status(Resource):
             {
                 "code": 200,
                 "message": "Resource found"
-            },
-            {
-                "code": 500,
-                "message": "Internal exception occurred"
             }
         ]
     )
