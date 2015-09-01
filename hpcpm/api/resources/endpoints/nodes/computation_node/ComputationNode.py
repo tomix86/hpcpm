@@ -6,6 +6,8 @@ from flask_restful_swagger import swagger
 
 from hpcpm.api import log
 from hpcpm.api.helpers.database import database
+from hpcpm.api.helpers.utils import abort_when_port_invalid, COMPUTATION_NODE_PARAM, COMPUTATION_NODE_NOT_FOUND_PARAM, \
+    COMPUTATION_NODE_FETCHED_PARAM
 
 
 class ComputationNode(Resource):
@@ -13,14 +15,7 @@ class ComputationNode(Resource):
         notes="This endpoint is used for registering new computation node",
         nickname="/nodes/computation_node/<string:name>",
         parameters=[
-            {
-                'name': 'name',
-                'description': 'Computation Node name',
-                'required': True,
-                'allowMultiple': False,
-                'dataType': 'string',
-                "paramType": 'path'
-            },
+            COMPUTATION_NODE_PARAM,
             {
                 'name': 'address',
                 'description': 'Computation Node address',
@@ -44,7 +39,7 @@ class ComputationNode(Resource):
                 "message": "Node added successfully"
             },
             {
-                "code": 404,
+                "code": 406,
                 "message": "Computation node could not be found"
             }
         ]
@@ -52,17 +47,29 @@ class ComputationNode(Resource):
     def put(self, name):
         address = request.args.get('address')
         port = request.args.get('port')
+
+        abort_when_port_invalid(port)
+
+        node_by_ip = database.get_computation_node_info_by_address(address, port)
+        if node_by_ip and node_by_ip.get('name') != name:
+            log.warning('Node with IP: %s:%s is present in database: %s', address, port, node_by_ip)
+
         devices_query = "http://" + address + ":" + port + "/devices_list"
         try:
             response = requests.get(devices_query)
         except requests.exceptions.ConnectionError:
             log.error("Connection could not be established to %s", devices_query)
-            abort(404)
+            abort(406)
 
         log.info("Response from %s: %s", devices_query, response.text)
 
-        node_info = json.loads(response.text)
-        node_info['name'] = name
+        backend_info = json.loads(response.text)
+        node_info = {
+            'name': name,
+            'address': address,
+            'port': port,
+            'backend_info': backend_info
+        }
         upsert_result = database.replace_computation_node_info(name, node_info)
         if upsert_result.modified_count:
             log.info("Node %s was already present in a database", name)
@@ -70,3 +77,22 @@ class ComputationNode(Resource):
         else:
             log.info("Stored Node info %s on id %s", node_info, upsert_result.upserted_id)
         return name, 201
+
+    @swagger.operation(
+        notes="This endpoint is used for getting computation node information from database",
+        nickname="/nodes/computation_node/<string:name>",
+        parameters=[
+            COMPUTATION_NODE_PARAM
+        ],
+        responseMessages=[
+            COMPUTATION_NODE_FETCHED_PARAM,
+            COMPUTATION_NODE_NOT_FOUND_PARAM
+        ]
+    )
+    def get(self, name):
+        result = database.get_computation_node_info(name)
+        if not result:
+            log.info("No such computation node %s", name)
+            abort(404)
+        log.info('Successfully get node %s info: %s', name, result)
+        return result, 200
