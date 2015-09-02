@@ -96,3 +96,40 @@ class ComputationNode(Resource):
             abort(404)
         log.info('Successfully get node %s info: %s', name, result)
         return result, 200
+
+    @swagger.operation(
+        notes="This endpoint is used for removing computation node information from database",
+        nickname="/nodes/computation_node/<string:name>",
+        parameters=[
+            COMPUTATION_NODE_PARAM
+        ],
+        responseMessages=[
+            COMPUTATION_NODE_FETCHED_PARAM,
+            COMPUTATION_NODE_NOT_FOUND_PARAM
+        ]
+    )
+    def delete(self, name):
+        result_node_info = database.delete_computation_node_info(name)
+        result_power_limit_info = database.delete_power_limit_info(name)
+        if not result_node_info:
+            log.info("No such computation node %s", name)
+            abort(404)
+        if not result_power_limit_info:
+            log.info("No such power limit info for node %s", name)
+            abort(404)
+
+        address = result_node_info.get('address')
+        port = result_node_info.get('port')
+        abort_when_port_invalid(port)
+
+        deletion_query = "http://" + address + ":" + port + "/power_limit"
+        for device in result_node_info['backend_info']['devices']:
+            try:
+                response = requests.delete(deletion_query, params={'device_id': device['id']})
+                log.info('Device %s deletion info: %s', device['id'], response)
+            except requests.exceptions.ConnectionError:
+                log.error("Connection could not be established to %s", deletion_query)
+                abort(406)
+
+        log.info('Successfully deleted node %s info and its power limit: %s %s', name, result_node_info, result_power_limit_info)
+        return 204
