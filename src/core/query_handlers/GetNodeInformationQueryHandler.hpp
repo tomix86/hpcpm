@@ -21,10 +21,7 @@ public:
 
 			web::json::value array;
 			for ( auto deviceIdentifier : devices ) {
-				web::json::value deviceObj;
-				deviceObj[ U( "Type" ) ] = web::json::value( deviceIdentifier.typeName() );
-				deviceObj[ U( "id" ) ] = web::json::value( deviceIdentifier.id );
-				array[ array.size() ] = deviceObj;
+				array[ array.size() ] = serializeDeviceIdentifierToJson( deviceIdentifier );
 			}
 			mainObject[ U( "devices" ) ] = array;
 
@@ -38,8 +35,8 @@ public:
 		std::vector<devices::DeviceIdentifier> devices;
 	};
 
-	GetNodeInformationQueryHandler( std::shared_ptr<devices::DevicesManager> devicesMgr ) :
-	QueryHandler( devicesMgr ) {
+	GetNodeInformationQueryHandler( std::shared_ptr<devices::DevicesManager> devicesManager ) :
+	QueryHandler( devicesManager ) {
 	}
 
 	// should return list of devices and information about the host(node) itself (like for example OS version)

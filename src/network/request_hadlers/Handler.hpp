@@ -36,6 +36,8 @@ public:
 protected:
 	typedef web::http::status_codes status_code;
 
+	static constexpr const char* const JSON_RESPONSE_TYPE = "application/json";
+
 	virtual std::vector<core::Query> splitIntoQueries( http_request request ) = 0;
 
 	virtual http_response serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr> result ) = 0;

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <boost/tokenizer.hpp>
 #include "Exceptions.hpp"
 #include "Functional.hpp"
 

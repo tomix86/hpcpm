@@ -1,6 +1,5 @@
 #pragma once
 #include <algorithm>
-#include <boost/tokenizer.hpp>
 #include <initializer_list>
 #include <iomanip>
 #include <sstream>

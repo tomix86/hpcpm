@@ -13,9 +13,16 @@ public:
 	}
 
 	static std::vector<Device::Ptr> getAvailableDevices( void ) {
-		auto list = CommunicationProvider::listDevices();
-		(void)list;
-		return std::vector<Device::Ptr>();
+		auto handles = CommunicationProvider::listDevices();
+		std::vector<Device::Ptr> list;
+		for ( auto handle : handles ) {
+			auto devId = CommunicationProvider::getPrimaryId( handle );
+			auto devPtr = std::make_shared<NvidiaTeslaDevice>( devId );
+			list.push_back( devPtr );
+			devPtr->info.entries = CommunicationProvider::getInfo( handle );
+		}
+
+		return list;
 	}
 
 	void setPowerLimit( Power ) final {

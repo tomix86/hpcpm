@@ -9,6 +9,15 @@ public:
 		return std::vector<nvmlDevice_t>{ nvmlDevice_t(0), nvmlDevice_t(1), nvmlDevice_t(2) };
 	}
 
+	static devices::DeviceIdentifier::idType getPrimaryId( nvmlDevice_t deviceHandle ) {
+		return std::to_string( reinterpret_cast<long long>( deviceHandle ) );
+	}
+
+	static std::map<std::string, std::string> getInfo( nvmlDevice_t deviceHandle ) {
+		(void)deviceHandle;
+		return std::map<std::string, std::string>{};
+	}
+
 	MockNVMLCommunicationProvider( DeviceIdentifier::idType id ) :
 	deviceHandle{ std::stoi( id ) } {
 	}

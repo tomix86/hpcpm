@@ -3,14 +3,10 @@
 std::streambuf* RequestHandlersTestSuite::oldCoutBuf;
 std::ostringstream RequestHandlersTestSuite::sink;
 
-class MockQueryResult : public core::QueryHandler::Result {
-public:
-	MOCK_CONST_METHOD0( serialize, std::string ( void ) );
-};
 //TODO: re-enable disabled tests, for now they crash probably due to gmock and gtest incompatibility with
 //our code, possible solution is to recompile gtest and gmock using compilation flags from this project
 //https://stackoverflow.com/questions/31643068/gmock-segmentationfault-on-expect-call
-TEST_F( RequestHandlersTestSuite, DISABLED_StringResponseTest ) {
+TEST_F( RequestHandlersTestSuite, DISABLED_ResponseTest ) {
 	EXPECT_CALL( handler, splitIntoQueries( testing::_ ) )
 		.WillOnce( testing::Return( std::vector<Query>{ Query{ Query::Type::GetNodeInformation } } ) );
 
@@ -46,18 +42,6 @@ TEST_F( RequestHandlersTestSuite, DISABLED_MultipleQueriesTest ) {
 		.WillOnce( testing::Return( "test" ) );
 
 	ASSERT_NO_THROW( handler.handle( http_request{} ) );
-}
-
-TEST_F( RequestHandlersTestSuite, DISABLED_JsonResponseTest ) {
-	EXPECT_CALL( handler, splitIntoQueries( testing::_ ) )
-		.WillOnce( testing::Return( std::vector<Query>{ Query{ Query::Type::GetNodeInformation } } ) );
-
-	auto queryResult = std::make_shared<MockQueryResult>();
-	EXPECT_CALL( *queryExecutor.get(), execute( testing::_ ) )
-		.WillOnce( testing::Return( queryResult ) ); //TODO: modify this test
-
-	http_response result;
-	ASSERT_NO_THROW( result = handler.handle( http_request{} ) );
 }
 
 TEST_F( RequestHandlersTestSuite, MalformedQueryExceptionTest ) {

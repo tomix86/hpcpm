@@ -68,4 +68,13 @@ struct HandlerAccessor : public HandlerType {
 	std::vector<Query> split( http_request request ) {
 		return this->splitIntoQueries( request );
 	}
+
+	http_response serialize( std::vector<core::QueryHandler::Result::Ptr> result ) {
+		return this->serializeQueriesResults( result );
+	}
+};
+
+class MockQueryResult : public core::QueryHandler::Result {
+public:
+	MOCK_CONST_METHOD0( serialize, std::string ( void ) );
 };

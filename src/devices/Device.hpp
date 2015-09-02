@@ -15,7 +15,7 @@ class Device {
 public:
 	typedef std::shared_ptr<Device> Ptr;
 
-	const DeviceInformation& getInfo( void ) const { return info; }
+	virtual const DeviceInformation& getInfo( void ) const { return info; }
 
 	virtual void setPowerLimit( Power milliwatts ) = 0;
 	virtual void setPowerLimit( Percentage percentage ) = 0;

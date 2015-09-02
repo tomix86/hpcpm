@@ -2,14 +2,15 @@
 #include <map>
 #include <ostream>
 #include <string>
+#include "utility/Exceptions.hpp"
 
 namespace devices {
 
 enum class DeviceType {
 	None,
 	IntelXeon,
-	NvidiaTesla,
-	IntelXeonPhi
+	IntelXeonPhi,
+	NvidiaTesla
 };
 
 struct DeviceIdentifier {
@@ -28,15 +29,42 @@ struct DeviceIdentifier {
 		id{ id } {
 	}
 
+	DeviceIdentifier( std::string typeName, idType id ) :
+		type{ typeFromString( typeName ) },
+		id{ id } {
+	}
+
 	std::string typeName( void ) const {
 		std::string names[] = {
 			"None",
 			"IntelXeon",
-			"NvidiaTesla",
-			"IntelXeonPhi"
+			"IntelXeonPhi",
+			"NvidiaTesla"
 		};
 
 		return names[ static_cast<int>( type ) ];
+	}
+
+	bool operator==( const DeviceIdentifier& other ) const {
+		return this->type == other.type && this->id == other.id;
+	}
+
+	static DeviceType typeFromString( const std::string& typeName ) {
+		if ( typeName == "None" ) {
+			return DeviceType::None;
+		}
+		else if ( typeName == "IntelXeon" ) {
+			return DeviceType::IntelXeon;
+		}
+		else if ( typeName == "IntelXeonPhi") {
+			return DeviceType::IntelXeonPhi;
+		}
+		else if ( typeName == "NvidiaTesla") {
+			return DeviceType::NvidiaTesla;
+		}
+		else {
+			throw utility::RuntimeError( "DeviceIdentifier::typeFromString", "invalid type name: " + typeName );
+		}
 	}
 
 	friend std::ostream& operator<<( std::ostream& s, const DeviceIdentifier& obj ) {
@@ -51,6 +79,7 @@ public:
 	DeviceIdentifier identifier;
 
 	// If the device has any other IDs (secondary) then they are stored here along with other info about that device
+	//TODO: change to more suitable name?
     std::map<std::string, std::string> entries;
 
 };

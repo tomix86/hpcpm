@@ -10,9 +10,15 @@
 
 namespace devices {
 void DevicesManager::init( void ) {
-	LOG ( INFO ) << "Initializing devices manager";
-//TODO: initialize libraries like NVML here?
-	LOG ( INFO ) << "Devices manager initialized";
+	LOG ( INFO ) << "Initializing DevicesManager";
+//	devices::NVMLCommunicationProvider::init();
+	LOG ( INFO ) << "DevicesManager initialized";
+}
+
+DevicesManager::~DevicesManager( void ) {
+	LOG ( INFO ) << "Destroying DevicesManager";
+//	devices::NVMLCommunicationProvider::shutdown();
+	LOG ( INFO ) << "DevicesManager successfully destroyed";
 }
 
 devices::Device& DevicesManager::getDeviceByIdentifier( devices::DeviceIdentifier deviceIdentifier ){
@@ -37,9 +43,9 @@ void DevicesManager::updateDevicesList( void ) {
 	auto list = devices::IntelXeonDevice::getAvailableDevices();
 	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
 	list = devices::IntelXeonPhiDevice::getAvailableDevices();
-//	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
+	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
 	list = devices::NvidiaTeslaDevice<devices::MockNVMLCommunicationProvider>::getAvailableDevices();
-//	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
+	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
 
 	LOG ( INFO ) << "Devices list updated";
 }

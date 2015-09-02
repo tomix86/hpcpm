@@ -24,7 +24,7 @@ protected:
 
 	http_response serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr> result ) final {
 		http_response response;
-		response.set_body( result[0]->serialize(), "application/json" );
+		response.set_body( result[0]->serialize(), JSON_RESPONSE_TYPE );
 		return response;
 	}
 };
