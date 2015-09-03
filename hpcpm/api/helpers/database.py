@@ -38,7 +38,7 @@ class Database:  # pylint: disable=too-few-public-methods
         return self.computation_nodes_collection.find_one_and_delete({'name': name})
 
     def delete_power_limit_info(self, name):
-        return self.power_limit_collection.find_one_and_delete({'name': name})
+        return self.power_limit_collection.delete_many({'name': name})
 
 
 database = Database()  # pylint: disable=invalid-name
