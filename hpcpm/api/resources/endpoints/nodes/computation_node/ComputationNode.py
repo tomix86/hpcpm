@@ -131,5 +131,6 @@ class ComputationNode(Resource):
                 log.error("Connection could not be established to %s", deletion_query)
                 abort(406)
 
-        log.info('Successfully deleted node %s info and its power limit: %s %s', name, result_node_info, result_power_limit_info)
+        log.info('Successfully deleted node %s info and its power limit: %s %s', name, result_node_info,
+                 result_power_limit_info)
         return 204
