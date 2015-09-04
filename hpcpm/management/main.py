@@ -4,7 +4,7 @@ import configparser
 import logging
 import logging.config
 import sys
-from hpcpm.management import app
+from hpcpm.management.app import App
 from hpcpm.management import log
 
 
@@ -77,8 +77,8 @@ def handle_parsing_error():
 
 
 def run_app(config):
-    app.initialize(config)
-    app.run()
+    application = App(config)
+    application.run()
 
 if __name__ == '__main__':
     sys.exit(main())

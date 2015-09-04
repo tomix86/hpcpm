@@ -139,10 +139,9 @@ class TestMain(unittest.TestCase):
 
         m_exit.assert_called_once_with(-1)
 
-    @mock.patch('hpcpm.management.app.initialize')
-    @mock.patch('hpcpm.management.app.run')
-    def test_run_management(self, m_run, m_initialize):
-        run_app('conf')
-
-        m_initialize.assert_called_once_with('conf')
+    @mock.patch('hpcpm.management.app.App.run')
+    def test_run_app(self, m_run):
+        config = mock.Mock()
+        config.get.return_value = '2'
+        run_app(config)
         m_run.assert_called_once_with()
