@@ -7,7 +7,7 @@ from hpcpm.api.helpers.database import database
 
 class AllComputationNodes(Resource):
     @swagger.operation(
-        notes="This endpoint is used for retrieving all computation nodes",
+        notes="This endpoint is used for retrieving all computation nodes info",
         nickname="/nodes/computation_nodes",
         parameters=[],
         responseMessages=[

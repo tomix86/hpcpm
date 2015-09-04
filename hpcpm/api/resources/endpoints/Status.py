@@ -5,7 +5,7 @@ from flask_restful_swagger import swagger
 class Status(Resource):
     @swagger.operation(
         notes="This endpoint is used for returning API status",
-        nickname="get",
+        nickname="/status",
         parameters=[],
         responseMessages=[
             {

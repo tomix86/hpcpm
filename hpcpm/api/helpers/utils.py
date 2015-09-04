@@ -30,12 +30,12 @@ COMPUTATION_NODE_PARAM = {
     "paramType": 'path'
 }
 
-COMPUTATION_NODE_NOT_FOUND_PARAM = {
+COMPUTATION_NODE_NOT_FOUND_RESPONSE = {
     "code": 404,
     "message": "Computation node could not be found"
 }
 
-COMPUTATION_NODE_FETCHED_PARAM = {
+COMPUTATION_NODE_FETCHED_RESPONSE = {
     "code": 200,
     "message": "Node info fetched successfully"
 }

@@ -6,8 +6,8 @@ from flask_restful_swagger import swagger
 
 from hpcpm.api import log
 from hpcpm.api.helpers.database import database
-from hpcpm.api.helpers.utils import abort_when_port_invalid, COMPUTATION_NODE_PARAM, COMPUTATION_NODE_NOT_FOUND_PARAM, \
-    COMPUTATION_NODE_FETCHED_PARAM
+from hpcpm.api.helpers.utils import abort_when_port_invalid, COMPUTATION_NODE_PARAM, \
+    COMPUTATION_NODE_NOT_FOUND_RESPONSE, COMPUTATION_NODE_FETCHED_RESPONSE
 
 
 class ComputationNode(Resource):
@@ -85,8 +85,8 @@ class ComputationNode(Resource):
             COMPUTATION_NODE_PARAM
         ],
         responseMessages=[
-            COMPUTATION_NODE_FETCHED_PARAM,
-            COMPUTATION_NODE_NOT_FOUND_PARAM
+            COMPUTATION_NODE_FETCHED_RESPONSE,
+            COMPUTATION_NODE_NOT_FOUND_RESPONSE
         ]
     )
     def get(self, name):
@@ -104,8 +104,8 @@ class ComputationNode(Resource):
             COMPUTATION_NODE_PARAM
         ],
         responseMessages=[
-            COMPUTATION_NODE_FETCHED_PARAM,
-            COMPUTATION_NODE_NOT_FOUND_PARAM
+            COMPUTATION_NODE_FETCHED_RESPONSE,
+            COMPUTATION_NODE_NOT_FOUND_RESPONSE
         ]
     )
     def delete(self, name):

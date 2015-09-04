@@ -5,8 +5,8 @@ from flask_restful_swagger import swagger
 
 from hpcpm.api import log
 from hpcpm.api.helpers.database import database
-from hpcpm.api.helpers.utils import abort_when_not_int, COMPUTATION_NODE_PARAM, COMPUTATION_NODE_NOT_FOUND_PARAM, \
-    COMPUTATION_NODE_FETCHED_PARAM
+from hpcpm.api.helpers.utils import abort_when_not_int, COMPUTATION_NODE_PARAM, COMPUTATION_NODE_NOT_FOUND_RESPONSE, \
+    COMPUTATION_NODE_FETCHED_RESPONSE
 
 
 class PowerLimit(Resource):
@@ -37,7 +37,7 @@ class PowerLimit(Resource):
                 "code": 201,
                 "message": "Power limit set successfully"
             },
-            COMPUTATION_NODE_NOT_FOUND_PARAM
+            COMPUTATION_NODE_NOT_FOUND_RESPONSE
         ]
     )
     def put(self, name, device_id):
@@ -88,7 +88,7 @@ class PowerLimit(Resource):
             }
         ],
         responseMessages=[
-            COMPUTATION_NODE_FETCHED_PARAM,
+            COMPUTATION_NODE_FETCHED_RESPONSE,
             {
                 "code": 404,
                 "message": "Device could not be found"
