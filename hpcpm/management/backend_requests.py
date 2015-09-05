@@ -1,0 +1,13 @@
+import requests
+
+
+class BackendRequests:
+    def __init__(self, base_uri):
+        self.base_uri = base_uri
+
+    def get_power_limit_for_device(self, device_id):
+        return requests.get('http://{0}/power_limit'.format(self.base_uri), params={'device_id': device_id})
+
+    def set_power_limit_for_device(self, device_id, power_limit):
+        return requests.put('http://{0}/power_limit'.format(self.base_uri),
+                            params={'device_id': device_id, 'power_limit': power_limit})
