@@ -2,6 +2,7 @@
 // use this header to include easylogging++
 // https://github.com/easylogging/easyloggingpp
 
+//#define ELPP_DISABLE_DEFAULT_CRASH_HANDLING
 #define ELPP_THREAD_SAFE
 #define ELPP_STACKTRACE_ON_CRASH
 #define ELPP_LOGGING_FLAGS_FROM_ARG

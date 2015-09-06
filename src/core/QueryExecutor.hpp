@@ -10,6 +10,7 @@ public:
 	typedef std::shared_ptr<QueryExecutor> Ptr;
 
 	QueryExecutor( std::shared_ptr<devices::DevicesManager> devicesManager );
+	virtual ~QueryExecutor( void ) {}
 
 	virtual QueryHandler::Result::Ptr execute( Query query );
 

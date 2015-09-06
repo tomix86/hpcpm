@@ -24,6 +24,8 @@ namespace utility {
 	public:
 		Exception(std::string src, std::string msg);
 
+		virtual ~Exception( void ) {}
+
 		virtual std::string source(void) const;
 
 		virtual std::string message(void) const;

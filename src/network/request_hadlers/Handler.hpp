@@ -21,6 +21,8 @@ public:
 	queryExecutor{ queryExecutor } {
 	}
 
+	virtual ~Handler( void ) {}
+
 	http_response handle( http_request request ) {
 		//TODO: remember to get all of the useful data from the request
 		LOG ( INFO ) << "Handling " << request.method() << request.request_uri().to_string();

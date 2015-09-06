@@ -12,7 +12,7 @@ class DevicesManager : public boost::noncopyable {
 public:
 	void init( void );
 
-	~DevicesManager( void );
+	virtual ~DevicesManager( void );
 
 	virtual devices::Device& getDeviceByIdentifier( devices::DeviceIdentifier deviceIdentifier );
 

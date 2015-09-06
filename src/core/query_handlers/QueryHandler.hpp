@@ -13,6 +13,8 @@ public:
 	public:
 		typedef std::shared_ptr<Result> Ptr;
 
+		virtual ~Result( void ) {}
+
 		//TODO: should we use json in this layer?
 		//      should we serialize it instead of returning json or string object?
 		virtual std::string serialize( void ) const = 0;
@@ -37,6 +39,8 @@ public:
 	QueryHandler( std::shared_ptr<devices::DevicesManager> devicesMgr ) :
 	devicesManager( devicesMgr ) {
 	}
+
+	virtual ~QueryHandler( void ) {}
 
 	virtual Result::Ptr handle( Query query ) = 0;
 
