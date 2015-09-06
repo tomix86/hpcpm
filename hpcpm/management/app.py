@@ -13,25 +13,27 @@ class App:
 
     def _update_device_power_limit(self, device, node_name, backend_requests):
         device_id = device['id']
+        device_type = device['Type']  # probably temporary - device_type is necessary for backend queries
         log.debug('started retrieving power limit info for %s:%s', node_name, device_id)
         power_limit_response = self.api_requests.get_power_limit_info_for_device(node_name, device_id)
         if power_limit_response.status_code == 404:
-            log.info('no power limit info set for %s:%s', node_name, device_id)
+            log.info('no power limit info set in database for %s:%s', node_name, device_id)
         else:
             power_limit = power_limit_response.json()
             log.info('power limit info for %s:%s received: %s', node_name, device_id, power_limit)
 
             log.debug('started retrieving power limit info from device %s:%s', node_name, device_id)
-            device_power_limit = int(backend_requests.get_power_limit_for_device(
-                device_id))  # I'm assuming that it's one int which should not be true
+            device_power_limit = backend_requests.get_power_limit_for_device(
+                device_type, device_id).json()[0]['PowerLimit']  # Naive implementation
             log.info('power limit info from device %s:%s received: %s', node_name, device_id,
                      device_power_limit)
 
             if device_power_limit != int(power_limit['power_limit']):
-                log.debug('sett power limit for device %s:%s to %s', node_name, device_id,
+                log.debug('setting power limit for device %s:%s to %s', node_name, device_id,
                           int(power_limit['power_limit']))
-                resp = backend_requests.set_power_limit_for_device(device_id, int(power_limit['power_limit']))
-                log.info('set power limit for device %s:%s, response: %s', node_name, device_id, resp)
+                resp = backend_requests.set_power_limit_for_device(device_type, device_id,
+                                                                   int(power_limit['power_limit']))
+                log.info('set power limit for device %s:%s, response: %s', node_name, device_id, resp.text)
 
     def check_and_set_nodes_power_limit(self):
         start_time = datetime.now()
