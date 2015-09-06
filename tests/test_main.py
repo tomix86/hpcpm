@@ -62,7 +62,7 @@ class TestMain(unittest.TestCase):
         val = create_parser()
 
         self.assertEqual(val, 'parser')
-        m_ArgumentParser.assert_called_once_with(description="HPC Power Management - API")
+        m_ArgumentParser.assert_called_once_with(description='HPC Power Management - API')
 
     def test_add_arguments_to_parser(self):
         parser = mock.MagicMock()
@@ -70,15 +70,15 @@ class TestMain(unittest.TestCase):
         add_arguments_to_parser(parser)
 
         self.assertEqual(parser.add_argument.call_count, 2)
-        parser.add_argument.assert_any_call("-c", "--config",
-                                            action="store",
-                                            default="api.conf.ini",
-                                            help="path to a config file")
-        parser.add_argument.assert_called_with("-p", "--port",
-                                               action="store",
+        parser.add_argument.assert_any_call('-c', '--config',
+                                            action='store',
+                                            default='api.conf.ini',
+                                            help='path to a config file')
+        parser.add_argument.assert_called_with('-p', '--port',
+                                               action='store',
                                                type=int,
                                                default=8080,
-                                               help="port on which API will be exposed")
+                                               help='port on which API will be exposed')
 
     @mock.patch('hpcpm.api.main.configure_logging')
     def test_try_to_configure_logging_no_exception(self, m_configure_logging):

@@ -29,7 +29,7 @@ class Database:  # pylint: disable=too-few-public-methods
             self.computation_nodes_collection.find({}, {'name': True, 'address': True, 'port': True, '_id': False}))
 
     def replace_computation_node_info(self, name, data):
-        return self.computation_nodes_collection.replace_one({"name": name}, data, True)
+        return self.computation_nodes_collection.replace_one({'name': name}, data, True)
 
     def replace_power_limit_for_device(self, name, device_id, power_limit):
         return self.power_limit_collection.replace_one({'name': name, 'device_id': device_id}, power_limit, True)
