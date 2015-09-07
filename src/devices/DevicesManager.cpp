@@ -8,16 +8,32 @@
 #include "utility/Logging.hpp"
 #include "utility/make_unique.hpp"
 
+#ifdef USE_COMM_PROVIDERS_MOCKS
+	using NVMLCommProvider = devices::MockNVMLCommunicationProvider;
+	//using MPSSCommProvider = devices::MockMPSSCommunicationProvider;
+	//using NPMRKCommProvider = devices::MockNPMRKCommunicationProvider;
+#else
+	using NVMLCommProvider = devices::NVMLCommunicationProvider;
+	//using MPSSCommProvider = devices::MPSSCommunicationProvider;
+	//using NPMRKCommProvider = devices::NPMRKCommunicationProvider;
+#endif
+
 namespace devices {
 void DevicesManager::init( void ) {
 	LOG ( INFO ) << "Initializing DevicesManager";
-//	devices::NVMLCommunicationProvider::init();
+	NVMLCommProvider::init();
 	LOG ( INFO ) << "DevicesManager initialized";
 }
 
 DevicesManager::~DevicesManager( void ) {
 	LOG ( INFO ) << "Destroying DevicesManager";
-//	devices::NVMLCommunicationProvider::shutdown();
+	try {
+		NVMLCommProvider::shutdown();
+	}
+	catch ( utility::Exception& ex ) {
+		LOG ( ERROR ) << ex.traceWithMessages();
+	}
+
 	LOG ( INFO ) << "DevicesManager successfully destroyed";
 }
 
@@ -44,7 +60,7 @@ void DevicesManager::updateDevicesList( void ) {
 	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
 	list = devices::IntelXeonPhiDevice::getAvailableDevices();
 	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
-	list = devices::NvidiaTeslaDevice<devices::MockNVMLCommunicationProvider>::getAvailableDevices();
+	list = devices::NvidiaTeslaDevice<NVMLCommProvider>::getAvailableDevices();
 	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
 
 	LOG ( INFO ) << "Devices list updated";

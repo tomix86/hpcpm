@@ -26,6 +26,19 @@ public:
 		}
 	};
 
+	class ResultWithError : public Result {
+	public:
+		ResultWithError( std::string message ) :
+		message{ message } {
+		}
+
+		std::string serialize( void ) const final {
+			return message;
+		}
+
+		std::string message;
+	};
+
 	class NullResult : public Result {
 	public:
 		std::string serialize( void ) const final {

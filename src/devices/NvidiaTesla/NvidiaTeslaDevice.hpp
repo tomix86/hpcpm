@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include "devices/Device.hpp"
+#include "devices/NvidiaTesla/NVMLCommunicationProvider.hpp"
+#include "utility/Logging.hpp"
 
 namespace devices {
 
@@ -13,7 +15,15 @@ public:
 	}
 
 	static std::vector<Device::Ptr> getAvailableDevices( void ) {
-		auto handles = CommunicationProvider::listDevices();
+		std::vector<nvmlDevice_t> handles;
+		try {
+			handles = CommunicationProvider::listDevices();
+		}
+		catch ( utility::RuntimeError& ex ) {
+			LOG( ERROR ) << "Failed to aqcuire device list from NVML, will return an empty one."
+							" Following exception was thrown: " << ex.info();
+		}
+
 		std::vector<Device::Ptr> list;
 		for ( auto handle : handles ) {
 			auto devId = CommunicationProvider::getPrimaryId( handle );

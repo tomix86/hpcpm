@@ -27,6 +27,10 @@ QueryHandler::Result::Ptr QueryExecutor::execute( Query query ) {
 		LOG ( ERROR ) << "Invalid query type";
 		return std::make_shared<QueryHandler::NullResult>();
 	}
+	catch ( utility::RuntimeError& ex ) {
+		LOG ( ERROR ) << "Query execution failed, exception thrown: " << ex.info();
+		return std::make_shared<QueryHandler::ResultWithError>( ex.info() );
+	}
 }
 
 } // namespace core

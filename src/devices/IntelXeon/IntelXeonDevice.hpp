@@ -10,7 +10,7 @@ public:
 
 	static void setCommunicationProvider( XeonCommunicationProvider provider ) { communicationProvider = provider; }
 
-	static std::vector<Device::Ptr> getAvailableDevices( void );
+	static std::vector<Device::Ptr> getAvailableDevices( void ); //TODO: should never throw
 
 	void setPowerLimit( Power ) final;
 	void setPowerLimit( Percentage ) final;

@@ -55,7 +55,7 @@ set ( CMAKE_CXX_FLAGS_RELEASE "" )
 set ( GCC_EXTENSIVE_ERROR_CHECKS "-Werror -Wfatal-errors -Wall -Wextra -pedantic -pedantic-errors -Wswitch-default -Wswitch-enum -Wcast-align -Wpointer-arith -Wstrict-overflow=5 -Wcast-qual -Wunreachable-code -Wwrite-strings -Wuninitialized -Wlogical-op -Wfloat-equal -Wstrict-aliasing=2 -Wredundant-decls -fno-omit-frame-pointer -ffloat-store -fno-common -fstrict-aliasing -Winit-self" )
 	# -Winline -Wundef -Wshadow
 #set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -D_FORTIFY_SOURCE=1" ) TODO: analyze why FORTIFY_SOURCE rises redefinition error on quickbuild
-set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DUSE_COMM_PROVIDERS_MOCKS" )
 set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_EXTENSIVE_ERROR_CHECKS}" )
 
 #Add libraries location

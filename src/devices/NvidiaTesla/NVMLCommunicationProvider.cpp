@@ -6,13 +6,10 @@
 #define NVML_ERROR_CHECK( statusCode ) checkNVMLErrors( "NVML error at line:" STR( __LINE__ ), statusCode )
 
 //TODO: use nvmlDeviceGetEnforcedPowerLimit ?
-//TODO: think about error handling
-//TOOO: should we also reported devices which are not capable of power management via NVML?
 namespace devices {
 NVMLCommunicationProvider::NVMLCommunicationProvider( DeviceIdentifier::idType deviceId ) {
 	NVML_ERROR_CHECK( nvmlDeviceGetHandleByUUID( deviceId.c_str(), &deviceHandle ) ); //TODO: this line should be changed when we decide what should be used as device's primary id
 }
-
 
 void NVMLCommunicationProvider::init( void ) {
 	NVML_ERROR_CHECK( nvmlInit() );
@@ -34,9 +31,9 @@ void NVMLCommunicationProvider::shutdown( void ) {
 }
 
 std::vector<nvmlDevice_t> NVMLCommunicationProvider::listDevices( void ) {
-	// Enumerate devices and store them in container
 	unsigned int devCount;
 	NVML_ERROR_CHECK( nvmlDeviceGetCount( &devCount ) );
+
 	std::vector<nvmlDevice_t> devices;
 	for ( size_t i = 0; i < devCount; i++ ) {
 		nvmlDevice_t devtmp;
@@ -45,41 +42,24 @@ std::vector<nvmlDevice_t> NVMLCommunicationProvider::listDevices( void ) {
 			devices.push_back( devtmp );
 		}
 		catch ( NVMLError& err ) {
-			LOG( ERROR ) << nvmlErrorString( err.code );
-			// something has prevented us from acquiring device handle, take necessary actions here...
+			LOG( ERROR ) << "Failed to acquire device handle for device with index: " << i << ", error: " << nvmlErrorString( err.code );
 		}
 	}
 
 	LOG( INFO ) << "Total number of devices: " << devices.size();
 
-	// In case of unsupported (i.e. not capable of power managment via NVML) devices
-	// we can either remove them or store them in another container
-	// at this moment we've chosen the former approach
-	auto iter = std::remove_if( devices.begin(), devices.end(), [] ( nvmlDevice_t device ) {
-		nvmlEnableState_t powerManagementEnabled;
-		try {
-			NVML_ERROR_CHECK( nvmlDeviceGetPowerManagementMode( device, &powerManagementEnabled ) );
-			return powerManagementEnabled != nvmlEnableState_t::NVML_FEATURE_ENABLED;
-		}
-		catch ( NVMLError ) {
-			// either device does not support power managment features or some other error has happened
-			// in both cases we have no use of that device
-			return true;
-		}
-	} );
-	devices.erase( iter, devices.end() );
-
-	LOG( INFO ) << "Number of devices supporting power management via NVML: " << devices.size();
-
 	return devices;
 }
 
 devices::DeviceIdentifier::idType NVMLCommunicationProvider::getPrimaryId( nvmlDevice_t deviceHandle ) {
-	std::map<std::string, std::string> info;
-
 	char UUID[ NVML_DEVICE_UUID_BUFFER_SIZE ];
 	NVML_ERROR_CHECK( nvmlDeviceGetUUID( deviceHandle, UUID, NVML_DEVICE_UUID_BUFFER_SIZE ) );
-	info[ "UUID" ] = UUID;
+
+	return UUID;
+}
+
+std::map<std::string, std::string> NVMLCommunicationProvider::getInfo( nvmlDevice_t deviceHandle ) {
+	std::map<std::string, std::string> info;
 
 	char serial[ NVML_DEVICE_SERIAL_BUFFER_SIZE ];
 	NVML_ERROR_CHECK( nvmlDeviceGetSerial( deviceHandle, serial, NVML_DEVICE_SERIAL_BUFFER_SIZE ) );
@@ -93,23 +73,11 @@ devices::DeviceIdentifier::idType NVMLCommunicationProvider::getPrimaryId( nvmlD
 	NVML_ERROR_CHECK( nvmlDeviceGetPciInfo( deviceHandle, &pciInfo ) );
 	info[ "PciBusId" ] = pciInfo.busId;
 
-
+	info[ "PowerManagementCapable" ] = isDevicePowerManagementCapable( deviceHandle );
 
 	nvmlComputeMode_t computeMode;
 	NVML_ERROR_CHECK( nvmlDeviceGetComputeMode( deviceHandle, &computeMode ) );
-	switch( computeMode ) {
-	case NVML_COMPUTEMODE_DEFAULT:
-		info[ "ComputeMode" ] = "Default"; break;
-	case NVML_COMPUTEMODE_EXCLUSIVE_THREAD:
-		info[ "ComputeMode" ] = "Exclusive thread"; break;
-	case NVML_COMPUTEMODE_PROHIBITED:
-		info[ "ComputeMode" ] = "Prohibited"; break;
-	case NVML_COMPUTEMODE_EXCLUSIVE_PROCESS:
-		info[ "ComputeMode" ] = "Exclusive process"; break;
-	case NVML_COMPUTEMODE_COUNT:
-	default:
-		info[ "ComputeMode" ] = "Unknown";
-	}
+	info[ "ComputeMode" ] = computeModeToString( computeMode );
 
 	unsigned pcieLinkGeneration;
 	NVML_ERROR_CHECK( nvmlDeviceGetCurrPcieLinkGeneration( deviceHandle, &pcieLinkGeneration ) );
@@ -126,26 +94,8 @@ devices::DeviceIdentifier::idType NVMLCommunicationProvider::getPrimaryId( nvmlD
 
 	nvmlGpuOperationMode_t currentGpuOperationMode, pendingGpuOperationMode;
 	NVML_ERROR_CHECK( nvmlDeviceGetGpuOperationMode( deviceHandle, &currentGpuOperationMode, &pendingGpuOperationMode ) );
-	switch( currentGpuOperationMode ) {
-	case NVML_GOM_ALL_ON:
-		info[ "CurrentGpuOperationMode" ] = "All on"; break;
-	case NVML_GOM_COMPUTE:
-		info[ "CurrentGpuOperationMode" ] = "Compute"; break;
-	case NVML_GOM_LOW_DP:
-		info[ "CurrentGpuOperationMode" ] = "Low DP"; break;
-	default:
-		info[ "CurrentGpuOperationMode" ] = "Unknown"; break;
-	}
-	switch( pendingGpuOperationMode ) {
-	case NVML_GOM_ALL_ON:
-		info[ "PendingGpuOperationMode" ] = "All on"; break;
-	case NVML_GOM_COMPUTE:
-		info[ "PendingGpuOperationMode" ] = "Compute"; break;
-	case NVML_GOM_LOW_DP:
-		info[ "PendingGpuOperationMode" ] = "Low DP"; break;
-	default:
-		info[ "PendingGpuOperationMode" ] = "Unknown"; break;
-	}
+	info[ "CurrentGpuOperationMode" ] = gpuOperationModeToString( currentGpuOperationMode );
+	info[ "PendingGpuOperationMode" ] = gpuOperationModeToString( pendingGpuOperationMode );
 
 	char inforomImageVersion[ NVML_DEVICE_INFOROM_VERSION_BUFFER_SIZE ];
 	NVML_ERROR_CHECK( nvmlDeviceGetInforomImageVersion( deviceHandle, inforomImageVersion, NVML_DEVICE_INFOROM_VERSION_BUFFER_SIZE ) );
@@ -175,14 +125,6 @@ devices::DeviceIdentifier::idType NVMLCommunicationProvider::getPrimaryId( nvmlD
 	NVML_ERROR_CHECK( nvmlDeviceGetVbiosVersion( deviceHandle, vbiosVersion, NVML_DEVICE_VBIOS_VERSION_BUFFER_SIZE ) );
 	info[ "VBiosVersion" ] = vbiosVersion;
 
-	return UUID;
-}
-
-std::map<std::string, std::string> NVMLCommunicationProvider::getInfo( nvmlDevice_t deviceHandle ) {
-	std::map<std::string, std::string> info;
-	char name[ NVML_DEVICE_NAME_BUFFER_SIZE ];
-	NVML_ERROR_CHECK( nvmlDeviceGetName( deviceHandle, name, NVML_DEVICE_NAME_BUFFER_SIZE ) );
-
 	return info;
 }
 
@@ -206,6 +148,57 @@ void NVMLCommunicationProvider::checkNVMLErrors( const char* source, nvmlReturn_
 	if ( status != NVML_SUCCESS ) {
 		throw NVMLError{ source, status };
 	}
+}
+
+std::string NVMLCommunicationProvider::computeModeToString( nvmlComputeMode_t computeMode ) {
+	switch( computeMode ) {
+	case NVML_COMPUTEMODE_DEFAULT:
+		return "Default";
+	case NVML_COMPUTEMODE_EXCLUSIVE_THREAD:
+		return "Exclusive thread";
+	case NVML_COMPUTEMODE_PROHIBITED:
+		return "Prohibited";
+	case NVML_COMPUTEMODE_EXCLUSIVE_PROCESS:
+		return "Exclusive process";
+	case NVML_COMPUTEMODE_COUNT:
+	default:
+		return "Unknown";
+	}
+}
+
+std::string NVMLCommunicationProvider::gpuOperationModeToString( nvmlGpuOperationMode_t gpuOperationMode ) {
+	switch( gpuOperationMode ) {
+	case NVML_GOM_ALL_ON:
+		return "All on";
+	case NVML_GOM_COMPUTE:
+		return "Compute";
+	case NVML_GOM_LOW_DP:
+		return "Low DP";
+	default:
+		return "Unknown";
+	}
+}
+
+bool NVMLCommunicationProvider::isDevicePowerManagementCapable( nvmlDevice_t deviceHandle ) {
+	nvmlEnableState_t powerManagementEnabled;
+	try {
+		NVML_ERROR_CHECK( nvmlDeviceGetPowerManagementMode( deviceHandle, &powerManagementEnabled ) );
+
+		if ( powerManagementEnabled == NVML_FEATURE_DISABLED ) {
+			char name[ NVML_DEVICE_NAME_BUFFER_SIZE ];
+			NVML_ERROR_CHECK( nvmlDeviceGetName( deviceHandle, name, NVML_DEVICE_NAME_BUFFER_SIZE ) );
+			char UUID[ NVML_DEVICE_UUID_BUFFER_SIZE ];
+			NVML_ERROR_CHECK( nvmlDeviceGetUUID( deviceHandle, UUID, NVML_DEVICE_UUID_BUFFER_SIZE ) );
+			LOG( INFO ) << name << " with UUID: " << UUID << " doesn't support power management.";
+		}
+	}
+	catch ( NVMLError& ex ) {
+		LOG( INFO ) << "Failed to get power management mode for device with handle: " << deviceHandle
+					<< " exception: " << ex.info();
+		return false;
+	}
+
+	return powerManagementEnabled != NVML_FEATURE_ENABLED;
 }
 
 } // namespace devices

@@ -5,6 +5,10 @@
 namespace devices {
 class MockNVMLCommunicationProvider {
 public:
+	static void init( void ) {}
+
+	static void shutdown( void ) {}
+
 	static std::vector<nvmlDevice_t> listDevices( void ) {
 		return std::vector<nvmlDevice_t>{ nvmlDevice_t(0), nvmlDevice_t(1), nvmlDevice_t(2) };
 	}
@@ -13,6 +17,7 @@ public:
 		return std::to_string( reinterpret_cast<long long>( deviceHandle ) );
 	}
 
+	//TODO: make it return some real values
 	static std::map<std::string, std::string> getInfo( nvmlDevice_t deviceHandle ) {
 		(void)deviceHandle;
 		return std::map<std::string, std::string>{};
