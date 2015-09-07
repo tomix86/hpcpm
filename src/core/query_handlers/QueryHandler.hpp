@@ -15,12 +15,9 @@ public:
 
 		virtual ~Result( void ) {}
 
-		//TODO: should we use json in this layer?
-		//      should we serialize it instead of returning json or string object?
 		virtual std::string serialize( void ) const = 0;
 
 	protected:
-		//TODO: shouldn't it be a member of the DeviceIdentifier class?
 		web::json::value serializeDeviceIdentifierToJson( devices::DeviceIdentifier deviceIdentifier ) const {
 			web::json::value object;
 			object[ U( "Type" ) ] = web::json::value( deviceIdentifier.typeName() );

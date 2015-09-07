@@ -9,7 +9,7 @@ class Query {
 public:
 	enum class Type {
 		None,
-		GetNodeInformation, //TODO: rename to GetDevicesList?
+		GetNodeInformation,
 		SetPowerLimitAbsolute,
 		SetPowerLimitPercentage,
 		GetPowerLimit,

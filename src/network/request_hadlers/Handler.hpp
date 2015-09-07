@@ -24,8 +24,11 @@ public:
 	virtual ~Handler( void ) {}
 
 	http_response handle( http_request request ) {
-		//TODO: remember to get all of the useful data from the request
 		LOG ( INFO ) << "Handling " << request.method() << request.request_uri().to_string();
+		LOG ( INFO ) << "Headers:";
+		for ( auto header : request.headers() ) {
+			LOG( INFO ) << "   " << header.first << ": " << header.second;
+		}
 
 		try {
 			return process( request );
@@ -50,9 +53,9 @@ private:
 	http_response process( http_request request ) {
 		auto queries = splitIntoQueries( request );
 
-		std::vector<core::QueryHandler::Result::Ptr> results;  //TODO: we must decide whether we want to send multiple queries in single request or not
-		for ( auto& query : queries ) { //TODO: if the response requires it we will send a json, otherwise a string will be sent
-			results.push_back( queryExecutor->execute( query ) ); //TODO: management node will discern between those two based on Content-Type HTTP header
+		std::vector<core::QueryHandler::Result::Ptr> results;
+		for ( auto& query : queries ) {
+			results.push_back( queryExecutor->execute( query ) );
 		}
 
 		auto response = serializeQueriesResults( results );
@@ -84,11 +87,13 @@ private:
 		}
 		catch ( std::exception& ex ) {
 			response.set_status_code( status_code::InternalError );
-			LOG ( WARNING ) << "std::exception with description: " << ex.what() << " thrown when processing a request"; //TODO: add diagnostic log dump here
+			LOG ( WARNING ) << "std::exception with description: " << ex.what() << " thrown when processing a request";
+			el::base::debug::StackTrace();
 		}
 		catch ( ... ) {
 			response.set_status_code( status_code::InternalError );
-			LOG ( ERROR ) << "Unknown exception occured when processing a request"; //TODO: add diagnostic log dump here
+			LOG ( ERROR ) << "Unknown exception occured when processing a request";
+			el::base::debug::StackTrace();
 		}
 
 		return response;

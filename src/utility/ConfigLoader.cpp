@@ -5,7 +5,6 @@
 #include "Functional.hpp"
 #include "Logging.hpp"
 
-//TODO: should we use std::cerr instead of logging library here?
 namespace utility {
 
 std::map<std::string, std::string> ConfigLoader::config;

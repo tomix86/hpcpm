@@ -79,7 +79,6 @@ public:
 	DeviceIdentifier identifier;
 
 	// If the device has any other IDs (secondary) then they are stored here along with other info about that device
-	//TODO: change to more suitable name?
     std::map<std::string, std::string> entries;
 
 };

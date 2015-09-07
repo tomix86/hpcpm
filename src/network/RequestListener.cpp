@@ -7,9 +7,6 @@
 #include "RequestListener.hpp"
 #include "utility/ConfigLoader.hpp"
 
-//TODO: is it possible to know when we receive request to the resource that doesn't exist? for example: /devices_foobar
-// or when an invalid method is used for example: SET/devices_list ?
-
 //TODO: it may be a good idea to estabilish the connection the the server from the computation node (instead of listening)
 // by doing it we avoid potential problems with port forwarding, which may arise when the computation node is behind NAT
 namespace network {

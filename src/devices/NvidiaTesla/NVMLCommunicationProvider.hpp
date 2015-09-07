@@ -27,7 +27,6 @@ public:
 	static void init( void );
 	static void shutdown( void );
 	static std::vector<nvmlDevice_t> listDevices( void );
-	//TODO: use those functions inside listDevices and return vector of DeviceInformaton instead of nvmlDevice_t?
 	static devices::DeviceIdentifier::idType getPrimaryId( nvmlDevice_t deviceHandle );
 	static std::map<std::string, std::string> getInfo( nvmlDevice_t deviceHandle );
 

@@ -14,7 +14,6 @@ utility::ApplicationExitCode Core::run( void ) {
 	LOG ( INFO ) << "Core.run()";
 
 	requestListener.start();
-	std::getchar(); //TODO: obsiously it won't work that way... =)
 	requestListener.stop();
 
 	return utility::EXIT_SUCCESSFUL;
