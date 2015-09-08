@@ -20,8 +20,8 @@ public:
 	protected:
 		web::json::value serializeDeviceIdentifierToJsonObject( devices::DeviceIdentifier deviceIdentifier ) const {
 			web::json::value object;
-			object[ U( "Type" ) ] = web::json::value( deviceIdentifier.typeName() );
-			object[ U( "id" ) ] = web::json::value( deviceIdentifier.id );
+			object[ "Type" ] = web::json::value( deviceIdentifier.typeName() );
+			object[ "id" ] = web::json::value( deviceIdentifier.id );
 			return object;
 		}
 	};

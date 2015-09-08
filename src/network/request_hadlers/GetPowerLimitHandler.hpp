@@ -37,7 +37,7 @@ protected:
 	http_response serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr> result ) final {
 		web::json::value array;
 		for ( auto element : result ) {
-			array[ array.size() ] = web::json::value::parse( U( element->serialize() ) );
+			array[ array.size() ] = web::json::value::parse( element->serialize() );
 		}
 
 		http_response response;

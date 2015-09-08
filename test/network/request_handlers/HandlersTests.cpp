@@ -28,7 +28,7 @@ TEST_F( RequestHandlersTestSuite, ResponseTest ) {
 		.WillOnce( testing::Return( std::vector<Query>{ Query{ Query::Type::GetNodeInformation } } ) );
 
 	http_response serializationResult( status_codes::OK );
-	serializationResult.set_body( U( "Misza" ) );
+	serializationResult.set_body( "Misza" );
 
 	EXPECT_CALL( handler, serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr>{ queryResult } ) )
 		.WillOnce( testing::Return( serializationResult ) );

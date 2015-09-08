@@ -13,11 +13,11 @@ public:
 	public:
 		std::string serialize( void ) const final {
 			web::json::value mainObject;
-			mainObject[ U( "sysname" ) ] = web::json::value( sysInfo.sysname );
-			mainObject[ U( "nodename" ) ] = web::json::value( sysInfo.nodename );
-			mainObject[ U( "release" ) ] = web::json::value( sysInfo.release );
-			mainObject[ U( "version" ) ] = web::json::value( sysInfo.version );
-			mainObject[ U( "machine" ) ] = web::json::value( sysInfo.machine );
+			mainObject[ "sysname" ] = web::json::value( sysInfo.sysname );
+			mainObject[ "nodename" ] = web::json::value( sysInfo.nodename );
+			mainObject[ "release" ] = web::json::value( sysInfo.release );
+			mainObject[ "version" ] = web::json::value( sysInfo.version );
+			mainObject[ "machine" ] = web::json::value( sysInfo.machine );
 
 			web::json::value devicesArray;
 			for ( auto device : devices ) {
@@ -25,13 +25,13 @@ public:
 
 				web::json::value infoObject;
 				for ( auto entry : device->getInfo().entries ) {
-					infoObject[ U( entry.first ) ] = web::json::value( U( entry.second ) );
+					infoObject[ entry.first ] = web::json::value( entry.second );
 				}
-				deviceObject[ U( "info" ) ] = infoObject;
+				deviceObject[ "info" ] = infoObject;
 
 				devicesArray[ devicesArray.size() ] = deviceObject;
 			}
-			mainObject[ U( "devices" ) ] = devicesArray;
+			mainObject[ "devices" ] = devicesArray;
 
 			return mainObject.serialize();
 		}

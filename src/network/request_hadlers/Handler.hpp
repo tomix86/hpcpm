@@ -5,7 +5,6 @@
 #include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
-//TODO: take care of platform specific string macro
 namespace network {
 namespace handlers {
 
@@ -66,7 +65,7 @@ private:
 		}
 		catch ( web::json::json_exception& ex ) {
 			response.set_status_code( status_code::InternalError );
-			response.set_body( U( ex.what() ) );
+			response.set_body( ex.what() );
 		}
 
 		return response;
@@ -80,17 +79,17 @@ private:
 		}
 		catch ( MalformedQueryException& ex ) {
 			response.set_status_code( status_code::BadRequest );
-			response.set_body( U( ex.info() ) );
+			response.set_body( ex.info() );
 			LOG ( WARNING ) << ex.traceWithMessages();
 		}
 		catch ( devices::DeviceNotFoundException& ex ) {
 			response.set_status_code( status_code::BadRequest );
-			response.set_body( U( ex.info() ) );
+			response.set_body( ex.info() );
 			LOG ( WARNING ) << ex.traceWithMessages();
 		}
 		catch ( utility::Exception& ex ) {
 			response.set_status_code( status_code::InternalError );
-			response.set_body( U( ex.info() ) );
+			response.set_body( ex.info() );
 			LOG ( WARNING ) << ex.traceWithMessages();
 		}
 		catch ( std::exception& ex ) {
