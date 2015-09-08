@@ -6,7 +6,7 @@
 
 namespace devices {
 
-DEFINE_RUNTIME_ERROR_DERIVATIVE( DeviceNotFoundException )
+DEFINE_RUNTIME_ERROR_DERIVATIVE( DeviceNotFoundException );
 
 class DevicesManager : public boost::noncopyable {
 public:

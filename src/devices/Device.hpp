@@ -11,6 +11,8 @@ struct PowerLimitConstraints {
 	Power upper;
 };
 
+DEFINE_RUNTIME_ERROR_DERIVATIVE( ArgumentOutOfBounds );
+
 class Device {
 public:
 	typedef std::shared_ptr<Device> Ptr;

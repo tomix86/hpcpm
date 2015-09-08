@@ -10,6 +10,7 @@
 namespace utility {
 
 bool toBool( std::string str );
+std::string toString( bool b );
 
 int tryParseInt( std::string value, int minLegalValue = std::numeric_limits<int>::min(), int maxLegalValue = std::numeric_limits<int>::max() );
 

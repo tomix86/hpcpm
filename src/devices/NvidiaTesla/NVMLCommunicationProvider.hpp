@@ -48,6 +48,6 @@ private:
 
 	static std::string gpuOperationModeToString( nvmlGpuOperationMode_t gpuOperationMode );
 
-	static std::string isDevicePowerManagementCapable( nvmlDevice_t deviceHandle );
+	static bool isDevicePowerManagementCapable( nvmlDevice_t deviceHandle );
 };
 } // namespace devices

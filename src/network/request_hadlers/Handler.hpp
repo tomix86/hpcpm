@@ -8,7 +8,7 @@
 namespace network {
 namespace handlers {
 
-DEFINE_RUNTIME_ERROR_DERIVATIVE( MalformedQueryException )
+DEFINE_RUNTIME_ERROR_DERIVATIVE( MalformedQueryException );
 
 using web::http::http_request;
 using web::http::http_response;

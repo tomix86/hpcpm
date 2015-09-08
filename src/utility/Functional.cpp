@@ -15,6 +15,10 @@ bool toBool( std::string str ) {
 	return str == "true" ? true : false;
 }
 
+std::string toString( bool b ) {
+	return b ? "true" : "false";
+}
+
 int tryParseInt( std::string value, int minLegalValue, int maxLegalValue ) {
 	try {
 		auto val = std::stoi( value );

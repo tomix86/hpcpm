@@ -21,5 +21,5 @@ private:
 	void addListener( std::string resource, handlers::Handler::Ptr GETHandler, handlers::Handler::Ptr PUTHandler );
 };
 
-DEFINE_RUNTIME_ERROR_DERIVATIVE ( ListenerLaunchFailedException )
+DEFINE_RUNTIME_ERROR_DERIVATIVE( ListenerLaunchFailedException );
 } // namespace network

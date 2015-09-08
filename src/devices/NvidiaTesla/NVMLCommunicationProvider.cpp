@@ -1,4 +1,5 @@
 #include "NVMLCommunicationProvider.hpp"
+#include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
 #define S( x ) #x
@@ -77,7 +78,7 @@ std::map<std::string, std::string> NVMLCommunicationProvider::getInfo( nvmlDevic
 	NVML_ERROR_CHECK( nvmlDeviceGetPciInfo( deviceHandle, &pciInfo ) );
 	info[ "PciBusId" ] = pciInfo.busId;
 
-	info[ "PowerManagementCapable" ] = isDevicePowerManagementCapable( deviceHandle );
+	info[ "PowerManagementCapable" ] = utility::toString( isDevicePowerManagementCapable( deviceHandle ) );
 
 	nvmlComputeMode_t computeMode;
 	NVML_ERROR_CHECK( nvmlDeviceGetComputeMode( deviceHandle, &computeMode ) );
@@ -183,7 +184,7 @@ std::string NVMLCommunicationProvider::gpuOperationModeToString( nvmlGpuOperatio
 	}
 }
 
-std::string NVMLCommunicationProvider::isDevicePowerManagementCapable( nvmlDevice_t deviceHandle ) {
+bool NVMLCommunicationProvider::isDevicePowerManagementCapable( nvmlDevice_t deviceHandle ) {
 	nvmlEnableState_t powerManagementEnabled;
 	try {
 		NVML_ERROR_CHECK( nvmlDeviceGetPowerManagementMode( deviceHandle, &powerManagementEnabled ) );
@@ -199,10 +200,10 @@ std::string NVMLCommunicationProvider::isDevicePowerManagementCapable( nvmlDevic
 	catch ( NVMLError& ex ) {
 		LOG( INFO ) << "Failed to get power management mode for device with handle: " << deviceHandle
 					<< " exception: " << ex.info();
-		return "false";
+		return false;
 	}
 
-	return powerManagementEnabled == NVML_FEATURE_ENABLED ? "true" : "false";
+	return powerManagementEnabled == NVML_FEATURE_ENABLED;
 }
 
 } // namespace devices

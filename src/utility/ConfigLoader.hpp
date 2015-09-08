@@ -6,7 +6,7 @@
 #include "utility/Exceptions.hpp"
 
 namespace utility {
-DEFINE_RUNTIME_ERROR_DERIVATIVE ( InvalidKeyException )
+DEFINE_RUNTIME_ERROR_DERIVATIVE ( InvalidKeyException );
 
 class ConfigLoader {
 public:

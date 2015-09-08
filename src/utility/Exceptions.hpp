@@ -8,13 +8,13 @@
 class ExceptionName: public utility::RuntimeError {\
 public:\
 	ExceptionName( std::string src, std::string msg ) : utility::RuntimeError( src, msg) { }\
-};
+}
 
 #define DEFINE_LOGIC_ERROR_DERIVATIVE ( ExceptionName ) \
 class ExceptionName: public utility::RuntimeError {\
 public:\
 	ExceptionName( std::string src, std::string msg ) : utility::RuntimeError( src, msg) { }\
-};
+}
 
 namespace utility {
 	class Exception : public std::exception {
