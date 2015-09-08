@@ -18,7 +18,7 @@ public:
 		virtual std::string serialize( void ) const = 0;
 
 	protected:
-		web::json::value serializeDeviceIdentifierToJson( devices::DeviceIdentifier deviceIdentifier ) const {
+		web::json::value serializeDeviceIdentifierToJsonObject( devices::DeviceIdentifier deviceIdentifier ) const {
 			web::json::value object;
 			object[ U( "Type" ) ] = web::json::value( deviceIdentifier.typeName() );
 			object[ U( "id" ) ] = web::json::value( deviceIdentifier.id );
@@ -33,7 +33,7 @@ public:
 		}
 
 		std::string serialize( void ) const final {
-			return message;
+			return '"' + message + '"';
 		}
 
 		std::string message;
@@ -42,7 +42,7 @@ public:
 	class NullResult : public Result {
 	public:
 		std::string serialize( void ) const final {
-			return "";
+			return "\"\"";
 		}
 	};
 

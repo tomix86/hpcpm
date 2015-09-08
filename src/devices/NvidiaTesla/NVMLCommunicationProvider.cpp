@@ -61,6 +61,10 @@ devices::DeviceIdentifier::idType NVMLCommunicationProvider::getPrimaryId( nvmlD
 std::map<std::string, std::string> NVMLCommunicationProvider::getInfo( nvmlDevice_t deviceHandle ) {
 	std::map<std::string, std::string> info;
 
+	char UUID[ NVML_DEVICE_UUID_BUFFER_SIZE ];
+	NVML_ERROR_CHECK( nvmlDeviceGetUUID( deviceHandle, UUID, NVML_DEVICE_UUID_BUFFER_SIZE ) );
+	info[ "UUID" ] = UUID;
+
 	char serial[ NVML_DEVICE_SERIAL_BUFFER_SIZE ];
 	NVML_ERROR_CHECK( nvmlDeviceGetSerial( deviceHandle, serial, NVML_DEVICE_SERIAL_BUFFER_SIZE ) );
 	info[ "SerialNumber" ] = serial;
@@ -179,7 +183,7 @@ std::string NVMLCommunicationProvider::gpuOperationModeToString( nvmlGpuOperatio
 	}
 }
 
-bool NVMLCommunicationProvider::isDevicePowerManagementCapable( nvmlDevice_t deviceHandle ) {
+std::string NVMLCommunicationProvider::isDevicePowerManagementCapable( nvmlDevice_t deviceHandle ) {
 	nvmlEnableState_t powerManagementEnabled;
 	try {
 		NVML_ERROR_CHECK( nvmlDeviceGetPowerManagementMode( deviceHandle, &powerManagementEnabled ) );
@@ -195,10 +199,10 @@ bool NVMLCommunicationProvider::isDevicePowerManagementCapable( nvmlDevice_t dev
 	catch ( NVMLError& ex ) {
 		LOG( INFO ) << "Failed to get power management mode for device with handle: " << deviceHandle
 					<< " exception: " << ex.info();
-		return false;
+		return "false";
 	}
 
-	return powerManagementEnabled != NVML_FEATURE_ENABLED;
+	return powerManagementEnabled == NVML_FEATURE_ENABLED ? "true" : "false";
 }
 
 } // namespace devices

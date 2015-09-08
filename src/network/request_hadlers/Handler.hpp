@@ -5,6 +5,7 @@
 #include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
+//TODO: take care of platform specific string macro
 namespace network {
 namespace handlers {
 
@@ -58,8 +59,15 @@ private:
 			results.push_back( queryExecutor->execute( query ) );
 		}
 
-		auto response = serializeQueriesResults( results );
-		response.set_status_code( status_code::OK );
+		http_response response;
+		try {
+			response = serializeQueriesResults( results );
+			response.set_status_code( status_code::OK );
+		}
+		catch ( web::json::json_exception& ex ) {
+			response.set_status_code( status_code::InternalError );
+			response.set_body( U( ex.what() ) );
+		}
 
 		return response;
 	}
@@ -87,7 +95,7 @@ private:
 		}
 		catch ( std::exception& ex ) {
 			response.set_status_code( status_code::InternalError );
-			LOG ( WARNING ) << "std::exception with description: " << ex.what() << " thrown when processing a request";
+			LOG ( WARNING ) << "std::exception with description: \"" << ex.what() << "\" thrown when processing a request";
 			el::base::debug::StackTrace();
 		}
 		catch ( ... ) {

@@ -17,9 +17,13 @@ void ConfigLoader::initialize( std::string cfgFilePath ) {
 		throw utility::LogicError( "ConfigLoader::initialize", "ConfigLoader was already initialized" );
 	}
 
+	if ( cfgFilePath.empty() ) {
+		throw utility::RuntimeError( "ConfigLoader::initialize", "Config file path was not set" );
+	}
+
 	std::ifstream file( cfgFilePath );
 	if ( !file.is_open() ) {
-		throw utility::RuntimeError( "ConfigLoader::initialize", "Error while opening config file " + cfgFilePath );
+		throw utility::RuntimeError( "ConfigLoader::initialize", "Error while opening config file: " + cfgFilePath );
 	}
 
 	try {

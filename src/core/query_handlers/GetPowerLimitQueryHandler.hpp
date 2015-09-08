@@ -8,7 +8,7 @@ public:
 	class Result : public QueryHandler::Result {
 	public:
 		std::string serialize( void ) const final {
-			auto object = serializeDeviceIdentifierToJson( deviceIdentifier );
+			auto object = serializeDeviceIdentifierToJsonObject( deviceIdentifier );
 			object[ "PowerLimit" ] = powerLimit;
 			return object.serialize();
 		}

@@ -78,7 +78,9 @@ TEST_F( QueryExecutorTestSuite, GetNodeInformation ) {
 
 	GetNodeInformationQueryHandler::Result::Ptr result;
 	ASSERT_NO_THROW( result = handler.handle( Query{ Query::Type::GetNodeInformation } ) );
-	ASSERT_TRUE( result->serialize().find( "[{\"Type\":\"IntelXeon\",\"id\":\"123\"},{\"Type\":\"IntelXeonPhi\",\"id\":\"456\"},{\"Type\":\"NvidiaTesla\",\"id\":\"789\"}]" ) != std::string::npos );
+	ASSERT_TRUE( result->serialize().find( "\"Type\":\"IntelXeon\",\"id\":\"123\"" ) != std::string::npos );
+	ASSERT_TRUE( result->serialize().find( "\"Type\":\"IntelXeonPhi\",\"id\":\"456\"" ) != std::string::npos );
+	ASSERT_TRUE( result->serialize().find( "\"Type\":\"NvidiaTesla\",\"id\":\"789\"" ) != std::string::npos );
 }
 
 TEST_F( QueryExecutorTestSuite, GetPowerLimit ) {

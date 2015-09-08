@@ -14,6 +14,7 @@ utility::ApplicationExitCode Core::run( void ) {
 	LOG ( INFO ) << "Core.run()";
 
 	requestListener.start();
+	while ( true );
 	requestListener.stop();
 
 	return utility::EXIT_SUCCESSFUL;

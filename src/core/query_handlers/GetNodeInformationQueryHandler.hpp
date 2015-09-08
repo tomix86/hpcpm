@@ -19,11 +19,19 @@ public:
 			mainObject[ U( "version" ) ] = web::json::value( sysInfo.version );
 			mainObject[ U( "machine" ) ] = web::json::value( sysInfo.machine );
 
-			web::json::value array;
-			for ( auto deviceIdentifier : devices ) {
-				array[ array.size() ] = serializeDeviceIdentifierToJson( deviceIdentifier );
+			web::json::value devicesArray;
+			for ( auto device : devices ) {
+				auto deviceObject = serializeDeviceIdentifierToJsonObject( device->getInfo().identifier );
+
+				web::json::value infoObject;
+				for ( auto entry : device->getInfo().entries ) {
+					infoObject[ U( entry.first ) ] = web::json::value( U( entry.second ) );
+				}
+				deviceObject[ U( "info" ) ] = infoObject;
+
+				devicesArray[ devicesArray.size() ] = deviceObject;
 			}
-			mainObject[ U( "devices" ) ] = array;
+			mainObject[ U( "devices" ) ] = devicesArray;
 
 			return mainObject.serialize();
 		}
@@ -32,23 +40,20 @@ public:
 		friend class GetNodeInformationQueryHandler;
 
 		utsname sysInfo;
-		std::vector<devices::DeviceIdentifier> devices;
+		std::vector<devices::Device::Ptr> devices;
 	};
 
 	GetNodeInformationQueryHandler( std::shared_ptr<devices::DevicesManager> devicesManager ) :
 	QueryHandler( devicesManager ) {
 	}
 
-	// should return list of devices and information about the host(node) itself (like for example OS version)
 	QueryHandler::Result::Ptr handle( Query query ) final {
 		(void)query; //cast to avoid unused-parameter warning
 
 		auto result = std::make_shared<Result>();
 		uname( &result->sysInfo );
 
-		for ( auto device : devicesManager->getDevicesList() ) {
-			result->devices.push_back( device->getInfo().identifier );
-		}
+		result->devices = devicesManager->getDevicesList();
 
 		return result;
 	}

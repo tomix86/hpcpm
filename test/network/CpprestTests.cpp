@@ -37,6 +37,16 @@ TEST( CpprestTestSuite, JSONValuesTest ) {
 	ASSERT_THROW( integerVal.as_string(), web::json::json_exception );
 }
 
+TEST( CpprestTestSuite, JSONStringParsingTest ) {
+	json::value val;
+	ASSERT_THROW( json::value::parse( U( "test" ) ), json::json_exception );
+	ASSERT_NO_THROW( val = json::value::parse( U( "\"test\"" ) ) );
+	ASSERT_STREQ( U( "test" ), val.as_string().c_str() );
+
+	ASSERT_THROW( json::value::parse( U( "" ) ), json::json_exception );
+	ASSERT_NO_THROW( val = json::value::parse( U( "\"\"" ) ) );
+}
+
 TEST( CpprestTestSuite, JSONObjectParsingTest ) {
 	auto stringsToParse = {	U( "{ \"DeviceID\" : \"0:0:0:1\" }" ),
 							U( "{ \"DeviceID\"     :  \"0:0:0:1\" }" ),
