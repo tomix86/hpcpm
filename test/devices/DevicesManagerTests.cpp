@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "devices/DevicesManager.hpp"
 #include "devices/IntelXeon/IntelXeonDevice.hpp"
+#include "devices/IntelXeon/MockMPSSCommunicationProvider.hpp"
 
 using namespace devices;
 
@@ -17,7 +18,7 @@ TEST( DevicesManagerTestSuite, getDeviceByIdentifierTest ) {
 	DeviceIdentifier devId{ DeviceType::IntelXeon, "0" };
 	ASSERT_THROW( devicesManager.getDeviceByIdentifier( devId ), DeviceNotFoundException );
 
-	devicesManager.getDevicesListRef().push_back( std::make_shared<devices::IntelXeonDevice>( devId.id ) );
+	devicesManager.getDevicesListRef().push_back( std::make_shared<devices::IntelXeonDevice<devices::MockMPSSCommunicationProvider>>( devId.id ) );
 
 	auto& dev = devicesManager.getDeviceByIdentifier( devId );
 	ASSERT_EQ( devId.type, dev.getInfo().identifier.type );

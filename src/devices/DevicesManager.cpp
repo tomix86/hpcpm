@@ -1,7 +1,11 @@
 #include <algorithm>
 #include "DevicesManager.hpp"
 #include "IntelXeon/IntelXeonDevice.hpp"
+#include "IntelXeon/MockMPSSCommunicationProvider.hpp"
+#include "IntelXeon/MPSSCommunicationProvider.hpp"
 #include "IntelXeonPhi/IntelXeonPhiDevice.hpp"
+#include "IntelXeonPhi/MockNPMRKCommunicationProvider.hpp"
+#include "IntelXeonPhi/NPMRKCommunicationProvider.hpp"
 #include "NvidiaTesla/NvidiaTeslaDevice.hpp"
 #include "NvidiaTesla/MockNVMLCommunicationProvider.hpp"
 #include "NvidiaTesla/NVMLCommunicationProvider.hpp"
@@ -10,17 +14,19 @@
 
 #ifdef USE_COMM_PROVIDERS_MOCKS
 	using NVMLCommProvider = devices::MockNVMLCommunicationProvider;
-	//using MPSSCommProvider = devices::MockMPSSCommunicationProvider;
-	//using NPMRKCommProvider = devices::MockNPMRKCommunicationProvider;
+	using MPSSCommProvider = devices::MockMPSSCommunicationProvider;
+	using NPMRKCommProvider = devices::MockNPMRKCommunicationProvider;
 #else
 	using NVMLCommProvider = devices::NVMLCommunicationProvider;
-	//using MPSSCommProvider = devices::MPSSCommunicationProvider;
-	//using NPMRKCommProvider = devices::NPMRKCommunicationProvider;
+	using MPSSCommProvider = devices::MPSSCommunicationProvider;
+	using NPMRKCommProvider = devices::NPMRKCommunicationProvider;
 #endif
 
 namespace devices {
 void DevicesManager::init( void ) {
 	LOG ( INFO ) << "Initializing DevicesManager";
+	MPSSCommProvider::init();
+	NPMRKCommProvider::init();
 	NVMLCommProvider::init();
 	LOG ( INFO ) << "DevicesManager initialized";
 }
@@ -28,6 +34,8 @@ void DevicesManager::init( void ) {
 DevicesManager::~DevicesManager( void ) {
 	LOG ( INFO ) << "Destroying DevicesManager";
 	try {
+		MPSSCommProvider::shutdown();
+		NPMRKCommProvider::shutdown();
 		NVMLCommProvider::shutdown();
 	}
 	catch ( utility::Exception& ex ) {
@@ -56,9 +64,9 @@ const std::vector<devices::Device::Ptr>& DevicesManager::getDevicesList( void ) 
 
 void DevicesManager::updateDevicesList( void ) {
 	devicesList.clear();
-	auto list = devices::IntelXeonDevice::getAvailableDevices();
+	auto list = devices::IntelXeonDevice<MPSSCommProvider>::getAvailableDevices();
 	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
-	list = devices::IntelXeonPhiDevice::getAvailableDevices();
+	list = devices::IntelXeonPhiDevice<NPMRKCommProvider>::getAvailableDevices();
 	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
 	list = devices::NvidiaTeslaDevice<NVMLCommProvider>::getAvailableDevices();
 	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
