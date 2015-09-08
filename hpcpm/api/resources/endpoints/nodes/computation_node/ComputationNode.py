@@ -8,6 +8,7 @@ from hpcpm.api import log
 from hpcpm.api.helpers.database import database
 from hpcpm.api.helpers.utils import abort_when_port_invalid, COMPUTATION_NODE_PARAM, \
     COMPUTATION_NODE_NOT_FOUND_RESPONSE, COMPUTATION_NODE_FETCHED_RESPONSE
+from hpcpm.api.helpers.requests import get_devices_list, delete_power_limit
 
 
 class ComputationNode(Resource):
@@ -54,14 +55,13 @@ class ComputationNode(Resource):
         if node_by_ip and node_by_ip.get('name') != name:
             log.warning(str.format('Node with IP: {}:{} is present in database: {}', address, port, node_by_ip))
 
-        devices_query = str.format('http://{}:{}/devices_list', address, port)
         try:
-            response = requests.get(devices_query)
+            response = get_devices_list(address, port)
         except requests.exceptions.ConnectionError:
-            log.error(str.format('Connection could not be established to {}', devices_query))
+            log.error(str.format('Connection could not be established to {}:{}', address, port))
             abort(406)
 
-        log.info(str.format('Response from {}: {}', devices_query, response.text))
+        log.info(str.format('Response {}:', response.text))
 
         backend_info = json.loads(response.text)
         node_info = {
@@ -110,7 +110,8 @@ class ComputationNode(Resource):
     )
     def delete(self, name):
         result_node_info = database.delete_computation_node_info(name)
-        result_power_limit_info = database.delete_power_limit_info(name)
+        result_power_limit_info = database.delete_power_limit_infos(name)
+
         if not result_node_info:
             log.info(str.format('No such computation node {}', name))
             abort(404)
@@ -122,13 +123,12 @@ class ComputationNode(Resource):
         port = result_node_info.get('port')
         abort_when_port_invalid(port)
 
-        deletion_query = str.format('http://{}:{}/power_limit', address, port)
         for device in result_node_info['backend_info']['devices']:
             try:
-                response = requests.delete(deletion_query, params={'device_id': device['id']})
+                response = delete_power_limit(address, port, device['id'])
                 log.info(str.format('Device {} deletion info: {}', device['id'], response))
             except requests.exceptions.ConnectionError:
-                log.error(str.format('Connection could not be established to {}', deletion_query))
+                log.error(str.format('Connection could not be established to {}:{}', address, port))
                 abort(406)
 
         log.info(str.format('Successfully deleted node {} info and its power limit: {} {}', name, result_node_info,
