@@ -35,27 +35,49 @@ public:
 		return list;
 	}
 
-	void setPowerLimit( Power ) final {
+	void setPowerLimit( Power milliwatts ) final {
+		auto constraints = communicationProvider.getPowerLimitConstraints();
+		if ( milliwatts < constraints.first || milliwatts > constraints.second ) {
+			throw ArgumentOutOfBounds( "NvidiaTeslaDevice::setPowerLimit(Power)", "power limit value out of bounds" );
+		}
 
+		communicationProvider.setPowerLimit( milliwatts );
 	}
 
-	void setPowerLimit( Percentage ) final {
+	void setPowerLimit( Percentage percentage ) final {
+		if ( percentage < 0.f || percentage > 1.f ) {
+			throw ArgumentOutOfBounds( "NvidiaTeslaDevice::setPowerLimit(Percentage)", "power limit value out of bounds" );
+		}
 
+		auto constraints = getPowerLimitConstraints();
+		auto range = constraints.upper - constraints.lower;
+		auto newPowerLimit =  static_cast<unsigned>( constraints.lower + range * percentage );
+
+		//make sure that new power limit never gets out of bounds
+		newPowerLimit = std::min( std::max( newPowerLimit, constraints.lower ), constraints.upper );
+		communicationProvider.setPowerLimit( newPowerLimit );
 	}
 
 	Power getCurrentPowerLimit( void ) const final {
-		return Power{};
+		return communicationProvider.getCurrentPowerLimit();
 	}
 
 	Percentage getCurrentPowerLimitPercentage( void ) const final {
-		return Percentage{};
+		auto constraints = getPowerLimitConstraints();
+		auto range = constraints.upper - constraints.lower;
+		auto percentage = static_cast<float>( ( getCurrentPowerLimit() - constraints.lower ) ) / range;
+
+		//make sure that the percentage never goes out of bounds
+		percentage = std::min ( std::max( percentage, 0.f ), 1.f );
+		return percentage;
 	}
 
 	PowerLimitConstraints getPowerLimitConstraints( void ) const final {
-		return PowerLimitConstraints();
+		auto constraints = communicationProvider.getPowerLimitConstraints();
+		return PowerLimitConstraints{ constraints.first, constraints.second };
 	}
 
-private:
+protected:
 	CommunicationProvider communicationProvider;
 };
 } // namespace devices

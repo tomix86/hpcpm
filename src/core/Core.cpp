@@ -1,5 +1,7 @@
 #include <atomic>
+#include <chrono>
 #include <csignal>
+#include <thread>
 #include "Core.hpp"
 #include "utility/Logging.hpp"
 #include "utility/make_unique.hpp"
@@ -25,6 +27,7 @@ utility::ApplicationExitCode Core::run( void ) {
 			LOG ( INFO ) << "SIGINT caught, terminating.";
 			break;
 		}
+		std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
 	}
 	requestListener.stop();
 

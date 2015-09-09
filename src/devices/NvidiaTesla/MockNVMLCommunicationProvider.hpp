@@ -1,19 +1,26 @@
 #pragma once
 #include <nvml.h>
 #include "devices/DeviceInformation.hpp"
+#include "utility/Logging.hpp"
 
 namespace devices {
 class MockNVMLCommunicationProvider {
 public:
-	static void init( void ) {}
+	static void init( void ) {
+		LOG( DEBUG ) << "MOCK NVML initializing";
+	}
 
-	static void shutdown( void ) {}
+	static void shutdown( void ) {
+		LOG( DEBUG ) << "MOCK NVML shutting down";
+	}
 
 	static std::vector<nvmlDevice_t> listDevices( void ) {
+		LOG( DEBUG ) << "MOCK NVML returning devices list";
 		return std::vector<nvmlDevice_t>{ nvmlDevice_t(0), nvmlDevice_t(1), nvmlDevice_t(2) };
 	}
 
 	static devices::DeviceIdentifier::idType getPrimaryId( nvmlDevice_t deviceHandle ) {
+		LOG( DEBUG ) << "MOCK NVML returning primary id for device: " << deviceHandle;
 		return std::to_string( reinterpret_cast<long long>( deviceHandle ) );
 	}
 
@@ -41,6 +48,7 @@ public:
 		info[ "DefaultPowerManagementLimit" ] = "225000";
 		info[ "VBiosVersion" ] = "0";
 
+		LOG( DEBUG ) << "MOCK NVML returning info for device: " << deviceHandle;
 		return info;
 	}
 
@@ -49,6 +57,7 @@ public:
 	}
 
 	unsigned getCurrentPowerLimit( void ) const {
+		LOG( DEBUG ) << "MOCK NVML returning power limit for device: " << deviceHandle;
 		switch( deviceHandle ) {
 		case 0:
 			return 100;
@@ -59,6 +68,17 @@ public:
 		default:
 			throw 1;
 		}
+	}
+
+	std::pair<unsigned, unsigned> getPowerLimitConstraints( void ) const {
+		LOG( DEBUG ) << "MOCK NVML returning power limit constraints for device: " << deviceHandle;
+		return std::make_pair( 0, 0 );
+	}
+
+	void setPowerLimit( unsigned milliwatts ) {
+		(void)milliwatts;
+
+		LOG( DEBUG ) << "MOCK NVML setting power limit for device: " << deviceHandle << " to: " << milliwatts;
 	}
 
 private:
