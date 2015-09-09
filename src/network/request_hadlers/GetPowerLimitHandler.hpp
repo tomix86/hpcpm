@@ -7,8 +7,11 @@ namespace handlers {
 class GetPowerLimitHandler : public Handler {
 public:
 	GetPowerLimitHandler( core::QueryExecutor::Ptr queryExecutor ) :
-	Handler{ queryExecutor } {
+	Handler{ queryExecutor },
+	queryType( core::Query::Type::GetPowerLimit ) {
 	}
+
+	virtual ~GetPowerLimitHandler( void ) {};
 
 protected:
 	// Query string syntax: should contain list of devices that are being queried in form:
@@ -26,7 +29,7 @@ protected:
 		std::vector<core::Query> queries;
 		for( auto devString : utility::tokenizeString( queryString, '&' ) ) {
 			auto tokenizedDevString = utility::tokenizeString( devString, '=' );
-			core::Query query{ core::Query::Type::GetPowerLimit };
+			core::Query query{ queryType };
 			query.setDeviceIdentifier( { tokenizedDevString.at( 0 ), tokenizedDevString.at( 1 ) } );
 			queries.push_back( query );
 		}
@@ -44,6 +47,9 @@ protected:
 		response.set_body( array.serialize(), JSON_RESPONSE_TYPE );
 		return response;
 	}
+
+protected:
+	core::Query::Type queryType;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-overflow"

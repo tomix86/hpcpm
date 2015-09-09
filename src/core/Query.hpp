@@ -10,7 +10,7 @@ public:
 	enum class Type {
 		None,
 		GetNodeInformation,
-		SetPowerLimitAbsolute,
+		SetPowerLimitAbsolute, //TODO: remove "Absolute"
 		SetPowerLimitPercentage,
 		GetPowerLimit,
 		GetPowerLimitPercentage,

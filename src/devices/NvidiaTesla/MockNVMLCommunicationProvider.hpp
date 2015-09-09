@@ -60,11 +60,11 @@ public:
 		LOG( DEBUG ) << "MOCK NVML returning power limit for device: " << deviceHandle;
 		switch( deviceHandle ) {
 		case 0:
-			return 100;
+			return 150000;
 		case 1:
-			return 20000;
+			return 175000;
 		case 2:
-			return 40000;
+			return 220000;
 		default:
 			throw 1;
 		}
@@ -72,7 +72,7 @@ public:
 
 	std::pair<unsigned, unsigned> getPowerLimitConstraints( void ) const {
 		LOG( DEBUG ) << "MOCK NVML returning power limit constraints for device: " << deviceHandle;
-		return std::make_pair( 0, 0 );
+		return std::make_pair( 150000, 225000 );
 	}
 
 	void setPowerLimit( unsigned milliwatts ) {
