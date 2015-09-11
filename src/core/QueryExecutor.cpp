@@ -2,6 +2,9 @@
 #include "query_handlers/GetNodeInformationQueryHandler.hpp"
 #include "query_handlers/GetPowerLimitPercentageQueryHandler.hpp"
 #include "query_handlers/GetPowerLimitQueryHandler.hpp"
+#include "query_handlers/GetPowerLimitConstraintsQueryHandler.hpp"
+#include "query_handlers/SetPowerLimitPercentageQueryHandler.hpp"
+#include "query_handlers/SetPowerLimitQueryHandler.hpp"
 #include "utility/Logging.hpp"
 #include "utility/make_unique.hpp"
 
@@ -11,6 +14,9 @@ QueryExecutor::QueryExecutor( std::shared_ptr<devices::DevicesManager> devicesMa
 	queryHandlers.emplace( type::GetNodeInformation, utility::make_unique<GetNodeInformationQueryHandler>( devicesManager ) );
 	queryHandlers.emplace( type::GetPowerLimit, utility::make_unique<GetPowerLimitQueryHandler>( devicesManager ) );
 	queryHandlers.emplace( type::GetPowerLimitPercentage, utility::make_unique<GetPowerLimitPercentageQueryHandler>( devicesManager ) );
+	queryHandlers.emplace( type::GetPowerLimitConstraints, utility::make_unique<GetPowerLimitConstraintsQueryHandler>( devicesManager ) );
+	queryHandlers.emplace( type::SetPowerLimit, utility::make_unique<SetPowerLimitQueryHandler>( devicesManager ) );
+	queryHandlers.emplace( type::SetPowerLimitPercentage, utility::make_unique<SetPowerLimitPercentageQueryHandler>( devicesManager ) );
 }
 
 QueryHandler::Result::Ptr QueryExecutor::execute( Query query ) {

@@ -1,9 +1,6 @@
 #include "request_hadlers/GetDevicesListHandler.hpp"
-#include "request_hadlers/GetPowerLimitConstraintsHandler.hpp"
-#include "request_hadlers/GetPowerLimitHandler.hpp"
-#include "request_hadlers/GetPowerLimitPercentageHandler.hpp"
-#include "request_hadlers/SetPowerLimitHandler.hpp"
-#include "request_hadlers/SetPowerLimitPercentageHandler.hpp"
+#include "request_hadlers/GetInfoFromDeviceHandler.hpp"
+#include "request_hadlers/SetDeviceParamHandler.hpp"
 #include "RequestListener.hpp"
 #include "utility/ConfigLoader.hpp"
 

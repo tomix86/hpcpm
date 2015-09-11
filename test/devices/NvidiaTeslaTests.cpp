@@ -23,19 +23,17 @@ public:
 	NvidiaTeslaDevice<MockTeslaCommunicationProvider>{ "0" } {
 	}
 
-	MockTeslaCommunicationProvider& getCommunicationProvider( void ) {
-		return communicationProvider;
-	}
+	using NvidiaTeslaDevice<MockTeslaCommunicationProvider>::communicationProvider;
 };
 
 TEST( NvidiaTeslaTestSuite, setPowerLimitArgumentCorectnessTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
-	EXPECT_CALL( device.getCommunicationProvider(), getPowerLimitConstraints() )
+	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )
 		.Times( 5 )
 		.WillRepeatedly( ::testing::Return( std::make_pair( 100000u, 150000u ) ) );
 
-	EXPECT_CALL( device.getCommunicationProvider(), setPowerLimit( ::testing::_ ) )
+	EXPECT_CALL( device.communicationProvider, setPowerLimit( ::testing::_ ) )
 		.Times( 3 );
 
 	ASSERT_THROW( device.setPowerLimit( devices::Power{ 99000 } ), ArgumentOutOfBounds );
@@ -48,10 +46,10 @@ TEST( NvidiaTeslaTestSuite, setPowerLimitArgumentCorectnessTest ) {
 TEST( NvidiaTeslaTestSuite, setPowerLimitPercentageArgumentCorectnessTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
-	EXPECT_CALL( device.getCommunicationProvider(), getPowerLimitConstraints() )
+	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )
 		.WillRepeatedly( ::testing::Return( std::make_pair( 0u, 0u ) ) );
 
-	EXPECT_CALL( device.getCommunicationProvider(), setPowerLimit( ::testing::_ ) )
+	EXPECT_CALL( device.communicationProvider, setPowerLimit( ::testing::_ ) )
 		.Times( 3 );
 
 	ASSERT_THROW( device.setPowerLimit( devices::Percentage{ 1.1f } ), ArgumentOutOfBounds );
@@ -64,13 +62,13 @@ TEST( NvidiaTeslaTestSuite, setPowerLimitPercentageArgumentCorectnessTest ) {
 TEST( NvidiaTeslaTestSuite, setPowerLimitPercentageTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
-	EXPECT_CALL( device.getCommunicationProvider(), getPowerLimitConstraints() )
+	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )
 		.Times( 3 )
 		.WillRepeatedly( ::testing::Return( std::make_pair( 100000u, 200000u ) ) );
 
-	EXPECT_CALL( device.getCommunicationProvider(), setPowerLimit( 100000 ) );
-	EXPECT_CALL( device.getCommunicationProvider(), setPowerLimit( 150000 ) );
-	EXPECT_CALL( device.getCommunicationProvider(), setPowerLimit( 200000 ) );
+	EXPECT_CALL( device.communicationProvider, setPowerLimit( 100000 ) );
+	EXPECT_CALL( device.communicationProvider, setPowerLimit( 150000 ) );
+	EXPECT_CALL( device.communicationProvider, setPowerLimit( 200000 ) );
 
 	ASSERT_NO_THROW( device.setPowerLimit( devices::Percentage{ 0.f } ) );
 	ASSERT_NO_THROW( device.setPowerLimit( devices::Percentage{ 0.5f } ) );
@@ -80,21 +78,21 @@ TEST( NvidiaTeslaTestSuite, setPowerLimitPercentageTest ) {
 TEST( NvidiaTeslaTestSuite, getCurrentPowerLimitPercentageTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
-	EXPECT_CALL( device.getCommunicationProvider(), getPowerLimitConstraints() )
+	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )
 		.Times( 3 )
 		.WillRepeatedly( ::testing::Return( std::make_pair( 100000u, 200000u ) ) );
 
-	EXPECT_CALL( device.getCommunicationProvider(), getCurrentPowerLimit() )
+	EXPECT_CALL( device.communicationProvider, getCurrentPowerLimit() )
 		.WillOnce( ::testing::Return( 100000 ) );
 
 	ASSERT_EQ( 0.f, device.getCurrentPowerLimitPercentage() );
 
-	EXPECT_CALL( device.getCommunicationProvider(), getCurrentPowerLimit() )
+	EXPECT_CALL( device.communicationProvider, getCurrentPowerLimit() )
 		.WillOnce( ::testing::Return( 150000 ) );
 
 	ASSERT_EQ( .5f, device.getCurrentPowerLimitPercentage() );
 
-	EXPECT_CALL( device.getCommunicationProvider(), getCurrentPowerLimit() )
+	EXPECT_CALL( device.communicationProvider, getCurrentPowerLimit() )
 		.WillOnce( ::testing::Return( 200000 ) );
 
 	ASSERT_EQ( 1.f, device.getCurrentPowerLimitPercentage() );

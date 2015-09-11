@@ -10,7 +10,7 @@ public:
 	enum class Type {
 		None,
 		GetNodeInformation,
-		SetPowerLimitAbsolute, //TODO: remove "Absolute"
+		SetPowerLimit,
 		SetPowerLimitPercentage,
 		GetPowerLimit,
 		GetPowerLimitPercentage,
@@ -31,7 +31,7 @@ public:
 		std::string names[] = {
 			"None",
 			"GetNodeInformation",
-			"SetPowerLimitAbsolute",
+			"SetPowerLimit",
 			"SetPowerLimitPercentage",
 			"GetPowerLimit",
 			"GetPowerLimitPercentage",
