@@ -3,6 +3,7 @@ from flask_restful_swagger import swagger
 
 from hpcpm.api import log
 from hpcpm.api.helpers.database import database
+from hpcpm.api.helpers.constants import ALL_DEVICES_GET_OK_RESPONSE
 
 
 class AllComputationNodes(Resource):
@@ -11,13 +12,10 @@ class AllComputationNodes(Resource):
         nickname='/nodes/computation_nodes',
         parameters=[],
         responseMessages=[
-            {
-                'code': 200,
-                'message': 'Ok'
-            }
+            ALL_DEVICES_GET_OK_RESPONSE
         ]
     )
     def get(self):
         result = database.get_list_of_nodes()
-        log.info(str.format('Got all nodes fetched: {}', result))
+        log.info('Got all nodes fetched: {}'.format(result))
         return result, 200

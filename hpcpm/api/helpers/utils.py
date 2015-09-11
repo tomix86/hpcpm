@@ -19,23 +19,3 @@ def abort_when_not_int(number):
     except ValueError:
         log.error(str.format('Number is not valid: {}', number))
         abort(400)
-
-
-COMPUTATION_NODE_PARAM = {
-    'name': 'name',
-    'description': 'Computation Node name',
-    'required': True,
-    'allowMultiple': False,
-    'dataType': 'string',
-    'paramType': 'path'
-}
-
-COMPUTATION_NODE_NOT_FOUND_RESPONSE = {
-    'code': 404,
-    'message': 'Computation node could not be found'
-}
-
-COMPUTATION_NODE_FETCHED_RESPONSE = {
-    'code': 200,
-    'message': 'Node info fetched successfully'
-}
