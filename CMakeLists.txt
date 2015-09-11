@@ -46,7 +46,7 @@ endif()
 #Add include directories
 include_directories ( "${CMAKE_SOURCE_DIR}/include" "${CMAKE_SOURCE_DIR}/src" )
 
-#Find all source files
+#Find all source f"-iles
 file ( GLOB_RECURSE SRCS "${CMAKE_SOURCE_DIR}/src/*.cpp" )
 
 #Set compilation flags
@@ -55,8 +55,12 @@ set ( CMAKE_CXX_FLAGS_RELEASE "" )
 set ( GCC_EXTENSIVE_ERROR_CHECKS "-Werror -Wfatal-errors -Wall -Wextra -pedantic -pedantic-errors -Wswitch-default -Wswitch-enum -Wcast-align -Wpointer-arith -Wstrict-overflow=5 -Wcast-qual -Wunreachable-code -Wwrite-strings -Wuninitialized -Wlogical-op -Wfloat-equal -Wstrict-aliasing=2 -Wredundant-decls -fno-omit-frame-pointer -ffloat-store -fno-common -fstrict-aliasing -Winit-self" )
 	# -Winline -Wundef -Wshadow
 #set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -D_FORTIFY_SOURCE=1" ) TODO: analyze why FORTIFY_SOURCE rises redefinition error on quickbuild
-set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DUSE_COMM_PROVIDERS_MOCKS" )
+set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_EXTENSIVE_ERROR_CHECKS}" )
+
+if ( USE_MOCKS STREQUAL "true" )
+	 set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_COMM_PROVIDERS_MOCKS" )
+endif ()
 
 #Add libraries location
 set ( CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${CMAKE_SOURCE_DIR}/lib/ )
