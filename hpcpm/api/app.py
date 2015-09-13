@@ -32,7 +32,7 @@ def start_request(*_):
     request.real_ip = request.headers.get('X-Real-Ip', request.remote_addr)
     request.start_time = time.time()
 
-    log.info('REQUEST STARTED: {} {} {}'.format(request.real_ip, request.method, request.url))
+    log.info('REQUEST STARTED: %s %s %s', request.real_ip, request.method, request.url)
 
 
 @flask_app.after_request
@@ -40,7 +40,6 @@ def end_request(response_class):
     request.end_time = time.time()
     request_processing_time = '{0:.6f}'.format(request.end_time - request.start_time)
 
-    log.info('REQUEST FINISHED (took {} seconds): {} {} {}'.format(request_processing_time, request.real_ip,
-                                                                   request.method,
-                                                                   request.url))
+    log.info('REQUEST FINISHED (took %s seconds): %s %s %s', request_processing_time, request.real_ip,
+             request.method, request.url)
     return response_class

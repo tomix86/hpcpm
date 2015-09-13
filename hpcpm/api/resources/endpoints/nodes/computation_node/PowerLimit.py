@@ -31,11 +31,11 @@ class PowerLimit(Resource):
         abort_when_not_int(power_limit)
         computation_node = database.get_computation_node_info(name)
         if not computation_node:
-            log.error('There is no such computation node: {}'.format(name))
+            log.error('There is no such computation node: %s', name)
             abort(404)
 
         if not any(d['id'] == device_id for d in computation_node['backend_info']['devices']):
-            log.error('There is no such device: {}'.format(device_id))
+            log.error('There is no such device: %s', device_id)
             abort(404)
 
         limit_info = {
@@ -45,18 +45,17 @@ class PowerLimit(Resource):
         }
         upsert_result = database.replace_power_limit_for_device(name, device_id, limit_info)
         if upsert_result.modified_count:
-            log.info('Power limit for device {}:{} was already set in a database to {}'.format(name, device_id,
-                                                                                               power_limit))
-            log.info('Stored power limit info {}'.format(limit_info))
+            log.info('Power limit for device %s:%s was already set in a database to %s', name, device_id, power_limit)
+            log.info('Stored power limit info %s', limit_info)
         else:
-            log.info('Stored power limit info {} on id {}'.format(limit_info, upsert_result.upserted_id))
+            log.info('Stored power limit info %s on id %s', limit_info, upsert_result.upserted_id)
 
         try:
             response = put_power_limit(computation_node['address'], computation_node['port'], device_id, power_limit)
             log.info(response.text)
         except requests.exceptions.ConnectionError:
-            log.error('Connection could not be established to {}:{}'.format(computation_node['address'],
-                                                                            computation_node['port']))
+            log.error('Connection could not be established to %s:%s', computation_node['address'],
+                      computation_node['port'])
             return 'Failed to set power limit on device, but added to database', 201
         return 'Power limit successfully set', 201
 
@@ -75,9 +74,9 @@ class PowerLimit(Resource):
     def get(self, name, device_id):
         result = database.get_power_limit_for_device(name, device_id)
         if not result:
-            log.info('No such device {}:{}'.format(name, device_id))
+            log.info('No such device %s:%s', name, device_id)
             abort(404)
-        log.info('Successfully get device {}:{} power limit info: {}'.format(name, device_id, result))
+        log.info('Successfully get device %s:%s power limit info: %s', name, device_id, result)
         return result, 200
 
     @swagger.operation(
@@ -97,7 +96,7 @@ class PowerLimit(Resource):
         node_info = database.get_computation_node_info(name)
 
         if not node_info:
-            log.info('No such computation node info {}:{}'.format(name, device_id))
+            log.info('No such computation node info %s:%s', name, device_id)
             abort(404)
 
         address = node_info['address']
@@ -105,16 +104,16 @@ class PowerLimit(Resource):
 
         result = database.delete_power_limit_info(name, device_id)
         if not result:
-            log.info('No such device {}:{}'.format(name, device_id))
+            log.info('No such device %s:%s', name, device_id)
             abort(404)
 
         try:
             response = delete_power_limit(address, port, device_id)
-            log.info('Power limit for device {} deletion info: {}'.format(device_id, response))
+            log.info('Power limit for device %s deletion info: %s', device_id, response)
         except requests.exceptions.ConnectionError:
-            log.error('Connection could not be established to {}:{}'.format(address, port))
+            log.error('Connection could not be established to %s:%s', address, port)
             return 'Warning: power limit was deleted from database but could not be deleted from device', 406
 
-        log.info('Successfully removed power limit for device {}:{} power limit info: {}'.format(name, device_id,
-                                                                                                 result))
+        log.info('Successfully removed power limit for device %s:%s power limit info: %s', name, device_id,
+                 result)
         return result, 200

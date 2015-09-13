@@ -35,15 +35,15 @@ class ComputationNode(Resource):
 
         node_by_ip = database.get_computation_node_info_by_address(address, port)
         if node_by_ip and node_by_ip.get('name') != name:
-            log.warning('Node with IP: {}:{} is present in database: {}'.format(address, port, node_by_ip))
+            log.warning('Node with IP: %s:%s is present in database: %s', address, port, node_by_ip)
 
         try:
             response = get_devices_list(address, port)
         except requests.exceptions.ConnectionError:
-            log.error('Connection could not be established to {}:{}'.format(address, port))
+            log.error('Connection could not be established to %s:%s', address, port)
             abort(406)
 
-        log.info('Response {}:'.format(response.text))
+        log.info('Response %s:', response.text)
 
         backend_info = json.loads(response.text)
         node_info = {
@@ -54,10 +54,10 @@ class ComputationNode(Resource):
         }
         upsert_result = database.replace_computation_node_info(name, node_info)
         if upsert_result.modified_count:
-            log.info('Node {} was already present in a database'.format(name))
-            log.info('Stored Node info {}'.format(node_info))
+            log.info('Node %s was already present in a database', name)
+            log.info('Stored Node info %s', node_info)
         else:
-            log.info('Stored Node info {} on id {}'.format(node_info, upsert_result.upserted_id))
+            log.info('Stored Node info %s on id %s', node_info, upsert_result.upserted_id)
         return name, 201
 
     @swagger.operation(
@@ -74,9 +74,9 @@ class ComputationNode(Resource):
     def get(self, name):
         result = database.get_computation_node_info(name)
         if not result:
-            log.info('No such computation node {}'.format(name))
+            log.info('No such computation node %s', name)
             abort(404)
-        log.info('Successfully get node {} info: {}'.format(name, result))
+        log.info('Successfully get node %s info: %s', name, result)
         return result, 200
 
     @swagger.operation(
@@ -95,10 +95,10 @@ class ComputationNode(Resource):
         result_power_limit_info = database.delete_power_limit_infos(name)
 
         if not result_node_info:
-            log.info('No such computation node {}'.format(name))
+            log.info('No such computation node %s', name)
             abort(404)
         if not result_power_limit_info:
-            log.info('No such power limit info for node {}'.format(name))
+            log.info('No such power limit info for node %s', name)
             abort(404)
 
         address = result_node_info.get('address')
@@ -108,11 +108,11 @@ class ComputationNode(Resource):
         for device in result_node_info['backend_info']['devices']:
             try:
                 response = delete_power_limit(address, port, device['id'])
-                log.info('Device {} deletion info: {}'.format(device['id'], response))
+                log.info('Device %s deletion info: %s', device['id'], response)
             except requests.exceptions.ConnectionError:
-                log.error('Connection could not be established to {}:{}'.format(address, port))
+                log.error('Connection could not be established to %s:%s', address, port)
                 abort(406)
 
-        log.info('Successfully deleted node {} info and its power limit: {} {}'.format(name, result_node_info,
-                                                                                       result_power_limit_info))
+        log.info('Successfully deleted node %s info and its power limit: %s %s', name, result_node_info,
+                 result_power_limit_info)
         return 204

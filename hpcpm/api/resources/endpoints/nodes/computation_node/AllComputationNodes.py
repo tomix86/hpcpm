@@ -17,5 +17,5 @@ class AllComputationNodes(Resource):
     )
     def get(self):
         result = database.get_list_of_nodes()
-        log.info('Got all nodes fetched: {}'.format(result))
+        log.info('Got all nodes fetched: %s', result)
         return result, 200
