@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include "devices/Device.hpp"
+#include "NMPRKCommunicationProvider.hpp"
+#include "utility/Logging.hpp"
 
 namespace devices {
 template <typename CommunicationProvider>
@@ -12,8 +14,23 @@ public:
 		}
 
 	static std::vector<Device::Ptr> getAvailableDevices( void ) {
-		//TODO: should never throw
-		return std::vector<Device::Ptr>{};
+		std::vector<Device::Ptr> list;
+
+		try {
+			//TODO: remove placeholder
+			auto dev = std::make_shared<IntelXeonDevice>( "PLACEHOLDER" );
+
+			dev->info.entries = CommunicationProvider::getInfo();
+
+			list.push_back( dev );
+		}
+		catch ( devices::NMPRKError& ex ) {
+			LOG( ERROR ) << "Failed to acquire device list from NMPRK, will return an empty one."
+							" Following exception was thrown: " << ex.info();
+			list.clear();
+		}
+
+		return list;
 	}
 
 	void setPowerLimit( Power ) final {
@@ -33,7 +50,7 @@ public:
 	}
 
 	PowerLimitConstraints getPowerLimitConstraints( void ) const final {
-		return PowerLimitConstraints{ 0, 0};
+		return PowerLimitConstraints{ 0, 0 };
 	}
 
 private:

@@ -46,7 +46,7 @@ endif()
 #Add include directories
 include_directories ( "${CMAKE_SOURCE_DIR}/include" "${CMAKE_SOURCE_DIR}/src" )
 
-#Find all source f"-iles
+#Find all source files
 file ( GLOB_RECURSE SRCS "${CMAKE_SOURCE_DIR}/src/*.cpp" )
 
 #Set compilation flags
@@ -80,7 +80,14 @@ endif ()
 Find_lib ( CASABLANCA cpprest )
 Find_lib ( NVIDIA-ML nvidia-ml )
 Find_lib ( PPLX pplx_test )
-set ( SHARED_LIBS ${CASABLANCA} ${NVIDIA-ML} ${PPLX} )
+Find_lib ( MICMGMT micmgmt )
+Find_lib ( SCIF scif )
+set ( SHARED_LIBS ${CASABLANCA} ${NVIDIA-ML} ${PPLX} ${SCIF} ${MICMGMT} )
+
+
+Find_lib ( NMPRK_IPMI NmprkIpmi )
+Find_lib ( NMPRK_TRANSLATION NmprkTranslation )
+list ( APPEND STATIC_LIBS ${NMPRK_IPMI} ${NMPRK_TRANSLATION} )
 
 if ( CMAKE_BUILD_TYPE STREQUAL "test" )
 	file ( GLOB_RECURSE TESTS_SRCS "${CMAKE_SOURCE_DIR}/test/*.cpp" )
@@ -94,7 +101,7 @@ endif ()
 
 #Build executable
 add_executable ( ${EXECUTABLE} ${SRCS} )
-target_link_libraries ( ${EXECUTABLE} ${SHARED_LIBS} ${STATIC_LIBS} )
+target_link_libraries ( ${EXECUTABLE} ${STATIC_LIBS} ${SHARED_LIBS} )
 
 if ( INSTALL_LOCALLY STREQUAL "true" )
 	set ( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} )

@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include "devices/Device.hpp"
+#include "MPSSCommunicationProvider.hpp"
+#include "utility/Logging.hpp"
 
 namespace devices {
 template <typename CommunicationProvider>
@@ -12,8 +14,26 @@ public:
 		}
 
 	static std::vector<Device::Ptr> getAvailableDevices( void ) {
-		//TODO: should never throw
-		return std::vector<Device::Ptr>{};
+		std::vector<Device::Ptr> list;
+
+		try {
+			auto handles = CommunicationProvider::listDevices();
+
+			for ( auto handle : handles ) {
+				auto devId = CommunicationProvider::getPrimaryId( handle );
+				auto devPtr = std::make_shared<IntelXeonPhiDevice>( devId );
+				list.push_back( devPtr );
+				devPtr->info.entries = CommunicationProvider::getInfo( handle );
+			}
+		}
+		catch ( devices::MPSSError& ex ) {
+			LOG( ERROR ) << "Failed to acquire device list from MPSS, will return an empty one."
+							" Following exception was thrown: " << ex.info();
+
+			list.clear();
+		}
+
+		return list;
 	}
 
 	void setPowerLimit( Power ) final {
@@ -33,10 +53,11 @@ public:
 	}
 
 	PowerLimitConstraints getPowerLimitConstraints( void ) const final {
-		return PowerLimitConstraints{ 0, 0 };
+		return PowerLimitConstraints{ 0, 0};
 	}
 
 private:
 	CommunicationProvider communicationProvider;
 };
 } // namespace devices
+

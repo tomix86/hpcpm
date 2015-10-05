@@ -2,7 +2,7 @@
 #include "QueryHandler.hpp"
 
 namespace core {
-//TODO: extract common superclass with SetPowerLimitQueryHandler?
+
 class SetPowerLimitPercentageQueryHandler : public QueryHandler {
 public:
 	class Result : public QueryHandler::Result {

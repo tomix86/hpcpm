@@ -4,9 +4,9 @@
 #include "core/query_handlers/GetNodeInformationQueryHandler.hpp"
 #include "core/query_handlers/GetPowerLimitQueryHandler.hpp"
 #include "devices/IntelXeon/IntelXeonDevice.hpp"
-#include "devices/IntelXeon/MockMPSSCommunicationProvider.hpp"
+#include "devices/IntelXeon/MockNMPRKCommunicationProvider.hpp"
 #include "devices/IntelXeonPhi/IntelXeonPhiDevice.hpp"
-#include "devices/IntelXeonPhi/MockNPMRKCommunicationProvider.hpp"
+#include "devices/IntelXeonPhi/MockMPSSCommunicationProvider.hpp"
 #include "devices/NvidiaTesla/MockNVMLCommunicationProvider.hpp"
 #include "devices/NvidiaTesla/NvidiaTeslaDevice.hpp"
 #include "utility/make_unique.hpp"
@@ -72,7 +72,7 @@ TEST_F( QueryExecutorTestSuite, GetNodeInformation ) {
 
 	std::vector<devices::Device::Ptr> devs;
 	devs.push_back( std::make_shared<devices::IntelXeonDevice<devices::MockMPSSCommunicationProvider>>( "123" ) );
-	devs.push_back( std::make_shared<devices::IntelXeonPhiDevice<devices::MockNPMRKCommunicationProvider>>( "456" ) );
+	devs.push_back( std::make_shared<devices::IntelXeonPhiDevice<devices::MockNMPRKCommunicationProvider>>( "456" ) );
 	devs.push_back( std::make_shared<devices::NvidiaTeslaDevice<devices::MockNVMLCommunicationProvider>>( "789" ) );
 
 	EXPECT_CALL( *devicesManager, getDevicesList() )
