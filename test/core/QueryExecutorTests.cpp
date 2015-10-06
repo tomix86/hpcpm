@@ -15,6 +15,10 @@ using namespace core;
 
 class MockDevicesManager : public devices::DevicesManager {
 public:
+	MockDevicesManager( void ) :
+	devices::DevicesManager{ false, false, false } {
+	}
+
 	MOCK_CONST_METHOD0( getDevicesList, const std::vector<devices::Device::Ptr>& ( void ) );
 	MOCK_METHOD1( getDeviceByIdentifier, devices::Device& ( devices::DeviceIdentifier ) );
 };
@@ -33,6 +37,10 @@ public:
 //those tests had been crashing due to an issue with gmock (EXPECT_CALL), which I was unable to track down
 class MockDevicesManager2 : public devices::DevicesManager {
 public:
+	MockDevicesManager2( void ) :
+	devices::DevicesManager{ false, false, false } {
+	}
+
 	devices::Device& getDeviceByIdentifier( devices::DeviceIdentifier deviceIdentifier ) {
 		(void)deviceIdentifier;
 		return deviceMock;

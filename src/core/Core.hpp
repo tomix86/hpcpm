@@ -5,7 +5,7 @@
 namespace core {
 class Core {
 public:
-	Core( void );
+	Core( bool hasNVML, bool hasNMPRK, bool hasMPSS );
 
 	utility::ApplicationExitCode run( void );
 

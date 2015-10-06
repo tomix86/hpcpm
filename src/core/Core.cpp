@@ -9,8 +9,8 @@
 namespace core {
 std::atomic<bool> running{ true };
 
-core::Core::Core() :
-devicesManager { std::make_shared<devices::DevicesManager>() },
+core::Core::Core( bool hasNVML, bool hasNMPRK, bool hasMPSS ) :
+devicesManager { std::make_shared<devices::DevicesManager>( hasNVML, hasNMPRK, hasMPSS ) },
 requestListener{ std::make_shared<QueryExecutor>( devicesManager ) } {
 	signal( SIGINT, []( int ){ running = false; } );
 

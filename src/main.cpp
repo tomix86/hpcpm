@@ -9,12 +9,30 @@ int main ( int argc, const char** argv ) {
 	utility::logging::setDefaultConfiguration();
 
 	core::ArgsParser argsParser;
-	std::string configFilePath;
 
+	std::string configFilePath;
 	argsParser.addOption( "config", "path to config file", 'c' )
 			.setRequired( true )
 			.setValidator( utility::validators::fileExists )
 			.setCallback( [&]( std::string value ){ configFilePath = value; } );
+
+	bool hasNVML;
+	argsParser.addOption( "withNVML", "specifies whether the NVML is available on the host system" )
+			.setRequired( true )
+			.setValidator( utility::validators::isBool )
+			.setCallback( [&]( std::string value ){ hasNVML = utility::toBool( value ); } );
+
+	bool hasNMPRK;
+	argsParser.addOption( "withNMPRK", "specifies whether the NMPRK is available on the host system" )
+			.setRequired( true )
+			.setValidator( utility::validators::isBool )
+			.setCallback( [&]( std::string value ){ hasNMPRK = utility::toBool( value ); } );
+
+	bool hasMPSS;
+	argsParser.addOption( "withMPSS", "specifies whether the MPSS is available on the host system" )
+			.setRequired( true )
+			.setValidator( utility::validators::isBool )
+			.setCallback( [&]( std::string value ){ hasMPSS = utility::toBool( value ); } );
 
     try {
 		argsParser.parse( argc, argv );
@@ -23,7 +41,8 @@ int main ( int argc, const char** argv ) {
 
 		utility::logging::loadConfiguration();
 
-		auto exitCode = core::Core{}.run();
+		core::Core core{ hasNVML, hasNMPRK, hasMPSS };
+		auto exitCode = core.run();
 		LOG ( INFO ) << "Exiting with code: " << exitCode;
 		return exitCode;
     }

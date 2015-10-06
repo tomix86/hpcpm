@@ -7,7 +7,6 @@
 #include "NvidiaTesla/NvidiaTeslaDevice.hpp"
 #include "NvidiaTesla/MockNVMLCommunicationProvider.hpp"
 #include "utility/Logging.hpp"
-#include "utility/make_unique.hpp"
 
 #ifdef USE_COMM_PROVIDERS_MOCKS
 	using NVMLCommProvider = devices::MockNVMLCommunicationProvider;
@@ -20,40 +19,60 @@
 #endif
 
 namespace devices {
-void DevicesManager::init( void ) {
-	LOG ( INFO ) << "Initializing DevicesManager";
 
-	if ( !MPSSCommProvider::init() ) {
-		LOG( WARNING ) << "MPSS init failed";
+DevicesManager::DevicesManager( bool hasNVML, bool hasNMPRK, bool hasMPSS ) :
+hasNVML{ hasNVML },
+hasNMPRK{ hasNMPRK },
+hasMPSS{ hasMPSS } {
+	LOG( INFO ) << "Application is launching with following power management libraries enabled:";
+	if ( hasNVML ) {
+		LOG( INFO ) << "...NVML(for Nvidia Tesla)";
 	}
-
-	if ( !NMPRKCommProvider::init() ) {
-		 LOG( WARNING ) << "NMPRK init failed";
+	if ( hasNMPRK ) {
+		LOG( INFO ) << "...NMPRK(for Intel Xeon)";
 	}
-
-	if ( !NVMLCommProvider::init() ) {
-		 LOG( WARNING ) << "NVML init failed";
+	if ( hasMPSS ) {
+		LOG( INFO ) << "...MPSS(for Intel XeonPhi)";
 	}
-
-	LOG ( INFO ) << "DevicesManager initialized";
+	if ( !hasNVML && !hasNMPRK && !hasMPSS ) {
+		LOG( WARNING ) << "...NONE, are you sure everything is working properly?";
+	}
 }
 
 DevicesManager::~DevicesManager( void ) {
 	LOG ( INFO ) << "Destroying DevicesManager";
 
-	if ( !MPSSCommProvider::shutdown() ) {
-		LOG( WARNING ) << "MPSS shutdown failed";
+	if ( hasNVML && !NVMLCommProvider::shutdown() ) {
+		 LOG( ERROR ) << "NVML shutdown failed";
 	}
 
-	if ( !NMPRKCommProvider::shutdown() ) {
-		 LOG( WARNING ) << "NMPRK shutdown failed";
+	if ( hasMPSS && !MPSSCommProvider::shutdown() ) {
+		LOG( ERROR ) << "MPSS shutdown failed";
 	}
 
-	if ( !NVMLCommProvider::shutdown() ) {
-		 LOG( WARNING ) << "NVML shutdown failed";
+	if ( hasNMPRK && !NMPRKCommProvider::shutdown() ) {
+		 LOG( ERROR ) << "NMPRK shutdown failed";
 	}
 
 	LOG ( INFO ) << "DevicesManager successfully destroyed";
+}
+
+void DevicesManager::init( void ) {
+	LOG ( INFO ) << "Initializing DevicesManager";
+
+	if ( hasNVML && !NVMLCommProvider::init() ) {
+		 LOG( ERROR ) << "NVML init failed";
+	}
+
+	if ( hasMPSS && !MPSSCommProvider::init() ) {
+		LOG( ERROR ) << "MPSS init failed";
+	}
+
+	if ( hasNMPRK && !NMPRKCommProvider::init() ) {
+		 LOG( ERROR ) << "NMPRK init failed";
+	}
+
+	LOG ( INFO ) << "DevicesManager initialized";
 }
 
 devices::Device& DevicesManager::getDeviceByIdentifier( devices::DeviceIdentifier deviceIdentifier ){
@@ -75,12 +94,21 @@ const std::vector<devices::Device::Ptr>& DevicesManager::getDevicesList( void ) 
 
 void DevicesManager::updateDevicesList( void ) {
 	devicesList.clear();
-	auto list = devices::IntelXeonDevice<NMPRKCommProvider>::getAvailableDevices();
-	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
-	list = devices::IntelXeonPhiDevice<MPSSCommProvider>::getAvailableDevices();
-	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
-	list = devices::NvidiaTeslaDevice<NVMLCommProvider>::getAvailableDevices();
-	devicesList.insert( devicesList.end(), list.begin(), list.end() ) ;
+
+	if ( hasNVML ) {
+		auto tmpList = devices::NvidiaTeslaDevice<NVMLCommProvider>::getAvailableDevices();
+		devicesList.insert( devicesList.end(), tmpList.begin(), tmpList.end() ) ;
+	}
+
+	if ( hasMPSS ) {
+		auto tmpList = devices::IntelXeonPhiDevice<MPSSCommProvider>::getAvailableDevices();
+		devicesList.insert( devicesList.end(), tmpList.begin(), tmpList.end() ) ;
+	}
+
+	if ( hasNMPRK ) {
+		auto tmpList = devices::IntelXeonDevice<NMPRKCommProvider>::getAvailableDevices();
+		devicesList.insert( devicesList.end(), tmpList.begin(), tmpList.end() ) ;
+	}
 
 	LOG ( INFO ) << "Devices list updated";
 }

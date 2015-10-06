@@ -27,4 +27,4 @@ You can configure application launch parameters using two following files:
 * res/logging.cfg - logging configuration, which is passed to easylogging++
 
 # Launching the application
-./HPCPM-backend-daemon -c="path/to/backend.cfg"
+./HPCPM-backend-daemon -c="path/to/backend.cfg" --withNVML=[true|false] --withMPSS=[true|false] --withNMPRK=[true|false]

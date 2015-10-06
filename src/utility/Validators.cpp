@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h>
+#include "Functional.hpp"
 #include "Validators.hpp"
 
 namespace utility {
@@ -14,6 +15,16 @@ bool fileExists( std::string arg ) {
 bool isPositiveInt( std::string arg ) {
 	try {
 		return std::stoi( arg ) > 0;
+	}
+	catch ( ... ) {
+		return false;
+	}
+}
+
+bool isBool( std::string arg ) {
+	try {
+		utility::toBool( arg );
+		return true;
 	}
 	catch ( ... ) {
 		return false;

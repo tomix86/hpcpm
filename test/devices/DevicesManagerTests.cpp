@@ -7,6 +7,10 @@ using namespace devices;
 
 class DevicesManagerAccessor : public devices::DevicesManager {
 public:
+	DevicesManagerAccessor( void ) :
+	devices::DevicesManager{ false, false, false } {
+	}
+
 	using devices::DevicesManager::devicesList;
 };
 
