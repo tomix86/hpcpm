@@ -25,13 +25,14 @@ NMPRKCommunicationProvider::~NMPRKCommunicationProvider( void ) {
 
 }*/
 
-void NMPRKCommunicationProvider::init( void ) {
+bool NMPRKCommunicationProvider::init( void ) {
 	try {
 		if ( translation::swSubSystemSetup( translation::initLibrary, nullptr ) ) {
 			LOG( INFO ) << "NMPRK Library initialized.";
 		}
 		else {
 			LOG( ERROR ) << "NMPRK Library initialization failed.";
+			return false;
 		}
 
 		d.type = ipmi::device_nm;
@@ -42,26 +43,33 @@ void NMPRKCommunicationProvider::init( void ) {
 		}
 		else {
 			LOG( ERROR ) << "Device initialization failed.";
+			return false;
 		}
+
+		return true;
 	}
 	catch ( nmprkException& e ) {
-		throw NMPRKError{ "NMPRKCommunicationProvider::init", e };
+		LOG( ERROR ) << NMPRKError::nmprkExceptionToString( e );
+		return false;
 	}
 }
 
-void NMPRKCommunicationProvider::shutdown( void ) {
+bool NMPRKCommunicationProvider::shutdown( void ) {
 	try {
 		translation::swSubSystemSetup( translation::unInitDevice, &d );
 
 		if ( translation::swSubSystemSetup( translation::unInitLibrary, nullptr ) ) {
 			LOG( INFO ) << "NMPRK Library uninitialized.";
+			return true;
 		}
 		else {
 			LOG( ERROR ) << "NMPRK Library uninitialization failed.";
+			return false;
 		}
 	}
 	catch ( nmprkException& e ) {
-		throw NMPRKError{ "NMPRKCommunicationProvider::shutdown", e };
+		LOG( ERROR ) << NMPRKError::nmprkExceptionToString( e );
+		return false;
 	}
 }
 

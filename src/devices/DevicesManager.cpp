@@ -22,21 +22,35 @@
 namespace devices {
 void DevicesManager::init( void ) {
 	LOG ( INFO ) << "Initializing DevicesManager";
-	MPSSCommProvider::init();
-	NMPRKCommProvider::init();
-	NVMLCommProvider::init();
+
+	if ( !MPSSCommProvider::init() ) {
+		LOG( WARNING ) << "MPSS init failed";
+	}
+
+	if ( !NMPRKCommProvider::init() ) {
+		 LOG( WARNING ) << "NMPRK init failed";
+	}
+
+	if ( !NVMLCommProvider::init() ) {
+		 LOG( WARNING ) << "NVML init failed";
+	}
+
 	LOG ( INFO ) << "DevicesManager initialized";
 }
 
 DevicesManager::~DevicesManager( void ) {
 	LOG ( INFO ) << "Destroying DevicesManager";
-	try {
-		MPSSCommProvider::shutdown();
-		NMPRKCommProvider::shutdown();
-		NVMLCommProvider::shutdown();
+
+	if ( !MPSSCommProvider::shutdown() ) {
+		LOG( WARNING ) << "MPSS shutdown failed";
 	}
-	catch ( utility::Exception& ex ) {
-		LOG ( ERROR ) << ex.traceWithMessages();
+
+	if ( !NMPRKCommProvider::shutdown() ) {
+		 LOG( WARNING ) << "NMPRK shutdown failed";
+	}
+
+	if ( !NVMLCommProvider::shutdown() ) {
+		 LOG( WARNING ) << "NVML shutdown failed";
 	}
 
 	LOG ( INFO ) << "DevicesManager successfully destroyed";

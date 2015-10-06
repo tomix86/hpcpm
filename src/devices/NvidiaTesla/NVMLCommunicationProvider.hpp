@@ -22,9 +22,9 @@ class NVMLCommunicationProvider {
 public:
 	NVMLCommunicationProvider( DeviceIdentifier::idType deviceId );
 
-	static void init( void );
+	static bool init( void );
 
-	static void shutdown( void );
+	static bool shutdown( void );
 
 	static std::vector<nvmlDevice_t> listDevices( void );
 

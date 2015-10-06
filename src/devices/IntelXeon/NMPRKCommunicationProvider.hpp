@@ -18,11 +18,10 @@ public:
 	}
 
 	NMPRKError( std::string source, const nmprk::nmprkException& exception ) :
-		utility::RuntimeError{ source, exceptionToString( exception ) } {
+		utility::RuntimeError{ source, nmprkExceptionToString( exception ) } {
 	}
 
-private:
-	std::string exceptionToString( const nmprk::nmprkException& exception ) const {
+	static std::string nmprkExceptionToString( const nmprk::nmprkException& exception ) {
 		std::ostringstream ss;
 		ss << "Code[" << exception.errorCode << "] Msg[" << exception.errorMsg << "]";
 		return ss.str();
@@ -34,9 +33,9 @@ public:
 	NMPRKCommunicationProvider( DeviceIdentifier::idType deviceId );
 //	~NMPRKCommunicationProvider( void );
 
-	static void init( void );
+	static bool init( void );
 
-	static void shutdown( void );
+	static bool shutdown( void );
 
 //	static std::vector<nvmlDevice_t> listDevices( void );
 

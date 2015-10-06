@@ -1,6 +1,7 @@
 #pragma once
 #include <devices/DeviceInformation.hpp>
 #include "MPSSCommunicationProvider.hpp"
+#include "utility/Logging.hpp"
 
 namespace devices {
 
@@ -10,21 +11,30 @@ public:
 		(void)deviceId;
 	}
 
-	static void init( void ) {}
-
-	static void shutdown( void ) {}
-
-	static std::vector<MicDevicePtr> listDevices( void ) {
-		return std::vector<MicDevicePtr>{};
+	static bool init( void ) {
+		LOG( DEBUG ) << "MOCK MPSS initializing";
+		return true;
 	}
 
-	static devices::DeviceIdentifier::idType getPrimaryId( MicDevicePtr device ) {
-		(void)device;
+	static bool shutdown( void ) {
+		LOG( DEBUG ) << "MOCK MPSS shutting down";
+		return true;
+	}
+
+	static std::vector<int> listDevices( void ) {
+		LOG( DEBUG ) << "MOCK MPSS returning devices list";
+		return std::vector<int>{};
+	}
+
+	static devices::DeviceIdentifier::idType getPrimaryId( int index ) {
+		(void)index;
+		LOG( DEBUG ) << "MOCK MPSS returning primary id for device: " << index;
 		return devices::DeviceIdentifier::idType{};
 	}
 
-	static std::map<std::string, std::string> getInfo( MicDevicePtr device ) {
-		(void)device;
+	static std::map<std::string, std::string> getInfo( int index ) {
+		(void)index;
+		LOG( DEBUG ) << "MOCK MPSS returning info for device: " << index;
 		return std::map<std::string, std::string>{};
 	}
 

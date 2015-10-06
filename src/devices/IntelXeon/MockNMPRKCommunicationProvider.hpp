@@ -1,5 +1,6 @@
 #pragma once
 #include <devices/DeviceInformation.hpp>
+#include "utility/Logging.hpp"
 
 namespace devices {
 
@@ -9,13 +10,18 @@ public:
 		(void)deviceId;
 	}
 
-	static void init( void ) {
+	static bool init( void ) {
+		LOG( DEBUG ) << "MOCK NMPRK initializing";
+		return true;
 	}
 
-	static void shutdown( void ) {
+	static bool shutdown( void ) {
+		LOG( DEBUG ) << "MOCK NMPRK shutting down";
+		return true;
 	}
 
 	static std::map<std::string, std::string> getInfo( void ) {
+		LOG( DEBUG ) << "MOCK NMPRK returning info";
 		return {};
 	}
 

@@ -12,23 +12,38 @@ NVMLCommunicationProvider::NVMLCommunicationProvider( DeviceIdentifier::idType d
 	NVML_ERROR_CHECK( nvmlDeviceGetHandleByUUID( deviceId.c_str(), &deviceHandle ) ); //TODO: this line should be changed when we decide what should be used as device's primary id
 }
 
-void NVMLCommunicationProvider::init( void ) {
-	NVML_ERROR_CHECK( nvmlInit() );
+bool NVMLCommunicationProvider::init( void ) {
+	try {
+		NVML_ERROR_CHECK( nvmlInit() );
 
-	LOG ( INFO ) << "...NVML Communication Provider initialized ";
+		LOG ( INFO ) << "...NVML Communication Provider initialized ";
 
-	char NVMLVersionString[ NVML_SYSTEM_NVML_VERSION_BUFFER_SIZE ];
-	NVML_ERROR_CHECK( nvmlSystemGetNVMLVersion( NVMLVersionString, NVML_SYSTEM_NVML_VERSION_BUFFER_SIZE ) );
-	LOG ( INFO ) << "......NVML version: " << NVMLVersionString;
+		char NVMLVersionString[ NVML_SYSTEM_NVML_VERSION_BUFFER_SIZE ];
+		NVML_ERROR_CHECK( nvmlSystemGetNVMLVersion( NVMLVersionString, NVML_SYSTEM_NVML_VERSION_BUFFER_SIZE ) );
+		LOG ( INFO ) << "......NVML version: " << NVMLVersionString;
 
-	char driverVersionString[ NVML_SYSTEM_DRIVER_VERSION_BUFFER_SIZE ];
-	NVML_ERROR_CHECK( nvmlSystemGetDriverVersion( driverVersionString, NVML_SYSTEM_DRIVER_VERSION_BUFFER_SIZE ) );
-	LOG ( INFO ) << "......Driver version: " << driverVersionString;
+		char driverVersionString[ NVML_SYSTEM_DRIVER_VERSION_BUFFER_SIZE ];
+		NVML_ERROR_CHECK( nvmlSystemGetDriverVersion( driverVersionString, NVML_SYSTEM_DRIVER_VERSION_BUFFER_SIZE ) );
+		LOG ( INFO ) << "......Driver version: " << driverVersionString;
+
+		return true;
+	}
+	catch ( NVMLError& err ) {
+		LOG( ERROR ) << err.info();
+		return false;
+	}
 }
 
-void NVMLCommunicationProvider::shutdown( void ) {
-	NVML_ERROR_CHECK( nvmlShutdown() );
-	LOG ( INFO ) << "...NVML Communication Provider shut down";
+bool NVMLCommunicationProvider::shutdown( void ) {
+	try {
+		NVML_ERROR_CHECK( nvmlShutdown() );
+		LOG ( INFO ) << "...NVML Communication Provider shut down";
+		return true;
+	}
+	catch ( NVMLError& err ) {
+		LOG( ERROR ) << err.info();
+		return false;
+	}
 }
 
 std::vector<nvmlDevice_t> NVMLCommunicationProvider::listDevices( void ) {

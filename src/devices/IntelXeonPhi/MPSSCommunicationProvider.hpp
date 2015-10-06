@@ -17,9 +17,9 @@ public:
 
 	MPSSCommunicationProvider( DeviceIdentifier::idType id );
 
-	static void init( void );
+	static bool init( void );
 
-	static void shutdown( void );
+	static bool shutdown( void );
 
 	unsigned getCurrentPowerLimit( void ) const;
 

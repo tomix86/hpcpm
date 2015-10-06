@@ -6,12 +6,14 @@
 namespace devices {
 class MockNVMLCommunicationProvider {
 public:
-	static void init( void ) {
+	static bool init( void ) {
 		LOG( DEBUG ) << "MOCK NVML initializing";
+		return true;
 	}
 
-	static void shutdown( void ) {
+	static bool shutdown( void ) {
 		LOG( DEBUG ) << "MOCK NVML shutting down";
+		return true;
 	}
 
 	static std::vector<nvmlDevice_t> listDevices( void ) {

@@ -15,12 +15,12 @@ MPSSCommunicationProvider::MPSSCommunicationProvider( DeviceIdentifier::idType i
 deviceHandle{ getDeviceById( id ) } {
 }
 
-void MPSSCommunicationProvider::init( void ) {
-
+bool MPSSCommunicationProvider::init( void ) {
+	return true;
 }
 
-void MPSSCommunicationProvider::shutdown( void ) {
-
+bool MPSSCommunicationProvider::shutdown( void ) {
+	return true;
 }
 
 unsigned MPSSCommunicationProvider::getCurrentPowerLimit( void ) const {
