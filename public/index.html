@@ -1,0 +1,130 @@
+<!doctype html>
+<html ng-app="frontend">
+
+<head>
+  <meta charset="utf-8">
+  <title>X</title>
+
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+  <script src="bower_components/angular-resource/angular-resource.js"></script>
+  <script src="bower_components/restangular/dist/restangular.js"></script>
+  <script src="bower_components/underscore/underscore.js"></script>
+
+  <script src="js/controllers.js"></script>
+
+</head>
+
+<body ng-controller="BodyController">
+  <div ng-controller="FormController">
+    <p>Select endpoint</p>
+    <select ng-model="selection" ng-options="item for item in items" ng-change="changeState()"></select>
+    <hr/>
+    <div class="animate-switch-container" ui-view>
+    </div>
+  </div>
+  <script type="text/ng-template" id="/login.html">
+    <div class="animate-switch" ng-controller="LoginController">
+      <form action="/login" method="post">
+        <input type="text" id="login" name="login" placeholder="login">
+        <input type="password" id="password" name="password" placeholder="password">
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </script>
+  <script type="text/ng-template" id="/default.html">
+  </script>
+
+  <script type="text/ng-template" id="/status.html">
+    <div class="animate-switch" ng-controller="StatusController">
+      <form ng-submit="getStatus()">
+        <input type="submit" value="Get status">
+        <p>Response: {{response}}</p>
+      </form>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="/get_computation_node.html">
+    <div class="animate-switch" ng-controller="GetComputationNodeController">
+      <form ng-submit="getComputationNode()">
+        <p>Node name:</p>
+        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
+        <input type="submit" value="Get node info">
+        <p>Response: {{response | json : 4}}</p>
+      </form>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="/put_computation_node.html">
+    <div class="animate-switch" ng-controller="PutComputationNodeController">
+      <form ng-submit="putComputationNode()">
+        <p>Node info:</p>
+        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
+        <input ng-model="node.address" type="text" name="node_address" placeholder="Node address">
+        <input ng-model="node.port" type="text" name="node_port" placeholder="Node port">
+        <input type="submit" value="Put node info">
+        <p>Response: {{response}}</p>
+      </form>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="/delete_computation_node.html">
+    <div class="animate-switch" ng-controller="DeleteComputationNodeController">
+      <form ng-submit="deleteComputationNode()">
+        <p>Node name:</p>
+        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
+        <input type="submit" value="Delete node">
+        <p>Response: {{response}}</p>
+      </form>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="/get_power_limit.html">
+    <div class="animate-switch" ng-controller="GetDevicePowerLimitController">
+      <form ng-submit="getPowerLimit()">
+        <p>Node name:</p>
+        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
+        <input ng-model="node.device_id" type="text" name="device_id" placeholder="Device ID">
+        <input type="submit" value="Get power limit info">
+        <p>Response: {{response | json : 4}}</p>
+      </form>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="/put_power_limit.html">
+    <div class="animate-switch" ng-controller="PutDevicePowerLimitController">
+      <form ng-submit="putPowerLimit()">
+        <p>Node info:</p>
+        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
+        <input ng-model="node.device_id" type="text" name="device_id" placeholder="Device ID">
+        <input ng-model="node.power_limit" type="text" name="power_limit" placeholder="Power limit">
+        <input type="submit" value="Put power limit info">
+        <p>Response: {{response | json : 4}}</p>
+      </form>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="/delete_power_limit.html">
+    <div class="animate-switch" ng-controller="DeleteDevicePowerLimitController">
+      <form ng-submit="deletePowerLimit()">
+        <p>Node name:</p>
+        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
+        <input ng-model="node.device_id" type="text" name="device_id" placeholder="Device ID">
+        <input type="submit" value="Delete power limit info">
+        <p>Response: {{response | json : 4}}</p>
+      </form>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="/get_all_computation_nodes.html">
+    <div class="animate-switch" ng-controller="GetAllComputationNodesController">
+      <form ng-submit="getAllComputationNodes()">
+        <p>Node name:</p>
+        <input type="submit" value="Get all nodes info">
+        <p>Response: {{response | json : 4}}</p>
+      </form>
+    </div>
+  </script>
+</body>
+
+</html>
