@@ -1,10 +1,8 @@
-#include "request_hadlers/GetDevicesListHandler.hpp"
 #include "request_hadlers/GetInfoFromDeviceHandler.hpp"
+#include "request_hadlers/GetNodeInformationHandler.hpp"
 #include "request_hadlers/SetDeviceParamHandler.hpp"
 #include "RequestListener.hpp"
 #include "utility/ConfigLoader.hpp"
-
-//TODO: make use of http_exception
 
 //TODO: it may be a good idea to estabilish the connection the the server from the computation node (instead of listening)
 // by doing it we avoid potential problems with port forwarding, which may arise when the computation node is behind NAT
@@ -16,7 +14,7 @@ listenerBaseURI{ utility::ConfigLoader::getStringParam( "listener_base_url" ) } 
 	addListener( "power_limit", std::make_shared<handlers::GetPowerLimitHandler>( queryExecutor ), std::make_shared<handlers::SetPowerLimitHandler>( queryExecutor ) );
 	addListener( "power_limit_percentage", std::make_shared<handlers::GetPowerLimitPercentageHandler>( queryExecutor ), std::make_shared<handlers::SetPowerLimitPercentageHandler>( queryExecutor ) );
 	addListener( "power_limit_constraints", std::make_shared<handlers::GetPowerLimitConstraintsHandler>( queryExecutor ) );
-	addListener( "devices_list", std::make_shared<handlers::GetDevicesListHandler>( queryExecutor ) );
+	addListener( "node_information", std::make_shared<handlers::GetNodeInformationHandler>( queryExecutor ) );
 }
 
 void RequestListener::start( void ) {

@@ -18,6 +18,9 @@ public:
 			mainObject[ "release" ] = web::json::value( sysInfo.release );
 			mainObject[ "version" ] = web::json::value( sysInfo.version );
 			mainObject[ "machine" ] = web::json::value( sysInfo.machine );
+			mainObject[ "supportsNVML" ] = web::json::value( supportedLibraries.NVML );
+			mainObject[ "supportsNMPRK" ] = web::json::value( supportedLibraries.NMPRK );
+			mainObject[ "supportsMPSS" ] = web::json::value( supportedLibraries.MPSS );
 
 			web::json::value devicesArray;
 			for ( auto device : devices ) {
@@ -41,6 +44,7 @@ public:
 
 		utsname sysInfo;
 		std::vector<devices::Device::Ptr> devices;
+		devices::SupportedLibraries supportedLibraries;
 	};
 
 	GetNodeInformationQueryHandler( std::shared_ptr<devices::DevicesManager> devicesManager ) :
@@ -54,6 +58,8 @@ public:
 		uname( &result->sysInfo );
 
 		result->devices = devicesManager->getDevicesList();
+
+		result->supportedLibraries = devicesManager->getSupportedLibraries();
 
 		return result;
 	}

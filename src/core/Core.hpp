@@ -5,7 +5,7 @@
 namespace core {
 class Core {
 public:
-	Core( bool hasNVML, bool hasNMPRK, bool hasMPSS );
+	Core( devices::SupportedLibraries supportedLibraries );
 
 	utility::ApplicationExitCode run( void );
 

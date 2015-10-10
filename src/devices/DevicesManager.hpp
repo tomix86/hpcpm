@@ -8,9 +8,15 @@ namespace devices {
 
 DEFINE_RUNTIME_ERROR_DERIVATIVE( DeviceNotFoundException );
 
+struct SupportedLibraries {
+	bool NVML;
+	bool NMPRK;
+	bool MPSS;
+};
+
 class DevicesManager : public boost::noncopyable {
 public:
-	DevicesManager( bool hasNVML, bool hasNMPRK, bool hasMPSS );
+	DevicesManager( SupportedLibraries supportedLibraries );
 	virtual ~DevicesManager( void );
 
 	void init( void );
@@ -21,12 +27,12 @@ public:
 
 	void updateDevicesList( void );
 
+	SupportedLibraries getSupportedLibraries( void ) const;
+
 protected:
 	std::vector<devices::Device::Ptr> devicesList;
 
 private:
-	bool hasNVML;
-	bool hasNMPRK;
-	bool hasMPSS;
+	SupportedLibraries supportedLibraries;
 };
 } // namespace devices

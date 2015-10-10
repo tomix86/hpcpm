@@ -20,21 +20,19 @@
 
 namespace devices {
 
-DevicesManager::DevicesManager( bool hasNVML, bool hasNMPRK, bool hasMPSS ) :
-hasNVML{ hasNVML },
-hasNMPRK{ hasNMPRK },
-hasMPSS{ hasMPSS } {
+DevicesManager::DevicesManager( SupportedLibraries supportedLibraries ) :
+supportedLibraries( supportedLibraries ) {
 	LOG( INFO ) << "Application is launching with following power management libraries enabled:";
-	if ( hasNVML ) {
+	if ( supportedLibraries.NVML ) {
 		LOG( INFO ) << "...NVML(for Nvidia Tesla)";
 	}
-	if ( hasNMPRK ) {
+	if ( supportedLibraries.NMPRK ) {
 		LOG( INFO ) << "...NMPRK(for Intel Xeon)";
 	}
-	if ( hasMPSS ) {
+	if ( supportedLibraries.MPSS ) {
 		LOG( INFO ) << "...MPSS(for Intel XeonPhi)";
 	}
-	if ( !hasNVML && !hasNMPRK && !hasMPSS ) {
+	if ( !supportedLibraries.NVML && !supportedLibraries.NMPRK && !supportedLibraries.MPSS ) {
 		LOG( WARNING ) << "...NONE, are you sure everything is working properly?";
 	}
 }
@@ -42,15 +40,15 @@ hasMPSS{ hasMPSS } {
 DevicesManager::~DevicesManager( void ) {
 	LOG ( INFO ) << "Destroying DevicesManager";
 
-	if ( hasNVML && !NVMLCommProvider::shutdown() ) {
+	if ( supportedLibraries.NVML && !NVMLCommProvider::shutdown() ) {
 		 LOG( ERROR ) << "NVML shutdown failed";
 	}
 
-	if ( hasMPSS && !MPSSCommProvider::shutdown() ) {
+	if ( supportedLibraries.MPSS && !MPSSCommProvider::shutdown() ) {
 		LOG( ERROR ) << "MPSS shutdown failed";
 	}
 
-	if ( hasNMPRK && !NMPRKCommProvider::shutdown() ) {
+	if ( supportedLibraries.NMPRK && !NMPRKCommProvider::shutdown() ) {
 		 LOG( ERROR ) << "NMPRK shutdown failed";
 	}
 
@@ -60,18 +58,18 @@ DevicesManager::~DevicesManager( void ) {
 void DevicesManager::init( void ) {
 	LOG ( INFO ) << "Initializing DevicesManager";
 
-	if ( hasNVML && !NVMLCommProvider::init() ) {
-		hasNVML = false;
+	if ( supportedLibraries.NVML && !NVMLCommProvider::init() ) {
+		supportedLibraries.NVML = false;
 		 LOG( ERROR ) << "NVML init failed";
 	}
 
-	if ( hasMPSS && !MPSSCommProvider::init() ) {
-		hasMPSS = false;
+	if ( supportedLibraries.MPSS && !MPSSCommProvider::init() ) {
+		supportedLibraries.MPSS = false;
 		LOG( ERROR ) << "MPSS init failed";
 	}
 
-	if ( hasNMPRK && !NMPRKCommProvider::init() ) {
-		hasNMPRK = false;
+	if ( supportedLibraries.NMPRK && !NMPRKCommProvider::init() ) {
+		supportedLibraries.NMPRK = false;
 		LOG( ERROR ) << "NMPRK init failed";
 	}
 
@@ -98,21 +96,26 @@ const std::vector<devices::Device::Ptr>& DevicesManager::getDevicesList( void ) 
 void DevicesManager::updateDevicesList( void ) {
 	devicesList.clear();
 
-	if ( hasNVML ) {
+	if ( supportedLibraries.NVML ) {
 		auto tmpList = devices::NvidiaTeslaDevice<NVMLCommProvider>::getAvailableDevices();
 		devicesList.insert( devicesList.end(), tmpList.begin(), tmpList.end() ) ;
 	}
 
-	if ( hasMPSS ) {
+	if ( supportedLibraries.MPSS ) {
 		auto tmpList = devices::IntelXeonPhiDevice<MPSSCommProvider>::getAvailableDevices();
 		devicesList.insert( devicesList.end(), tmpList.begin(), tmpList.end() ) ;
 	}
 
-	if ( hasNMPRK ) {
+	if ( supportedLibraries.NMPRK ) {
 		auto tmpList = devices::IntelXeonDevice<NMPRKCommProvider>::getAvailableDevices();
 		devicesList.insert( devicesList.end(), tmpList.begin(), tmpList.end() ) ;
 	}
 
 	LOG ( INFO ) << "Devices list updated";
 }
+
+SupportedLibraries DevicesManager::getSupportedLibraries( void ) const {
+	return supportedLibraries;
+}
+
 } // namespace devices

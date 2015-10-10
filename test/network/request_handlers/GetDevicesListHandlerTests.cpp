@@ -1,27 +1,27 @@
 #include "CommonHeader.hpp"
-#include "network/request_hadlers/GetDevicesListHandler.hpp"
+#include "network/request_hadlers/GetNodeInformationHandler.hpp"
 
-struct GetDevicesListHandlerAccessor : public GetDevicesListHandler {
-	GetDevicesListHandlerAccessor( void ) :
-		GetDevicesListHandler{ nullptr } {
+struct GetNodeInformationHandlerAccessor : public GetNodeInformationHandler {
+	GetNodeInformationHandlerAccessor( void ) :
+		GetNodeInformationHandler{ nullptr } {
 	}
 
-	using GetDevicesListHandler::splitIntoQueries;
-	using GetDevicesListHandler::serializeQueriesResults;
+	using GetNodeInformationHandler::splitIntoQueries;
+	using GetNodeInformationHandler::serializeQueriesResults;
 };
 
-TEST_F( RequestHandlersTestSuite, GetDevicesListHandler_ValidURISplittingTest ) {
+TEST_F( RequestHandlersTestSuite, GetNodeInformationHandler_ValidURISplittingTest ) {
 	std::vector<Query> queries;
-	GetDevicesListHandlerAccessor handler;
+	GetNodeInformationHandlerAccessor handler;
 
 	ASSERT_NO_THROW( queries = handler.splitIntoQueries( http_request{} ) );
 	ASSERT_EQ( 1, queries.size() );
 	ASSERT_EQ( Query::Type::GetNodeInformation, queries[0].getType() );
 }
 
-TEST_F( RequestHandlersTestSuite, GetDevicesListHandler_InvalidURISplittingTest ) {
+TEST_F( RequestHandlersTestSuite, GetNodeInformationHandler_InvalidURISplittingTest ) {
 	std::vector<Query> queries;
-	GetDevicesListHandlerAccessor handler;
+	GetNodeInformationHandlerAccessor handler;
 
 	http_request req;
 	req.set_request_uri( "http://localhost:1234/list_devices?test" );
@@ -32,8 +32,8 @@ TEST_F( RequestHandlersTestSuite, GetDevicesListHandler_InvalidURISplittingTest 
 	ASSERT_STREQ( "WARN : Query string should be empty but it's not, it contains: test\n", sink.str().c_str() );
 }
 
-TEST_F( RequestHandlersTestSuite, GetDevicesListHandler_SerializationTest ) {
-	GetDevicesListHandlerAccessor handler;
+TEST_F( RequestHandlersTestSuite, GetNodeInformationHandler_SerializationTest ) {
+	GetNodeInformationHandlerAccessor handler;
 
 	auto result1 = std::make_shared<MockQueryResult>();
 	std::vector<core::QueryHandler::Result::Ptr> input;

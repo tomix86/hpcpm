@@ -3,9 +3,9 @@
 
 namespace network {
 namespace handlers {
-class GetDevicesListHandler : public Handler {
+class GetNodeInformationHandler : public Handler {
 public:
-	GetDevicesListHandler( core::QueryExecutor::Ptr queryExecutor ) :
+	GetNodeInformationHandler( core::QueryExecutor::Ptr queryExecutor ) :
 	Handler{ queryExecutor } {
 	}
 
