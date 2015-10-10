@@ -69,7 +69,7 @@ std::vector<nvmlDevice_t> NVMLCommunicationProvider::listDevices( void ) {
 			devices.push_back( devtmp );
 		}
 		catch ( NVMLError& err ) {
-			LOG( ERROR ) << "Failed to acquire device handle for device with index: " << i << ", error: " << proxy.nvmlErrorString( err.code );
+			LOG( ERROR ) << "Failed to acquire device handle for device with index " << i << ": " << err.message();
 		}
 	}
 
@@ -177,7 +177,7 @@ std::pair<unsigned, unsigned> NVMLCommunicationProvider::getPowerLimitConstraint
 
 void NVMLCommunicationProvider::checkNVMLErrors( const char* source, nvmlReturn_t status ) {
 	if ( status != NVML_SUCCESS ) {
-		throw NVMLError{ source, status };
+		throw NVMLError{ source, "error code: " + std::to_string( status ) + ", description: " + proxy.nvmlErrorString( status ) };
 	}
 }
 

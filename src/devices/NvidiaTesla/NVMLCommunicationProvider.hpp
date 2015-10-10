@@ -8,15 +8,7 @@
 
 namespace devices {
 
-class NVMLError : public utility::RuntimeError {
-public:
-	NVMLError( std::string source, nvmlReturn_t code ) ://TODO: re-enable
-		utility::RuntimeError{ source, "error code: " + std::to_string( code ) + ", description: "/* + proxy.nvmlErrorString( code )*/ },
-		code( code ) {
-	}
-
-	nvmlReturn_t code;
-};
+DEFINE_RUNTIME_ERROR_DERIVATIVE( NVMLError );
 
 class NVMLCommunicationProvider {
 public:
