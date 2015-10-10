@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
-#include <miclib.h>
 #include <vector>
 #include "devices/DeviceInformation.hpp"
+#include "MPSSProxy.hpp"
 #include "utility/Exceptions.hpp"
 
 namespace devices {
@@ -35,6 +35,7 @@ public:
 
 private:
 	MicDevicePtr deviceHandle;
+	static MPSSProxy proxy;
 
 	class DevicesListWrapper {
 	public:

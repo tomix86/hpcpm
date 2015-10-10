@@ -78,16 +78,13 @@ endif ()
 
 #Find libraries
 Find_lib ( CASABLANCA cpprest )
-Find_lib ( NVIDIA-ML nvidia-ml )
-Find_lib ( PPLX pplx_test )
-Find_lib ( MICMGMT micmgmt )
-Find_lib ( SCIF scif )
-set ( SHARED_LIBS ${CASABLANCA} ${NVIDIA-ML} ${PPLX} ${SCIF} ${MICMGMT} )
+set ( SHARED_LIBS ${CASABLANCA} )
 
 
 Find_lib ( NMPRK_IPMI NmprkIpmi )
 Find_lib ( NMPRK_TRANSLATION NmprkTranslation )
-list ( APPEND STATIC_LIBS ${NMPRK_IPMI} ${NMPRK_TRANSLATION} )
+Find_lib ( DL dl )
+list ( APPEND STATIC_LIBS ${NMPRK_IPMI} ${NMPRK_TRANSLATION} ${DL} )
 
 if ( CMAKE_BUILD_TYPE STREQUAL "test" )
 	file ( GLOB_RECURSE TESTS_SRCS "${CMAKE_SOURCE_DIR}/test/*.cpp" )

@@ -14,6 +14,8 @@ public:
 		}
 
 	static std::vector<Device::Ptr> getAvailableDevices( void ) {
+		LOG( DEBUG ) << "Detecting XeonPhi devices";
+
 		std::vector<Device::Ptr> list;
 
 		try {
@@ -28,7 +30,7 @@ public:
 		}
 		catch ( devices::MPSSError& ex ) {
 			LOG( ERROR ) << "Failed to acquire device list from MPSS, will return an empty one."
-							" Following exception was thrown: " << ex.info();
+				<< " Following exception was thrown: " << ex.info();
 
 			list.clear();
 		}

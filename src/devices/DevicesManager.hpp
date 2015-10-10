@@ -25,8 +25,8 @@ protected:
 	std::vector<devices::Device::Ptr> devicesList;
 
 private:
-	 const bool hasNVML;
-	 const bool hasNMPRK;
-	 const bool hasMPSS;
+	bool hasNVML;
+	bool hasNMPRK;
+	bool hasMPSS;
 };
 } // namespace devices

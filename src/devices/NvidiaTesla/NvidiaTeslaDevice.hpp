@@ -15,6 +15,8 @@ public:
 	}
 
 	static std::vector<Device::Ptr> getAvailableDevices( void ) {
+		LOG( DEBUG ) << "Detecting Nvidia devices";
+
 		std::vector<Device::Ptr> list;
 
 		try {
@@ -29,7 +31,7 @@ public:
 		}
 		catch ( devices::NVMLError& ex ) {
 			LOG( ERROR ) << "Failed to acquire device list from NVML, will return an empty one."
-							" Following exception was thrown: " << ex.info();
+				<< " Following exception was thrown: " << ex.info();
 			list.clear();
 		}
 

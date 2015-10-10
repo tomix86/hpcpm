@@ -1,17 +1,17 @@
 #pragma once
 #include <map>
-#include <nvml.h>
 #include <string>
 #include <vector>
 #include <devices/DeviceInformation.hpp>
+#include "NVMLProxy.hpp"
 #include "utility/Exceptions.hpp"
 
 namespace devices {
 
 class NVMLError : public utility::RuntimeError {
 public:
-	NVMLError( std::string source, nvmlReturn_t code ) :
-		utility::RuntimeError{ source, "error code: " + std::to_string( code ) + ", description: " + nvmlErrorString( code ) },
+	NVMLError( std::string source, nvmlReturn_t code ) ://TODO: re-enable
+		utility::RuntimeError{ source, "error code: " + std::to_string( code ) + ", description: "/* + proxy.nvmlErrorString( code )*/ },
 		code( code ) {
 	}
 
@@ -40,6 +40,7 @@ public:
 
 private:
 	nvmlDevice_t deviceHandle;
+	static NVMLProxy proxy;
 
 	// throws NVMLError if an error is detected (i.e. status != NVML_SUCCESS)
 	static void checkNVMLErrors(  const char* source, nvmlReturn_t status );

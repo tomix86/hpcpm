@@ -14,6 +14,8 @@ public:
 		}
 
 	static std::vector<Device::Ptr> getAvailableDevices( void ) {
+		LOG( DEBUG ) << "Detecting Xeon devices";
+
 		std::vector<Device::Ptr> list;
 
 		try {
@@ -26,7 +28,7 @@ public:
 		}
 		catch ( devices::NMPRKError& ex ) {
 			LOG( ERROR ) << "Failed to acquire device list from NMPRK, will return an empty one."
-							" Following exception was thrown: " << ex.info();
+				<< " Following exception was thrown: " << ex.info();
 			list.clear();
 		}
 

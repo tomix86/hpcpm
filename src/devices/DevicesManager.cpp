@@ -61,15 +61,18 @@ void DevicesManager::init( void ) {
 	LOG ( INFO ) << "Initializing DevicesManager";
 
 	if ( hasNVML && !NVMLCommProvider::init() ) {
+		hasNVML = false;
 		 LOG( ERROR ) << "NVML init failed";
 	}
 
 	if ( hasMPSS && !MPSSCommProvider::init() ) {
+		hasMPSS = false;
 		LOG( ERROR ) << "MPSS init failed";
 	}
 
 	if ( hasNMPRK && !NMPRKCommProvider::init() ) {
-		 LOG( ERROR ) << "NMPRK init failed";
+		hasNMPRK = false;
+		LOG( ERROR ) << "NMPRK init failed";
 	}
 
 	LOG ( INFO ) << "DevicesManager initialized";
