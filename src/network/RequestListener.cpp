@@ -4,8 +4,6 @@
 #include "RequestListener.hpp"
 #include "utility/ConfigLoader.hpp"
 
-//TODO: it may be a good idea to estabilish the connection the the server from the computation node (instead of listening)
-// by doing it we avoid potential problems with port forwarding, which may arise when the computation node is behind NAT
 namespace network {
 RequestListener::RequestListener ( core::QueryExecutor::Ptr queryExecutor ) :
 listenerBaseURI{ utility::ConfigLoader::getStringParam( "listener_base_url" ) } {

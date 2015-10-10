@@ -14,6 +14,16 @@ macro ( Find_lib var name )
 	endif ()
 endmacro ()
 
+macro ( Find_lib_prefer_static var name )
+	message ( STATUS "Searching for ${var}..." )
+	find_library ( ${var} NAMES lib${name}.a ${name} )
+	if ( EXISTS ${${var}} )
+		message ( STATUS "\tFound  at: ${${var}}" )
+	else ()
+		message ( FATAL_ERROR "${var} not found!" )
+	endif ()
+endmacro ()
+
 #Locate and compile gtest and gmock, if googletest location is not specified try to use default one
 if ( NOT DEFINED GOOGLETEST_LOCATION )
 	set ( GOOGLETEST_LOCATION "${CMAKE_SOURCE_DIR}/extlibs/googletest" )
@@ -35,8 +45,11 @@ else ()
 	message ( FATAL_ERROR "googletest not found, set GOOGLETEST_LOCATION variable" )
 endif ()
 
+ # find_package(Boost 1.55 REQUIRED COMPONENTS random system thread filesystem chrono atomic)
+#  find_package(OpenSSL 1.0 REQUIRED)
 #Locate boost
-find_package ( Boost )
+set( Boost_USE_STATIC_LIBS ON )
+find_package ( Boost REQUIRED COMPONENTS system thread )
 if ( Boost_FOUND )
 	include_directories ( ${Boost_INCLUDE_DIRS} )
 else ()
@@ -77,14 +90,13 @@ else ()
 endif ()
 
 #Find libraries
-Find_lib ( CASABLANCA cpprest )
-set ( SHARED_LIBS ${CASABLANCA} )
-
-
+Find_lib ( CPPREST cpprest )
 Find_lib ( NMPRK_IPMI NmprkIpmi )
 Find_lib ( NMPRK_TRANSLATION NmprkTranslation )
 Find_lib ( DL dl )
-list ( APPEND STATIC_LIBS ${NMPRK_IPMI} ${NMPRK_TRANSLATION} ${DL} )
+Find_Lib_prefer_static ( SSL ssl )
+Find_lib_prefer_static ( CRYPTO crypto )
+list ( APPEND STATIC_LIBS ${CPPREST} ${NMPRK_IPMI} ${NMPRK_TRANSLATION} ${DL} ${SSL} ${CRYPTO} ${Boost_LIBRARIES} )
 
 if ( CMAKE_BUILD_TYPE STREQUAL "test" )
 	file ( GLOB_RECURSE TESTS_SRCS "${CMAKE_SOURCE_DIR}/test/*.cpp" )
@@ -98,7 +110,7 @@ endif ()
 
 #Build executable
 add_executable ( ${EXECUTABLE} ${SRCS} )
-target_link_libraries ( ${EXECUTABLE} ${STATIC_LIBS} ${SHARED_LIBS} )
+target_link_libraries ( ${EXECUTABLE} ${STATIC_LIBS} )
 
 if ( INSTALL_LOCALLY STREQUAL "true" )
 	set ( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} )
@@ -107,10 +119,6 @@ endif ()
 #TODO: Improve the installation procedure
 install (	TARGETS ${EXECUTABLE}
 			RUNTIME DESTINATION bin/${CMAKE_BUILD_TYPE}
-			CONFIGURATIONS DEBUG RELEASE )
-
-install (	FILES ${SHARED_LIBS}
-			DESTINATION bin/${CMAKE_BUILD_TYPE}
 			CONFIGURATIONS DEBUG RELEASE )
 
 install (	DIRECTORY ${CMAKE_SOURCE_DIR}/res
