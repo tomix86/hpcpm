@@ -1,6 +1,6 @@
 {
-  "name": "angular",
-  "version": "0.0.0",
+  "name": "HPCPM UI",
+  "version": "1.0.0",
   "authors": [
     ""
   ],
@@ -22,6 +22,10 @@
     "restangular": "~1.5.1",
     "angular": "angularjs#~1.4.6",
     "angular-resource": "~1.4.6",
-    "angular-ui-router": "~0.2.15"
+    "angular-ui-router": "~0.2.15",
+    "angular-bootstrap": "~0.14.0",
+    "ng-table": "~0.8.3",
+    "angularjs-toaster": "~0.4.15",
+    "bootstrap": "~3.3.5"
   }
 }

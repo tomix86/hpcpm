@@ -1,130 +1,139 @@
 <!doctype html>
-<html ng-app="frontend">
+<html ng-app="hpcpm-ui">
 
 <head>
-  <meta charset="utf-8">
-  <title>X</title>
-
-  <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-  <script src="bower_components/angular-resource/angular-resource.js"></script>
-  <script src="bower_components/restangular/dist/restangular.js"></script>
-  <script src="bower_components/underscore/underscore.js"></script>
-
-  <script src="js/controllers.js"></script>
+    <meta charset="utf-8">
+    <title>HPC Power Management</title>
+    <script src="bower_components/angular/angular.js"></script>
 
 </head>
 
-<body ng-controller="BodyController">
-  <div ng-controller="FormController">
-    <p>Select endpoint</p>
-    <select ng-model="selection" ng-options="item for item in items" ng-change="changeState()"></select>
-    <hr/>
-    <div class="animate-switch-container" ui-view>
+<script type="text/ng-template" id="AddNode.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Add new computation node</h3>
     </div>
-  </div>
-  <script type="text/ng-template" id="/login.html">
-    <div class="animate-switch" ng-controller="LoginController">
-      <form action="/login" method="post">
-        <input type="text" id="login" name="login" placeholder="login">
-        <input type="password" id="password" name="password" placeholder="password">
-        <button type="submit">Submit</button>
-      </form>
-    </div>
-  </script>
-  <script type="text/ng-template" id="/default.html">
-  </script>
+    <div class="modal-body">
+        <div>
+            <form name="newNodeForm" novalidate>
+                <div class="form-group" ng-class="{ 'has-error': newNodeForm.name.$invalid }">
+                    <label class="control-label">Name</label>
+                    <input type="text" name="name" class="form-control" ng-model="node.name" required/>
+                </div>
+                <div class="form-group" ng-class="{ 'has-error': newNodeForm.address.$invalid }">
+                    <label class="control-label">Address</label>
+                    <input type="text" name="address" class="form-control" ng-model="node.address" required/>
+                </div>
+                <div class="form-group" ng-class="{ 'has-error': newNodeForm.port.$invalid }">
+                    <label class="control-label">Port</label>
+                    <input type="text" name="port" class="form-control" ng-model="node.port" required/>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" type="button" ng-disabled="newNodeForm.$invalid"
+                            ng-click="addNode()">Add
+                    </button>
+                    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+                </div>
+            </form>
 
-  <script type="text/ng-template" id="/status.html">
-    <div class="animate-switch" ng-controller="StatusController">
-      <form ng-submit="getStatus()">
-        <input type="submit" value="Get status">
-        <p>Response: {{response}}</p>
-      </form>
+        </div>
     </div>
-  </script>
 
-  <script type="text/ng-template" id="/get_computation_node.html">
-    <div class="animate-switch" ng-controller="GetComputationNodeController">
-      <form ng-submit="getComputationNode()">
-        <p>Node name:</p>
-        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
-        <input type="submit" value="Get node info">
-        <p>Response: {{response | json : 4}}</p>
-      </form>
-    </div>
-  </script>
+</script>
 
-  <script type="text/ng-template" id="/put_computation_node.html">
-    <div class="animate-switch" ng-controller="PutComputationNodeController">
-      <form ng-submit="putComputationNode()">
-        <p>Node info:</p>
-        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
-        <input ng-model="node.address" type="text" name="node_address" placeholder="Node address">
-        <input ng-model="node.port" type="text" name="node_port" placeholder="Node port">
-        <input type="submit" value="Put node info">
-        <p>Response: {{response}}</p>
-      </form>
+<script type="text/ng-template" id="RemoveNode.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Remove computation node</h3>
     </div>
-  </script>
+    <div class="modal-body">
+        <div>
+            <div class="alert alert-danger">
+                Do you wish to remove computation node <strong>{{name}}</strong> from database?
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" type="button" ng-click="removeNode()">
+                    Remove
+                </button>
+                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            </div>
+        </div>
+    </div>
 
-  <script type="text/ng-template" id="/delete_computation_node.html">
-    <div class="animate-switch" ng-controller="DeleteComputationNodeController">
-      <form ng-submit="deleteComputationNode()">
-        <p>Node name:</p>
-        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
-        <input type="submit" value="Delete node">
-        <p>Response: {{response}}</p>
-      </form>
-    </div>
-  </script>
+</script>
 
-  <script type="text/ng-template" id="/get_power_limit.html">
-    <div class="animate-switch" ng-controller="GetDevicePowerLimitController">
-      <form ng-submit="getPowerLimit()">
-        <p>Node name:</p>
-        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
-        <input ng-model="node.device_id" type="text" name="device_id" placeholder="Device ID">
-        <input type="submit" value="Get power limit info">
-        <p>Response: {{response | json : 4}}</p>
-      </form>
+<body ng-controller="BodyController" style="padding-top: 30px">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">HPC Power Management</a>
     </div>
-  </script>
+    <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li>
+                <p class="navbar-btn">
+                    <button type="button" class="btn btn-default" ng-click="OpenNewNodeModal()">Add computation
+                        node
+                    </button>
+                </p>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div>
+    <div class="row">
+        <div class="col-md-2">
+            <toaster-container></toaster-container>
 
-  <script type="text/ng-template" id="/put_power_limit.html">
-    <div class="animate-switch" ng-controller="PutDevicePowerLimitController">
-      <form ng-submit="putPowerLimit()">
-        <p>Node info:</p>
-        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
-        <input ng-model="node.device_id" type="text" name="device_id" placeholder="Device ID">
-        <input ng-model="node.power_limit" type="text" name="power_limit" placeholder="Power limit">
-        <input type="submit" value="Put power limit info">
-        <p>Response: {{response | json : 4}}</p>
-      </form>
+        </div>
+        <div class="col-md-8">
+            <div class="page-header">
+                <h1>Computation nodes</h1>
+            </div>
+            <div ng-controller="nodesController">
+                <table ng-table="tableParams" show-filter="true"
+                       class="table table-condensed table-bordered table-striped">
+                    <tr ng-repeat="row in $data">
+                        <td data-title="'Name'" filter="{name: 'text'}" sortable="'name'">{{row.name}}</td>
+                        <td data-title="'Address'" filter="{address: 'text'}" sortable="'address'">{{row.address}}</td>
+                        <td data-title="'Port'" filter="{port: 'number'}" sortable="'port'">{{row.port}}</td>
+                        <td data-title="'Action'">
+                            <button class="btn btn-danger btn-xs" type="button"
+                                    ng-click="OpenRemoveNodeModal(row.name)">Remove
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
     </div>
-  </script>
+</div>
 
-  <script type="text/ng-template" id="/delete_power_limit.html">
-    <div class="animate-switch" ng-controller="DeleteDevicePowerLimitController">
-      <form ng-submit="deletePowerLimit()">
-        <p>Node name:</p>
-        <input ng-model="node.name" type="text" name="node_name" placeholder="Node name">
-        <input ng-model="node.device_id" type="text" name="device_id" placeholder="Device ID">
-        <input type="submit" value="Delete power limit info">
-        <p>Response: {{response | json : 4}}</p>
-      </form>
-    </div>
-  </script>
+<script src="bower_components/angular-animate/angular-animate.min.js"></script>
+<script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+<script src="bower_components/angular-resource/angular-resource.min.js"></script>
+<script src="bower_components/restangular/dist/restangular.min.js"></script>
+<script src="bower_components/underscore/underscore-min.js"></script>
+<script src="bower_components/ng-table/dist/ng-table.min.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+<script src="bower_components/AngularJS-Toaster/toaster.min.js"></script>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
-  <script type="text/ng-template" id="/get_all_computation_nodes.html">
-    <div class="animate-switch" ng-controller="GetAllComputationNodesController">
-      <form ng-submit="getAllComputationNodes()">
-        <p>Node name:</p>
-        <input type="submit" value="Get all nodes info">
-        <p>Response: {{response | json : 4}}</p>
-      </form>
-    </div>
-  </script>
+<script src="js/controllers.js"></script>
+<script src="js/DataService.js"></script>
+<script src="js/EndpointsService.js"></script>
+<script src="js/NewNodeController.js"></script>
+<script src="js/RemoveNodeController.js"></script>
+
+<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="bower_components/ng-table/dist/ng-table.min.css">
+<link rel="stylesheet" type="text/css" href="bower_components/AngularJS-Toaster/toaster.min.css"/>
+
 </body>
-
 </html>
