@@ -6,62 +6,25 @@ app.config([
     '$urlRouterProvider',
     function ($stateProvider, $urlRouterProvider) {
         $stateProvider
-            .state('default', {
+            .state('home', {
                 url: '/',
-                templateUrl: '/default.html',
-                controller: 'FormController'
+                templateUrl: '/NodeTable.html',
+                controller: 'NodesController'
             })
-            .state('status', {
-                url: '/status',
-                templateUrl: '/status.html',
-                controller: 'StatusController'
-            })
-            .state('get_computation_node', {
-                url: '/get_computation_node',
-                templateUrl: '/get_computation_node.html',
-                controller: 'GetComputationNodeController'
-            })
-            .state('put_computation_node', {
-                url: '/put_computation_node',
-                templateUrl: '/put_computation_node.html',
-                controller: 'PutComputationNodeController'
-            })
-            .state('delete_computation_node', {
-                url: '/delete_computation_node',
-                templateUrl: '/delete_computation_node.html',
-                controller: 'DeleteComputationNodeController'
-            })
-            .state('get_power_limit', {
-                url: '/get_power_limit',
-                templateUrl: '/get_power_limit.html',
-                controller: 'GetDevicePowerLimitController'
-            })
-            .state('put_power_limit', {
-                url: '/put_power_limit',
-                templateUrl: '/put_power_limit.html',
-                controller: 'PutDevicePowerLimitController'
-            })
-            .state('delete_power_limit', {
-                url: '/delete_power_limit',
-                templateUrl: '/delete_power_limit.html',
-                controller: 'DeleteDevicePowerLimitController'
-            })
-            .state('get_all_computation_nodes', {
-                url: '/get_all_computation_nodes',
-                templateUrl: '/get_all_computation_nodes.html',
-                controller: 'GetAllComputationNodesController'
-            })
-            .state('login', {
-                url: '/login',
-                templateUrl: '/login.html',
-                controller: 'LoginController'
+            .state('node_details', {
+                url: '/node/:node_name',
+                templateUrl: '/NodeDetails.html',
+                controller: 'NodeDetailsController',
+                params: {
+                   node: null
+                 }
             });
 
-        $urlRouterProvider.otherwise('default');
+        $urlRouterProvider.otherwise('/');
     }
 ]);
 
-var bodyController = app.controller('BodyController', function ($scope, $uibModal, $log) {
+var bodyController = app.controller('BodyController', function ($scope, $state, $uibModal, $log, SaveData) {
     $scope.OpenNewNodeModal = function () {
 
         var modalInstance = $uibModal.open({
@@ -74,12 +37,21 @@ var bodyController = app.controller('BodyController', function ($scope, $uibModa
             $scope.selected = selectedItem;
         });
     };
+
 });
 
+bodyController.controller('NodeDetailsController', function ($scope, $state, $uibModal, $log, $stateParams) {
+    if($stateParams.node) {
+      $scope.selectedNode = $stateParams.node;
+    }
+    else {
+      $scope.selectedNode = "elo";
+    }
+});
 
-app.controller("nodesController", nodesController);
-nodesController.$inject = ["$scope", "$filter", "NgTableParams", "DataService", "$uibModal", "$timeout"];
-function nodesController($scope, $filter, NgTableParams, DataService, $uibModal, $timeout) {
+app.controller("NodesController", NodesController);
+NodesController.$inject = ["$scope", "$filter", "NgTableParams", "DataService", "$uibModal", "$timeout"];
+function NodesController($scope, $filter, NgTableParams, DataService, $uibModal, $timeout) {
     $scope.tableParams = new NgTableParams({count: 10}, {
         counts: [10, 20, 40, 80, 100],
         getData: function ($defer, params) {

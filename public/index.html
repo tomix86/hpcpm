@@ -8,6 +8,37 @@
 
 </head>
 
+<script type="text/ng-template" id="/NodeDetails.html">
+  <div class="col-md-8" ng-controller="NodeDetailsController">
+  <br><br>
+    {{selectedNode}}
+  </div>
+</script>
+
+<script type="text/ng-template" id="/NodeTable.html">
+      <div class="col-md-8">
+          <div class="page-header">
+              <h1>Computation nodes</h1>
+          </div>
+          <div ng-controller="NodesController">
+              <table ng-table="tableParams" show-filter="true"
+                     class="table table-condensed table-bordered table-striped">
+                  <tr ng-repeat="row in $data">
+                      <td data-title="'Name'" filter="{name: 'text'}" sortable="'name'"><a ui-sref="node_details({node_name: row.name, node: row})">{{row.name}}</a></td>
+                      <td data-title="'Address'" filter="{address: 'text'}" sortable="'address'">{{row.address}}</td>
+                      <td data-title="'Port'" filter="{port: 'number'}" sortable="'port'">{{row.port}}</td>
+                      <td data-title="'Action'">
+                          <button class="btn btn-danger btn-xs" type="button"
+                                  ng-click="OpenRemoveNodeModal(row.name)">Remove
+                          </button>
+                      </td>
+                  </tr>
+              </table>
+          </div>
+      </div>
+      <div class="col-md-2"></div>
+</script>
+
 <script type="text/ng-template" id="AddNode.html">
     <div class="modal-header">
         <h3 class="modal-title">Add new computation node</h3>
@@ -84,33 +115,14 @@
         </ul>
     </div>
 </nav>
-<div>
-    <div class="row">
-        <div class="col-md-2">
-            <toaster-container></toaster-container>
 
-        </div>
-        <div class="col-md-8">
-            <div class="page-header">
-                <h1>Computation nodes</h1>
-            </div>
-            <div ng-controller="nodesController">
-                <table ng-table="tableParams" show-filter="true"
-                       class="table table-condensed table-bordered table-striped">
-                    <tr ng-repeat="row in $data">
-                        <td data-title="'Name'" filter="{name: 'text'}" sortable="'name'">{{row.name}}</td>
-                        <td data-title="'Address'" filter="{address: 'text'}" sortable="'address'">{{row.address}}</td>
-                        <td data-title="'Port'" filter="{port: 'number'}" sortable="'port'">{{row.port}}</td>
-                        <td data-title="'Action'">
-                            <button class="btn btn-danger btn-xs" type="button"
-                                    ng-click="OpenRemoveNodeModal(row.name)">Remove
-                            </button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <div class="col-md-2"></div>
+<div class="row">
+    <div class="col-md-2">
+        <toaster-container></toaster-container>
+
+    </div>
+    <div ui-view>
+
     </div>
 </div>
 
