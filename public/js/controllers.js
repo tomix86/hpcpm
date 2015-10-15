@@ -24,7 +24,7 @@ app.config([
     }
 ]);
 
-var bodyController = app.controller('BodyController', function ($scope, $state, $uibModal, $log, SaveData) {
+var bodyController = app.controller('BodyController', function ($scope, $state, $uibModal, $log) {
     $scope.OpenNewNodeModal = function () {
 
         var modalInstance = $uibModal.open({
@@ -40,18 +40,10 @@ var bodyController = app.controller('BodyController', function ($scope, $state, 
 
 });
 
-bodyController.controller('NodeDetailsController', function ($scope, $state, $uibModal, $log, $stateParams) {
-    if($stateParams.node) {
-      $scope.selectedNode = $stateParams.node;
-    }
-    else {
-      $scope.selectedNode = "elo";
-    }
-});
 
-app.controller("NodesController", NodesController);
-NodesController.$inject = ["$scope", "$filter", "NgTableParams", "DataService", "$uibModal", "$timeout"];
-function NodesController($scope, $filter, NgTableParams, DataService, $uibModal, $timeout) {
+var NodesController = app.controller("NodesController", nodesController);
+nodesController.$inject = ["$scope", "$filter", "NgTableParams", "DataService", "$uibModal", "$timeout"];
+function nodesController($scope, $filter, NgTableParams, DataService, $uibModal, $timeout) {
     $scope.tableParams = new NgTableParams({count: 10}, {
         counts: [10, 20, 40, 80, 100],
         getData: function ($defer, params) {
@@ -98,3 +90,12 @@ function NodesController($scope, $filter, NgTableParams, DataService, $uibModal,
     $scope.intervalFunction();
 
 }
+
+NodesController.controller('NodeDetailsController', function ($scope, $state, $uibModal, $log, $stateParams) {
+    if($stateParams.node) {
+      $scope.selectedNode = $stateParams.node_name;
+    }
+    else {
+      $scope.selectedNode = $stateParams.node_name;
+    }
+});
