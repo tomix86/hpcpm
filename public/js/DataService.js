@@ -12,6 +12,9 @@ function dataService(Restangular, EndpointsService) {
         },
         removeComputationNode: function(name) {
             return Restangular.one(EndpointsService.deleteComputationNodeUrl(), name).remove();
+        },
+        getComputationNode: function(name) {
+            return Restangular.one(EndpointsService.getComputationNodeUrl(), name).get();
         }
     }
 }

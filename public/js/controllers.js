@@ -90,12 +90,3 @@ function nodesController($scope, $filter, NgTableParams, DataService, $uibModal,
     $scope.intervalFunction();
 
 }
-
-NodesController.controller('NodeDetailsController', function ($scope, $state, $uibModal, $log, $stateParams) {
-    if($stateParams.node) {
-      $scope.selectedNode = $stateParams.node_name;
-    }
-    else {
-      $scope.selectedNode = $stateParams.node_name;
-    }
-});
