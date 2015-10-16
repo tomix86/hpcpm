@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "DeviceInformation.hpp"
+#include "utility/Logging.hpp"
 
 namespace devices {
 typedef unsigned Power;
@@ -17,7 +18,9 @@ class Device {
 public:
 	typedef std::shared_ptr<Device> Ptr;
 
-	virtual ~Device( void ) {}
+	virtual ~Device( void ) {
+		LOG( DEBUG ) << "Destroying device: " << info.identifier;
+	}
 
 	virtual const DeviceInformation& getInfo( void ) const { return info; }
 

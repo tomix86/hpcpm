@@ -12,6 +12,8 @@ DEFINE_RUNTIME_ERROR_DERIVATIVE( NVMLError );
 
 class NVMLCommunicationProvider {
 public:
+	typedef std::map<std::string, std::string> InfoContainer;
+
 	NVMLCommunicationProvider( DeviceIdentifier::idType deviceId );
 
 	static bool init( void );
@@ -22,7 +24,7 @@ public:
 
 	static devices::DeviceIdentifier::idType getPrimaryId( nvmlDevice_t deviceHandle );
 
-	static std::map<std::string, std::string> getInfo( nvmlDevice_t deviceHandle );
+	static DeviceInformation::InfoContainer getInfo( nvmlDevice_t deviceHandle );
 
 	unsigned getCurrentPowerLimit( void ) const;
 
@@ -42,5 +44,8 @@ private:
 	static std::string gpuOperationModeToString( nvmlGpuOperationMode_t gpuOperationMode );
 
 	static bool isDevicePowerManagementCapable( nvmlDevice_t deviceHandle );
+
+	using ValueType = DeviceInformation::InfoContainer::value_type::second_type;
+	static void setIfSupported( nvmlReturn_t returnCode, ValueType& field, ValueType value );
 };
 } // namespace devices

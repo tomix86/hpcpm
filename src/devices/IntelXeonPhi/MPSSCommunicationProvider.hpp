@@ -67,6 +67,7 @@ private:
 
 	static MicDevicePtr getDeviceByIndex( int index );
 	static MicDevicePtr getDeviceById( DeviceIdentifier::idType id );
+	static std::string getUUID( int index );
 };
 
 } // namespace devices

@@ -26,6 +26,7 @@ public:
 				auto devId = CommunicationProvider::getPrimaryId( handle );
 				auto devPtr = std::make_shared<NvidiaTeslaDevice>( devId );
 				list.push_back( devPtr );
+
 				devPtr->info.entries = CommunicationProvider::getInfo( handle );
 			}
 		}

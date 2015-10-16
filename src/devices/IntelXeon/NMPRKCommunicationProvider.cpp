@@ -11,6 +11,9 @@
 #include "NMPRKCommunicationProvider.hpp"
 #include "utility/Logging.hpp"
 
+// IMPORTANT NOTE: nmprkException MUST BE caught by pointer, not by reference
+// I don't know why it's the case but it doesn't seem to work when we catch it by reference
+
 namespace devices {
 
 nmprk::ipmi::device NMPRKCommunicationProvider::d;
@@ -20,18 +23,14 @@ using namespace nmprk;
 NMPRKCommunicationProvider::NMPRKCommunicationProvider( DeviceIdentifier::idType deviceId ) {
 	(void)deviceId;
 }
-/*
-NMPRKCommunicationProvider::~NMPRKCommunicationProvider( void ) {
-
-}*/
 
 bool NMPRKCommunicationProvider::init( void ) {
 	try {
 		if ( translation::swSubSystemSetup( translation::initLibrary, nullptr ) ) {
-			LOG( INFO ) << "NMPRK Library initialized.";
+			LOG( INFO ) << "NMPRK - library initialized";
 		}
 		else {
-			LOG( ERROR ) << "NMPRK Library initialization failed.";
+			LOG( ERROR ) << "NMPRK - library initialization failed";
 			return false;
 		}
 
@@ -39,16 +38,16 @@ bool NMPRKCommunicationProvider::init( void ) {
 		d.address = "local";
 
 		if ( translation::swSubSystemSetup( translation::initDevice, &d ) ) {
-			LOG( INFO ) << "Device initialized.";
+			LOG( INFO ) << "NMPRK - device initialized";
 		}
 		else {
-			LOG( ERROR ) << "Device initialization failed.";
+			LOG( ERROR ) << "NMPRK - device initialization failed";
 			return false;
 		}
 
 		return true;
 	}
-	catch ( nmprkException& e ) {
+	catch ( const nmprkException* e ) {
 		LOG( ERROR ) << NMPRKError::nmprkExceptionToString( e );
 		return false;
 	}
@@ -67,7 +66,7 @@ bool NMPRKCommunicationProvider::shutdown( void ) {
 			return false;
 		}
 	}
-	catch ( nmprkException& e ) {
+	catch ( const nmprkException* e ) {
 		LOG( ERROR ) << NMPRKError::nmprkExceptionToString( e );
 		return false;
 	}
@@ -138,7 +137,7 @@ std::map<std::string, std::string> NMPRKCommunicationProvider::getInfo( void ) {
 		info[ "MaxStatisticsReportingPeriod" ] = std::to_string( capabilities->maxStatReportPeriod );
 		info[ "MinStatisticsReportingPeriod" ] = std::to_string( capabilities->minStatReportPeriod );
 	}
-	catch( nmprk::nmprkException& e ) {
+	catch( const nmprkException* e ) {
 		throw NMPRKError{ "NMPRKCommunicationProvider::getInfo", e };
 	}
 
@@ -157,7 +156,7 @@ unsigned NMPRKCommunicationProvider::getCurrentPowerLimit( void ) const {
 		translation::resetStatistics( &d, translation::domainSystem, nullptr );
 		return reading;
 	}
-	catch ( nmprkException& e ) {
+	catch ( const nmprkException* e ) {
 		throw NMPRKError{ "NMPRKCommunicationProvider::getCurrentPowerLimit", e };
 	}
 }
@@ -182,7 +181,7 @@ void NMPRKCommunicationProvider::setPowerLimit( unsigned watts ) {
 			LOG( ERROR ) << "Setting power cap failed.";
 		}
 	}
-	catch ( nmprkException& e ) {
+	catch ( const nmprkException* e ) {
 		throw NMPRKError{ "NMPRKCommunicationProvider::setPowerLimit", e };
 	}
 }

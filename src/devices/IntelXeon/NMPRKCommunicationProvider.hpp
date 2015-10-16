@@ -17,13 +17,13 @@ public:
 		utility::RuntimeError{ source, message } {
 	}
 
-	NMPRKError( std::string source, const nmprk::nmprkException& exception ) :
+	NMPRKError( std::string source, const nmprk::nmprkException* exception ) :
 		utility::RuntimeError{ source, nmprkExceptionToString( exception ) } {
 	}
 
-	static std::string nmprkExceptionToString( const nmprk::nmprkException& exception ) {
+	static std::string nmprkExceptionToString( const nmprk::nmprkException* exception ) {
 		std::ostringstream ss;
-		ss << "Code[" << exception.errorCode << "] Msg[" << exception.errorMsg << "]";
+		ss << "Code[" << exception->errorCode << "] Msg[" << exception->errorMsg << "]";
 		return ss.str();
 	}
 };
@@ -31,7 +31,6 @@ public:
 class NMPRKCommunicationProvider {
 public:
 	NMPRKCommunicationProvider( DeviceIdentifier::idType deviceId );
-//	~NMPRKCommunicationProvider( void );
 
 	static bool init( void );
 

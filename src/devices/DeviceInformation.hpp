@@ -78,8 +78,8 @@ public:
 	// Primary device identifier
 	DeviceIdentifier identifier;
 
-	// If the device has any other IDs (secondary) then they are stored here along with other info about that device
-    std::map<std::string, std::string> entries;
+	typedef std::map<std::string, std::string> InfoContainer; //TODO: make use of it in other classes
 
+    std::map<std::string, std::string> entries;
 };
 } // namespace devices

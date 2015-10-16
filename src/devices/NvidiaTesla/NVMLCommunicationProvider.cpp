@@ -85,8 +85,8 @@ devices::DeviceIdentifier::idType NVMLCommunicationProvider::getPrimaryId( nvmlD
 	return UUID;
 }
 
-std::map<std::string, std::string> NVMLCommunicationProvider::getInfo( nvmlDevice_t deviceHandle ) {
-	std::map<std::string, std::string> info;
+DeviceInformation::InfoContainer NVMLCommunicationProvider::getInfo( nvmlDevice_t deviceHandle ) {
+	DeviceInformation::InfoContainer info;
 
 	char UUID[ NVML_DEVICE_UUID_BUFFER_SIZE ];
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetUUID( deviceHandle, UUID, NVML_DEVICE_UUID_BUFFER_SIZE ) );
@@ -124,13 +124,13 @@ std::map<std::string, std::string> NVMLCommunicationProvider::getInfo( nvmlDevic
 	info[ "PendingECCMode" ] = ( pendingEccMode == NVML_FEATURE_ENABLED ? "Enabled" : "Disabled" );
 
 	nvmlGpuOperationMode_t currentGpuOperationMode, pendingGpuOperationMode;
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetGpuOperationMode( deviceHandle, &currentGpuOperationMode, &pendingGpuOperationMode ) );
-	info[ "CurrentGpuOperationMode" ] = gpuOperationModeToString( currentGpuOperationMode );
-	info[ "PendingGpuOperationMode" ] = gpuOperationModeToString( pendingGpuOperationMode );
+	auto ret = proxy.nvmlDeviceGetGpuOperationMode( deviceHandle, &currentGpuOperationMode, &pendingGpuOperationMode ) ;
+	setIfSupported( ret, info[ "CurrentGpuOperationMode" ], gpuOperationModeToString( currentGpuOperationMode ) );
+	setIfSupported( ret, info[ "PendingGpuOperationMode" ], gpuOperationModeToString( pendingGpuOperationMode ) );
 
 	char inforomImageVersion[ NVML_DEVICE_INFOROM_VERSION_BUFFER_SIZE ];
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetInforomImageVersion( deviceHandle, inforomImageVersion, NVML_DEVICE_INFOROM_VERSION_BUFFER_SIZE ) );
-	info[ "InforomImageVersion" ] = inforomImageVersion;
+	ret = proxy.nvmlDeviceGetInforomImageVersion( deviceHandle, inforomImageVersion, NVML_DEVICE_INFOROM_VERSION_BUFFER_SIZE );
+	setIfSupported( ret, info[ "InforomImageVersion" ], inforomImageVersion );
 
 	unsigned clock;
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetMaxClockInfo( deviceHandle, NVML_CLOCK_GRAPHICS, &clock ) );
@@ -149,14 +149,23 @@ std::map<std::string, std::string> NVMLCommunicationProvider::getInfo( nvmlDevic
 	info[ "PersistenceMode" ] = ( persistenceMode == NVML_FEATURE_ENABLED ? "Enabled" : "Disabled" );
 
 	unsigned defaultLimit;
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetPowerManagementDefaultLimit( deviceHandle, &defaultLimit ) );
-	info[ "DefaultPowerManagementLimit" ] = std::to_string( defaultLimit );
+	setIfSupported( proxy.nvmlDeviceGetPowerManagementDefaultLimit( deviceHandle, &defaultLimit ), info[ "DefaultPowerManagementLimit" ], std::to_string( defaultLimit ) );
 
 	char vbiosVersion[ NVML_DEVICE_VBIOS_VERSION_BUFFER_SIZE ];
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetVbiosVersion( deviceHandle, vbiosVersion, NVML_DEVICE_VBIOS_VERSION_BUFFER_SIZE ) );
 	info[ "VBiosVersion" ] = vbiosVersion;
 
 	return info;
+}
+
+void NVMLCommunicationProvider::setIfSupported( nvmlReturn_t returnCode, ValueType& field, ValueType value ) {
+	if ( returnCode == NVML_ERROR_NOT_SUPPORTED ) {
+		field = "N/A";
+	}
+	else {
+		NVML_ERROR_CHECK( returnCode );
+		field = value;
+	}
 }
 
 unsigned NVMLCommunicationProvider::getCurrentPowerLimit( void ) const {

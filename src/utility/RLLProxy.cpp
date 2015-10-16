@@ -32,7 +32,7 @@ bool RLLProxy::init( void ) {
 
 	LOG( INFO ) << "Success, loading symbols...";
 	if( !loadSymbols() ) {
-		LOG( ERROR ) << "Symbols loading failed.";
+		LOG( ERROR ) << "Symbols loading failed";
 		return false;
 	}
 
@@ -45,6 +45,10 @@ bool RLLProxy::shutdown( void ) {
 		LOG( ERROR ) << "Error while closing " << libraryName << ": " << dlerror();
 		return false;
 	}
+
+	libHandle = nullptr;
+
+	LOG( INFO ) << libraryName << " unloaded";
 	return true;
 }
 

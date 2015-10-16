@@ -1,9 +1,11 @@
 #include <cerrno>
 #include <cstdint>
 #include <cstring>
+#include <iomanip>
 #include <numeric>
 #include <sstream>
 #include "MPSSCommunicationProvider.hpp"
+#include "utility/Logging.hpp"
 
 #define S( x ) #x
 #define STR( x ) S( x )
@@ -65,21 +67,7 @@ std::vector<int> MPSSCommunicationProvider::listDevices( void ) {
 }
 
 devices::DeviceIdentifier::idType MPSSCommunicationProvider::getPrimaryId( int index ) {
-	auto devPtr = getDeviceByIndex( index );
-	std::uint8_t UUID[ MAX_NAME_LENGTH ];
-	size_t size = MAX_NAME_LENGTH;
-
-	MPSS_ERROR_CHECK( proxy.mic_get_uuid( devPtr.get(), UUID, &size ) != E_MIC_SUCCESS );
-
-	/*
-
-	printf("    UUID: ");
-	for (i = 0; i < 16; i++)
-		printf("0x%02x ", str[i] & 0xff);
-		*/
-
-	static_assert( sizeof( std::uint8_t ) == sizeof( char ), "Sizes must match" );
-	return reinterpret_cast<char*>( UUID );
+	return getUUID( index );
 }
 
 std::map<std::string, std::string> MPSSCommunicationProvider::getInfo( int index ) {
@@ -87,14 +75,12 @@ std::map<std::string, std::string> MPSSCommunicationProvider::getInfo( int index
 	auto devPtr = getDeviceByIndex( index );
 	auto dev = devPtr.get();
 
-	std::uint8_t UUID[ MAX_NAME_LENGTH ];
-	size_t size = MAX_NAME_LENGTH;
-	proxy.mic_get_uuid( dev, UUID, &size );
-	info[ "UUID" ] = reinterpret_cast<char*>( UUID );
+	info[ "UUID" ] = getUUID( index );
 
 	info[ "Name" ] = proxy.mic_get_device_name( dev );
 
 	char stringBuf[ MAX_NAME_LENGTH ];
+	size_t size = MAX_NAME_LENGTH;
 	MPSS_ERROR_CHECK( proxy.mic_get_silicon_sku( dev, stringBuf, &size ) );
 	info[ "SiliconSKU" ] = stringBuf;
 
@@ -177,8 +163,8 @@ void MPSSCommunicationProvider::fillPciConfigInfo( std::map<std::string, std::st
 	MPSS_ERROR_CHECK( proxy.mic_get_subsystem_id( pciConfig, &subsystemId ) );
 	info[ "SubsysId" ] = std::to_string( subsystemId );
 
-	std::uint32_t linkWidth;
-	/* Has to be su to run this, else there is access violation error */
+/*	std::uint32_t linkWidth;
+	// Has to be su to run this, else there is access violation error
 	MPSS_ERROR_CHECK( proxy.mic_get_link_width( pciConfig, &linkWidth ) );
 	info[ "LinkWidth" ] = std::to_string( linkWidth );
 
@@ -193,7 +179,7 @@ void MPSSCommunicationProvider::fillPciConfigInfo( std::map<std::string, std::st
 	char stringBuf[ MAX_NAME_LENGTH ];
 	size_t size = MAX_NAME_LENGTH;
 	MPSS_ERROR_CHECK( proxy.mic_get_link_speed( pciConfig, stringBuf, &size ) );
-	info[ "LinkSpeed" ] = stringBuf;
+	info[ "LinkSpeed" ] = stringBuf;*/
 }
 
 void MPSSCommunicationProvider::fillMemoryInfo( std::map<std::string, std::string>& info, mic_device* dev ) {
@@ -289,6 +275,22 @@ MicDevicePtr MPSSCommunicationProvider::getDeviceById( DeviceIdentifier::idType 
 	}
 
 	throw MPSSError( "MPSSCommunicationProvider::getDeviceById", "Device with id: " + id + " not found" );
+}
+
+std::string MPSSCommunicationProvider::getUUID( int index ) {
+	auto devPtr = getDeviceByIndex( index );
+	std::uint8_t UUID[ MAX_NAME_LENGTH ];
+	size_t size = MAX_NAME_LENGTH;
+
+	MPSS_ERROR_CHECK( proxy.mic_get_uuid( devPtr.get(), UUID, &size ) != E_MIC_SUCCESS );
+
+	std::ostringstream UUIDss;
+	UUIDss << std::setfill( '0' ) << std::hex;
+	for ( unsigned i = 0; i < size; ++i ) {
+		UUIDss << std::setw( 2 ) << ( static_cast<int>( UUID[ i ] ) & 0x000000ff ); //TODO: czy ten and potrzebny
+	}
+
+	return UUIDss.str();
 }
 
 } // namespace devices

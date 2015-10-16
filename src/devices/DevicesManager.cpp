@@ -38,7 +38,13 @@ supportedLibraries( supportedLibraries ) {
 }
 
 DevicesManager::~DevicesManager( void ) {
-	LOG ( INFO ) << "Destroying DevicesManager";
+	// We must do it manually before the unload of RLL or we will receive some nasty segfaults
+	LOG( INFO ) << "Destroying devices...";
+	for ( auto& dev : devicesList ) {
+		dev.reset();
+	}
+
+	LOG( INFO ) << "Destroying DevicesManager";
 
 	if ( supportedLibraries.NVML && !NVMLCommProvider::shutdown() ) {
 		 LOG( ERROR ) << "NVML shutdown failed";
@@ -111,7 +117,7 @@ void DevicesManager::updateDevicesList( void ) {
 		devicesList.insert( devicesList.end(), tmpList.begin(), tmpList.end() ) ;
 	}
 
-	LOG ( INFO ) << "Devices list updated";
+	LOG( INFO ) << "Devices list updated";
 }
 
 SupportedLibraries DevicesManager::getSupportedLibraries( void ) const {
