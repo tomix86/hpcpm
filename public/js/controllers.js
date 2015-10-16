@@ -1,4 +1,4 @@
-var app = angular.module('hpcpm-ui', ['restangular', 'ui.router', "ngTable", "ui.bootstrap", "toaster"]);
+var app = angular.module('hpcpm-ui', ['restangular', 'ui.router', "ngTable", "ui.bootstrap", "toaster", 'ngPrettyJson']);
 
 
 app.config([

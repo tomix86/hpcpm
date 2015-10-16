@@ -26,6 +26,7 @@
     "angular-bootstrap": "~0.14.0",
     "ng-table": "~0.8.3",
     "angularjs-toaster": "~0.4.15",
-    "bootstrap": "~3.3.5"
+    "bootstrap": "~3.3.5",
+    "ng-prettyjson": "~0.1.9"
   }
 }
