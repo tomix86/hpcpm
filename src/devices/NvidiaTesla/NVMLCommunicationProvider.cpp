@@ -12,7 +12,7 @@ namespace devices {
 NVMLProxy NVMLCommunicationProvider::proxy;
 
 NVMLCommunicationProvider::NVMLCommunicationProvider( DeviceIdentifier::idType deviceId ) {
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetHandleByUUID( deviceId.c_str(), &deviceHandle ) ); //TODO: this line should be changed when we decide what should be used as device's primary id
+	NVML_ERROR_CHECK( proxy.nvmlDeviceGetHandleByUUID( deviceId.c_str(), &deviceHandle ) );
 }
 
 bool NVMLCommunicationProvider::init( void ) {
@@ -35,7 +35,7 @@ bool NVMLCommunicationProvider::init( void ) {
 
 		return true;
 	}
-	catch ( NVMLError& err ) {
+	catch ( const NVMLError& err ) {
 		LOG( ERROR ) << err.info();
 		return false;
 	}
@@ -52,7 +52,7 @@ bool NVMLCommunicationProvider::shutdown( void ) {
 
 		return true;
 	}
-	catch ( NVMLError& err ) {
+	catch ( const NVMLError& err ) {
 		LOG( ERROR ) << err.info();
 		return false;
 	}
@@ -69,7 +69,7 @@ std::vector<nvmlDevice_t> NVMLCommunicationProvider::listDevices( void ) {
 			NVML_ERROR_CHECK( proxy.nvmlDeviceGetHandleByIndex( i, &devtmp ) );
 			devices.push_back( devtmp );
 		}
-		catch ( NVMLError& err ) {
+		catch ( const NVMLError& err ) {
 			LOG( ERROR ) << "Failed to acquire device handle for device with index " << i << ": " << err.message();
 		}
 	}
@@ -233,7 +233,7 @@ bool NVMLCommunicationProvider::isDevicePowerManagementCapable( nvmlDevice_t dev
 			LOG( INFO ) << name << " with UUID: " << UUID << " doesn't support power management.";
 		}
 	}
-	catch ( NVMLError& ex ) {
+	catch ( const NVMLError& ex ) {
 		LOG( INFO ) << "Failed to get power management mode for device with handle: " << deviceHandle
 					<< " exception: " << ex.info();
 		return false;

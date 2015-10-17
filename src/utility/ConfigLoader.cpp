@@ -29,7 +29,7 @@ void ConfigLoader::initialize( std::string cfgFilePath ) {
 	try {
 		parse(file);
 	}
-	catch ( std::exception& ex ) {
+	catch ( const std::exception& ex ) {
 		throw utility::RuntimeError( "ConfigLoader::initialize", "Error while parsing config file: " + std::string( ex.what() ) );
 	}
 
@@ -96,7 +96,7 @@ T ConfigLoader::errorCheckWrapper( std::function<T( const std::string& )> functi
 	try {
 		return function( key );
 	}
-	catch ( std::out_of_range& ex ) {
+	catch ( const std::out_of_range& ex ) {
 		LOG ( ERROR ) << "Error while trying to get value of key: " << key << ". ";
 		throw InvalidKeyException( "ConfigLoader::get" + typeName + "Param", "Key not found: " + key );
 	}
@@ -106,7 +106,7 @@ T ConfigLoader::errorCheckWrapper( std::function<T( const std::string& )> functi
 		res.appendExceptionInfo( ex );
 		throw res;
 	}
-	catch ( std::invalid_argument& ex ) {
+	catch ( const std::invalid_argument& ex ) {
 		LOG ( ERROR ) << "Error while trying to convert value of key: " << key << " to type: " << typeName << ". " << ex.what();
 		throw InvalidKeyException( "ConfigLoader::get" + typeName + "Param", "Conversion from string failed for: " + key );
 	}

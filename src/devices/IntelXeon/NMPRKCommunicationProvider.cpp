@@ -12,7 +12,7 @@
 #include "utility/Logging.hpp"
 
 // IMPORTANT NOTE: nmprkException MUST BE caught by pointer, not by reference
-// I don't know why it's the case but it doesn't seem to work when we catch it by reference
+// I don't know why it's the case but it doesn't seem to work when we catch ( const constconst it by reference
 
 namespace devices {
 
@@ -72,8 +72,8 @@ bool NMPRKCommunicationProvider::shutdown( void ) {
 	}
 }
 
-std::map<std::string, std::string> NMPRKCommunicationProvider::getInfo( void ) { //TODO: clean up
-	std::map<std::string, std::string> info;
+DeviceInformation::InfoContainer NMPRKCommunicationProvider::getInfo( void ) {
+	DeviceInformation::InfoContainer info;
 
 	try {
 		auto capabilities = translation::getCapabilities( &d );
@@ -137,7 +137,7 @@ std::map<std::string, std::string> NMPRKCommunicationProvider::getInfo( void ) {
 		info[ "MaxStatisticsReportingPeriod" ] = std::to_string( capabilities->maxStatReportPeriod );
 		info[ "MinStatisticsReportingPeriod" ] = std::to_string( capabilities->minStatReportPeriod );
 	}
-	catch( const nmprkException* e ) {
+	catch ( const nmprkException* e ) {
 		throw NMPRKError{ "NMPRKCommunicationProvider::getInfo", e };
 	}
 

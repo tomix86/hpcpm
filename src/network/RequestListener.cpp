@@ -24,7 +24,7 @@ void RequestListener::start( void ) {
 		try {
 			listener.open().wait();
 		}
-		catch ( std::exception& ex ) {
+		catch ( const std::exception& ex ) {
 			throw ListenerLaunchFailedException( "RequestListener::start", ex.what() );
 		}
 	}

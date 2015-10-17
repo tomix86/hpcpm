@@ -34,7 +34,7 @@ public:
 			dev.setPowerLimit( arg );
 			result->status = "Success";
 		}
-		catch ( devices::ArgumentOutOfBounds& ex ) {
+		catch ( const devices::ArgumentOutOfBounds& ex ) {
 			result->status = "Failure: " + ex.message();
 		}
 

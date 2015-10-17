@@ -12,8 +12,6 @@ DEFINE_RUNTIME_ERROR_DERIVATIVE( NVMLError );
 
 class NVMLCommunicationProvider {
 public:
-	typedef std::map<std::string, std::string> InfoContainer;
-
 	NVMLCommunicationProvider( DeviceIdentifier::idType deviceId );
 
 	static bool init( void );

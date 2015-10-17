@@ -22,13 +22,13 @@ public:
 		return std::vector<nvmlDevice_t>{ reinterpret_cast<nvmlDevice_t>( 0 ), reinterpret_cast<nvmlDevice_t>( 1 ), reinterpret_cast<nvmlDevice_t>( 2 ) };
 	}
 
-	static devices::DeviceIdentifier::idType getPrimaryId( nvmlDevice_t deviceHandle ) {
+	static DeviceIdentifier::idType getPrimaryId( nvmlDevice_t deviceHandle ) {
 		LOG( DEBUG ) << "MOCK NVML returning primary id for device: " << deviceHandle;
 		return getUUID ( deviceHandle );
 	}
 
-	static std::map<std::string, std::string> getInfo( nvmlDevice_t deviceHandle ) {
-		std::map<std::string, std::string> info;
+	static DeviceInformation::InfoContainer getInfo( nvmlDevice_t deviceHandle ) {
+		DeviceInformation::InfoContainer info;
 
 		info[ "ComputeMode" ] = "Default";
 		info[ "CurrentECCMode" ] = "Enabled";

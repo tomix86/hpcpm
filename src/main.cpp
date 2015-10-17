@@ -44,15 +44,15 @@ int main ( int argc, const char** argv ) {
 		LOG ( INFO ) << "Exiting with code: " << exitCode;
 		return exitCode;
     }
-    catch ( utility::Exception& ex ) {
+	catch ( const utility::Exception& ex ) {
 		LOG ( FATAL ) << "Unhandled exception: " << ex.traceWithMessages();
         return utility::EXIT_UNHANDLED_EXCEPTION;
     }
-    catch ( std::exception& ex ) {
+	catch ( const std::exception& ex ) {
 		LOG ( FATAL ) << "Unhandled exception: " << ex.what();
         return utility::EXIT_UNHANDLED_EXCEPTION;
     }
-    catch ( ... ) {
+	catch ( ... ) {
 		LOG ( FATAL ) << "Unknown exception, terminating!";
         return utility::EXIT_UNKNOWN_EXCEPTION;
     }

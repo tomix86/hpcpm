@@ -49,7 +49,7 @@ http_response Handler::process( http_request request ) {
 		response = serializeQueriesResults( results );
 		response.set_status_code( status_code::OK );
 	}
-	catch ( web::json::json_exception& ex ) {
+	catch ( const web::json::json_exception& ex ) {
 		response.set_status_code( status_code::InternalError );
 		response.set_body( ex.what() );
 	}
@@ -63,22 +63,22 @@ http_response Handler::handleExceptions( void ) {
 	try {
 		throw;
 	}
-	catch ( MalformedQueryException& ex ) {
+	catch ( const MalformedQueryException& ex ) {
 		response.set_status_code( status_code::BadRequest );
 		response.set_body( ex.info() );
 		LOG ( WARNING ) << ex.traceWithMessages();
 	}
-	catch ( devices::DeviceNotFoundException& ex ) {
+	catch ( const devices::DeviceNotFoundException& ex ) {
 		response.set_status_code( status_code::BadRequest );
 		response.set_body( ex.info() );
 		LOG ( WARNING ) << ex.traceWithMessages();
 	}
-	catch ( utility::Exception& ex ) {
+	catch ( const utility::Exception& ex ) {
 		response.set_status_code( status_code::InternalError );
 		response.set_body( ex.info() );
 		LOG ( WARNING ) << ex.traceWithMessages();
 	}
-	catch ( std::exception& ex ) {
+	catch ( const std::exception& ex ) {
 		response.set_status_code( status_code::InternalError );
 		LOG ( WARNING ) << "std::exception with description: \"" << ex.what() << "\" thrown when processing a request";
 		el::base::debug::StackTrace();

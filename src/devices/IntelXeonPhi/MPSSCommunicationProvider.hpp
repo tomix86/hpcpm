@@ -29,9 +29,9 @@ public:
 
 	static std::vector<int> listDevices( void );
 
-	static devices::DeviceIdentifier::idType getPrimaryId( int index );
+	static DeviceIdentifier::idType getPrimaryId( int index );
 
-	static std::map<std::string, std::string> getInfo( int index );
+	static DeviceInformation::InfoContainer getInfo( int index );
 
 private:
 	MicDevicePtr deviceHandle;
@@ -56,10 +56,10 @@ private:
 	static const unsigned TIME_WINDOW_0 = 50; //TODO: should we use constant values for time window?
 	static const unsigned TIME_WINDOW_1 = 300; // maybe we should pull them from config file?
 
-	static void fillVersionInfo( std::map<std::string, std::string>& info, mic_device* dev );
-	static void fillProcessorInfo( std::map<std::string, std::string>& info, mic_device* dev );
-	static void fillPciConfigInfo( std::map<std::string, std::string>& info, mic_device* dev );
-	static void fillMemoryInfo( std::map<std::string, std::string>& info, mic_device* dev );
+	static void fillVersionInfo( DeviceInformation::InfoContainer& info, mic_device* dev );
+	static void fillProcessorInfo( DeviceInformation::InfoContainer& info, mic_device* dev );
+	static void fillPciConfigInfo( DeviceInformation::InfoContainer& info, mic_device* dev );
+	static void fillMemoryInfo( DeviceInformation::InfoContainer& info, mic_device* dev );
 
 	static void checkMPSSErrors( const char* source, int status );
 

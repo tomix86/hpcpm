@@ -34,6 +34,10 @@ protected:
 
 	virtual http_response serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr> result );
 
+	constexpr static const char* NvidiaTeslaIdRegex = "GPU-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
+	constexpr static const char* IntelXeonIdRegex = "[0-9]";
+	constexpr static const char* IntelXeonPhiIdRegex = "[a-f0-9]{32}";
+
 private:
 	http_response process( http_request request );
 

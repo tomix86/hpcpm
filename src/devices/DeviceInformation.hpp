@@ -78,7 +78,7 @@ public:
 	// Primary device identifier
 	DeviceIdentifier identifier;
 
-	typedef std::map<std::string, std::string> InfoContainer; //TODO: make use of it in other classes
+	typedef std::map<std::string, std::string> InfoContainer;
 
     std::map<std::string, std::string> entries;
 };

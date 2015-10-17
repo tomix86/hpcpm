@@ -29,7 +29,7 @@ void ArgsParser::parse( int argc, const char** argv ) {
 				processArg( a );
 			}
 		}
-		catch ( ArgsParserException &ex ) {
+		catch ( const ArgsParserException &ex ) {
 			std::cerr << ex.info() << std::endl;
 			showUsageInfo();
 			throw;
@@ -108,7 +108,7 @@ Option* ArgsParser::getLongOption( std::string optionName ) {
 	try {
 		return &options.at( optionName );
 	}
-	catch ( std::out_of_range ) {
+	catch ( const std::out_of_range ) {
 		throw InvalidOptionException( "ArgsParser::ArgsParser", "There's no such option: " + optionName );
 	}
 }

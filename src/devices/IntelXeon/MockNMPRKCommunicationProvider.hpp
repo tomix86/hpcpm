@@ -20,7 +20,7 @@ public:
 		return true;
 	}
 
-	static std::map<std::string, std::string> getInfo( void ) {
+	static DeviceInformation::InfoContainer getInfo( void ) {
 		LOG( DEBUG ) << "MOCK NMPRK returning info";
 		return {};
 	}

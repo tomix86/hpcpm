@@ -35,4 +35,14 @@ bool isNotOneOf( const T& value, std::initializer_list<T> set ) {
 
 std::vector<std::string> tokenizeString( std::string input, char separator );
 
+template <typename T>
+std::string toHexString( T value ) {
+	static_assert( std::is_integral<T>::value, "Template argument must be of integral type." );
+
+	std::ostringstream ss;
+	ss << std::setfill( '0' ) << std::hex << std::setw( 2 * sizeof( T ) ) << static_cast<unsigned long long>( value ) ;
+
+	return ss.str();
+}
+
 } // namespace utility

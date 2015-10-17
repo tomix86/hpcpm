@@ -30,7 +30,7 @@ public:
 				devPtr->info.entries = CommunicationProvider::getInfo( handle );
 			}
 		}
-		catch ( devices::NVMLError& ex ) {
+		catch ( const devices::NVMLError& ex ) {
 			LOG( ERROR ) << "Failed to acquire device list from NVML, will return an empty one."
 				<< " Following exception was thrown: " << ex.info();
 			list.clear();

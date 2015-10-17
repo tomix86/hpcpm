@@ -40,7 +40,7 @@ public:
 
 //	static devices::DeviceIdentifier::idType getPrimaryId( nvmlDevice_t deviceHandle );
 
-	static std::map<std::string, std::string> getInfo( void );
+	static DeviceInformation::InfoContainer getInfo( void );
 
 	unsigned getCurrentPowerLimit( void ) const;
 

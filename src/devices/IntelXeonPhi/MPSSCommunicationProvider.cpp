@@ -5,6 +5,7 @@
 #include <numeric>
 #include <sstream>
 #include "MPSSCommunicationProvider.hpp"
+#include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
 #define S( x ) #x
@@ -66,12 +67,12 @@ std::vector<int> MPSSCommunicationProvider::listDevices( void ) {
 	return list;
 }
 
-devices::DeviceIdentifier::idType MPSSCommunicationProvider::getPrimaryId( int index ) {
+DeviceIdentifier::idType MPSSCommunicationProvider::getPrimaryId( int index ) {
 	return getUUID( index );
 }
 
-std::map<std::string, std::string> MPSSCommunicationProvider::getInfo( int index ) {
-	std::map<std::string, std::string> info;
+DeviceInformation::InfoContainer MPSSCommunicationProvider::getInfo( int index ) {
+	DeviceInformation::InfoContainer info;
 	auto devPtr = getDeviceByIndex( index );
 	auto dev = devPtr.get();
 
@@ -103,7 +104,7 @@ std::map<std::string, std::string> MPSSCommunicationProvider::getInfo( int index
 	return info;
 }
 
-void MPSSCommunicationProvider::fillVersionInfo( std::map<std::string, std::string>& info, mic_device* dev ) {
+void MPSSCommunicationProvider::fillVersionInfo( DeviceInformation::InfoContainer& info, mic_device* dev ) {
 	mic_version_info* version;
 	MPSS_ERROR_CHECK( proxy.mic_get_version_info( dev, &version ) );
 	std::shared_ptr<mic_version_info> versionRAIIGuard{ version, []( mic_version_info* ptr ) { proxy.mic_free_version_info( ptr ); } };
@@ -117,7 +118,7 @@ void MPSSCommunicationProvider::fillVersionInfo( std::map<std::string, std::stri
 	info[ "uOSVersion" ] = stringBuf;
 }
 
-void MPSSCommunicationProvider::fillProcessorInfo( std::map<std::string, std::string>& info, mic_device* dev ) {
+void MPSSCommunicationProvider::fillProcessorInfo( DeviceInformation::InfoContainer& info, mic_device* dev ) {
 	mic_processor_info* processorInfo;
 	MPSS_ERROR_CHECK( proxy.mic_get_processor_info( dev, &processorInfo ) );
 	std::shared_ptr<mic_processor_info> processorInfoRAIIGuard{ processorInfo, []( mic_processor_info* ptr ) { proxy.mic_free_processor_info( ptr ); } };
@@ -141,48 +142,29 @@ void MPSSCommunicationProvider::fillProcessorInfo( std::map<std::string, std::st
 	info[ "ProcessorStepping" ] = stringBuf;
 }
 
-void MPSSCommunicationProvider::fillPciConfigInfo( std::map<std::string, std::string>& info, mic_device* dev ) {
-	//TODO: sposob wypisywania tych wszystkich id? w examples.c jest uzywany hex, sprawdzic po odpaleniu na aplu
+void MPSSCommunicationProvider::fillPciConfigInfo( DeviceInformation::InfoContainer& info, mic_device* dev ) {
 	mic_pci_config* pciConfig;
 	MPSS_ERROR_CHECK( proxy.mic_get_pci_config( dev, &pciConfig ) );
 	std::shared_ptr<mic_pci_config> pciConfigRAIIGuard{ pciConfig, []( mic_pci_config* ptr ) { proxy.mic_free_pci_config( ptr ); } };
 
 	std::uint16_t vendorId;
 	MPSS_ERROR_CHECK( proxy.mic_get_vendor_id( pciConfig, &vendorId ) );
-	info[ "VendorId" ] = std::to_string( vendorId );
+	info[ "VendorId" ] = utility::toHexString( vendorId );
 
 	std::uint16_t deviceId;
 	MPSS_ERROR_CHECK( proxy.mic_get_device_id( pciConfig, &deviceId ) );
-	info[ "DeviceId" ] = std::to_string( deviceId );
+	info[ "DeviceId" ] = utility::toHexString( deviceId );
 
 	std::uint8_t revisionId;
 	MPSS_ERROR_CHECK( proxy.mic_get_revision_id( pciConfig, &revisionId ) );
-	info[ "RevisionId" ] = std::to_string( revisionId );
+	info[ "RevisionId" ] = utility::toHexString( revisionId );
 
 	std::uint16_t subsystemId;
 	MPSS_ERROR_CHECK( proxy.mic_get_subsystem_id( pciConfig, &subsystemId ) );
-	info[ "SubsysId" ] = std::to_string( subsystemId );
-
-/*	std::uint32_t linkWidth;
-	// Has to be su to run this, else there is access violation error
-	MPSS_ERROR_CHECK( proxy.mic_get_link_width( pciConfig, &linkWidth ) );
-	info[ "LinkWidth" ] = std::to_string( linkWidth );
-
-	std::uint32_t payload;
-	MPSS_ERROR_CHECK( proxy.mic_get_max_payload( pciConfig, &payload ) );
-	info[ "MaxPayload" ] = std::to_string( payload );
-
-	std::uint32_t readreq;
-	MPSS_ERROR_CHECK( proxy.mic_get_max_readreq( pciConfig, &readreq ) );
-	info[ "MaxReadRequests" ] = std::to_string( readreq );
-
-	char stringBuf[ MAX_NAME_LENGTH ];
-	size_t size = MAX_NAME_LENGTH;
-	MPSS_ERROR_CHECK( proxy.mic_get_link_speed( pciConfig, stringBuf, &size ) );
-	info[ "LinkSpeed" ] = stringBuf;*/
+	info[ "SubsysId" ] = utility::toHexString( subsystemId );
 }
 
-void MPSSCommunicationProvider::fillMemoryInfo( std::map<std::string, std::string>& info, mic_device* dev ) {
+void MPSSCommunicationProvider::fillMemoryInfo( DeviceInformation::InfoContainer& info, mic_device* dev ) {
 	mic_device_mem* memoryInfo;
 	MPSS_ERROR_CHECK( proxy.mic_get_memory_info(dev, &memoryInfo ) );
 	std::shared_ptr<mic_device_mem> memoryInfoRAIIGuard{ memoryInfo, []( mic_device_mem* ptr ) { proxy.mic_free_memory_info( ptr ); } };
@@ -284,13 +266,12 @@ std::string MPSSCommunicationProvider::getUUID( int index ) {
 
 	MPSS_ERROR_CHECK( proxy.mic_get_uuid( devPtr.get(), UUID, &size ) != E_MIC_SUCCESS );
 
-	std::ostringstream UUIDss;
-	UUIDss << std::setfill( '0' ) << std::hex;
+	std::string UUIDstring;
 	for ( unsigned i = 0; i < size; ++i ) {
-		UUIDss << std::setw( 2 ) << ( static_cast<int>( UUID[ i ] ) & 0x000000ff ); //TODO: czy ten and potrzebny
+		UUIDstring += utility::toHexString( UUID[ i ] );
 	}
 
-	return UUIDss.str();
+	return UUIDstring;
 }
 
 } // namespace devices

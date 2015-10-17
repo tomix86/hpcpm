@@ -28,15 +28,15 @@ public:
 		return std::vector<int>{ 0 };
 	}
 
-	static devices::DeviceIdentifier::idType getPrimaryId( int index ) {
+	static DeviceIdentifier::idType getPrimaryId( int index ) {
 		LOG( DEBUG ) << "MOCK MPSS returning primary id for device: " << index;
 		return "af321e60ddd21877bbd8dc7128ff66f3";
 	}
 
-	static std::map<std::string, std::string> getInfo( int index ) {
+	static DeviceInformation::InfoContainer getInfo( int index ) {
 		LOG( DEBUG ) << "MOCK MPSS returning info for device: " << index;
 
-		std::map<std::string, std::string> info;
+		DeviceInformation::InfoContainer info;
 		info[ "CoresCount" ] = "60";
 		info[ "DeviceId" ] = "8784";
 		info[ "ECCMode" ] = "1";

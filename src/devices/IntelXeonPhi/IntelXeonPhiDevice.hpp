@@ -28,7 +28,7 @@ public:
 				devPtr->info.entries = CommunicationProvider::getInfo( handle );
 			}
 		}
-		catch ( devices::MPSSError& ex ) {
+		catch ( const devices::MPSSError& ex ) {
 			LOG( ERROR ) << "Failed to acquire device list from MPSS, will return an empty one."
 				<< " Following exception was thrown: " << ex.info();
 

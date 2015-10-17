@@ -27,11 +27,11 @@ QueryHandler::Result::Ptr QueryExecutor::execute( Query query ) {
 	try {
 		return queryHandlers.at( query.getType() )->handle( query );
 	}
-	catch ( std::out_of_range& ex ) {
+	catch ( const std::out_of_range& ex ) {
 		LOG ( ERROR ) << "Invalid query type";
 		return std::make_shared<QueryHandler::NullResult>();
 	}
-	catch ( utility::RuntimeError& ex ) {
+	catch ( const utility::RuntimeError& ex ) {
 		LOG ( ERROR ) << "Query execution failed, exception thrown: " << ex.info();
 		return std::make_shared<QueryHandler::ResultWithError>( ex.info() );
 	}
