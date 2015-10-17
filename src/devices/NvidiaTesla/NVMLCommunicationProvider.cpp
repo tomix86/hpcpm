@@ -45,14 +45,15 @@ bool NVMLCommunicationProvider::shutdown( void ) {
 	try {
 		NVML_ERROR_CHECK( proxy.nvmlShutdown() );
 		LOG ( INFO ) << "...NVML Communication Provider shut down";
+
+		if ( !proxy.shutdown() ) {
+			return false;
+		}
+
 		return true;
 	}
 	catch ( NVMLError& err ) {
 		LOG( ERROR ) << err.info();
-		return false;
-	}
-
-	if ( !proxy.shutdown() ) {
 		return false;
 	}
 }

@@ -39,7 +39,7 @@ bool GetInfoFromDeviceHandler::isQueryStringWellFormed( std::string queryString 
 	using namespace boost::xpressive;
 
 	//TODO: change ID pattern when we have determined format of primary id for each of the devices
-	std::string singleEntry = "(IntelXeon|IntelXeonPhi|NvidiaTesla)=[A-Za-z0-9:]+";
+	std::string singleEntry = "(IntelXeon|IntelXeonPhi|NvidiaTesla)=[A-Za-z0-9:-]+";
 	std::string matchEmptyOrOneDevice = "(" + singleEntry + "){0,1}";
 	std::string matchMultipleDevices = singleEntry + "(&" + singleEntry + ")+";
 	// The line below should use sregex::compile, but it doesn't work for GCC4.8 due to a bug so we need a simple workaround

@@ -18,6 +18,10 @@ class Device {
 public:
 	typedef std::shared_ptr<Device> Ptr;
 
+	Device( void ) {
+		LOG( DEBUG ) << "Creating device: " << info.identifier;
+	}
+
 	virtual ~Device( void ) {
 		LOG( DEBUG ) << "Destroying device: " << info.identifier;
 	}
