@@ -10,8 +10,6 @@ namespace utility {
 std::map<std::string, std::string> ConfigLoader::config;
 bool ConfigLoader::configFileLoaded = false;
 
-
-
 void ConfigLoader::initialize( std::string cfgFilePath ) {
 	if ( configFileLoaded ) {
 		throw utility::LogicError( "ConfigLoader::initialize", "ConfigLoader was already initialized" );
@@ -37,8 +35,6 @@ void ConfigLoader::initialize( std::string cfgFilePath ) {
 	LOG( INFO )  << "Config file loaded.";
 }
 
-
-
 void ConfigLoader::parse( std::ifstream& file ) {
 	std::string str;
 	while ( std::getline( file, str ) ) {
@@ -49,43 +45,29 @@ void ConfigLoader::parse( std::ifstream& file ) {
 	}
 }
 
-
-
 std::string ConfigLoader::getStringParam( const std::string& key ) {
 	return errorCheckWrapper<std::string>( [] ( const std::string& k ) { return ConfigLoader::config.at( k ); }, key, "String" );
 }
-
-
 
 int ConfigLoader::getIntParam( const std::string& key ) {
 	return errorCheckWrapper<int>( [] ( const std::string& k ) { return std::stoi( ConfigLoader::config.at( k ) ); }, key, "Int" );
 }
 
-
-
 unsigned ConfigLoader::getUnsignedParam( const std::string& key ) {
 	return errorCheckWrapper<unsigned>( [] ( const std::string& k ) { return std::stoul( ConfigLoader::config.at( k ) ); }, key, "Int" );
 }
-
-
 
 bool ConfigLoader::getBoolParam( const std::string& key ) {
 	return errorCheckWrapper<bool>( [] ( const std::string& k ) { return toBool( ConfigLoader::config.at( k ) ); }, key, "Bool" );
 }
 
-
-
 float ConfigLoader::getFloatParam( const std::string& key ) {
 	return errorCheckWrapper<float>( [] ( const std::string& k ) { return std::stof( ConfigLoader::config.at( k ) ); }, key, "Float" );
 }
 
-
-
 double ConfigLoader::getDoubleParam( const std::string& key ) {
 	return errorCheckWrapper<double>( [] ( const std::string& k ) { return std::stod( ConfigLoader::config.at( k ) ); }, key, "Double" );
 }
-
-
 
 template <typename T>
 T ConfigLoader::errorCheckWrapper( std::function<T( const std::string& )> function, std::string key, std::string typeName ) {
