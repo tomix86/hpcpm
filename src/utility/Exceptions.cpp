@@ -1,65 +1,58 @@
 #include "Exceptions.hpp"
 
 namespace utility {
-	Exception::Exception(std::string src, std::string msg) {
+	Exception::Exception( std::string src, std::string msg ) {
 		exceptionInfo.emplace_back( src, msg );
 	}
 
-	std::string Exception::source(void) const {
+	std::string Exception::source( void ) const {
 		return exceptionInfo.back().first;
 	}
 
-	std::string Exception::message(void) const {
+	std::string Exception::message( void ) const {
 		return exceptionInfo.back().second;
 	}
 
-	std::string Exception::info(void) const {
+	std::string Exception::info( void ) const {
 		return source() + ": " + message();
 	}
 
-	std::string Exception::trace(void) const {
+	std::string Exception::trace( void ) const {
 		std::string result;
-		for (auto entry : exceptionInfo)
-			result += entry.first + " -> ";
-		result += "[..]";
+		for ( unsigned i = 0; i < exceptionInfo.size(); ++i ) {
+			result += exceptionInfo[ i ].first;
+			if ( i + 1 != exceptionInfo.size() ) {
+				result += " -> ";
+			}
+		}
 		return result;
 	}
 
-	std::string Exception::traceWithMessages(void) const {
+	std::string Exception::traceWithMessages( void ) const {
 		std::string result;
-		for (auto entry : exceptionInfo)
-			result += entry.first + '[' + entry.second + ']' + " -> ";
-		result += "[..]";
+		for ( unsigned i = 0; i < exceptionInfo.size(); ++i ) {
+			result += exceptionInfo[ i ].first + '[' + exceptionInfo[ i ].second + ']';
+			if ( i + 1 != exceptionInfo.size() ) {
+				result += " -> ";
+			}
+		}
 		return result;
 	}
 
-	Exception& Exception::operator<<(infoEntry entry) {
-		exceptionInfo.push_back(entry);
-		return *this;
+	void Exception::appendExceptionInfo( const Exception& other ) {
+		exceptionInfo.insert( exceptionInfo.begin(), other.exceptionInfo.begin(), other.exceptionInfo.end() );
 	}
 
-	void Exception::rethrow(void) const {
-		throw *this;
+	RuntimeError::RuntimeError( std::string src, std::string msg ) :
+		Exception( src, msg ) {
 	}
 
-	void Exception::appendExceptionInfo(Exception& other) {
-		exceptionInfo.splice(exceptionInfo.begin(), std::move(other.exceptionInfo));
+	LogicError::LogicError( std::string src, std::string msg ) :
+		Exception( src, msg ) {
 	}
 
-	RuntimeError::RuntimeError(std::string src, std::string msg) :
-		Exception(src, msg) {
-	}
+	InvalidArgument::InvalidArgument( std::string src, std::string msg ) :
+		LogicError( src, msg ) {
 
-	LogicError::LogicError(std::string src, std::string msg) :
-		Exception(src, msg) {
-	}
-
-	InvalidArgument::InvalidArgument(std::string src, std::string msg) :
-		LogicError(src, msg) {
-
-	}
-
-	std::pair<std::string, std::string> entry(std::string handlerName, std::string message) {
-		return std::make_pair(handlerName, message);
 	}
 } // namespace utility

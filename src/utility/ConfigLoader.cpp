@@ -100,7 +100,7 @@ T ConfigLoader::errorCheckWrapper( std::function<T( const std::string& )> functi
 		LOG ( ERROR ) << "Error while trying to get value of key: " << key << ". ";
 		throw InvalidKeyException( "ConfigLoader::get" + typeName + "Param", "Key not found: " + key );
 	}
-	catch ( utility::InvalidArgument& ex ) {
+	catch ( const utility::InvalidArgument& ex ) {
 		LOG ( ERROR ) << "Error while trying to convert value of key: " << key << " to type: " << typeName << ". " << ex.info();
 		auto res = InvalidKeyException( "ConfigLoader::get" + typeName + "Param", "Conversion from string failed for: " + key );
 		res.appendExceptionInfo( ex );
