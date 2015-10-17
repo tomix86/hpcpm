@@ -14,15 +14,19 @@
         <h1>Node: {{selectedNode}}</h1>
     </div>
     <div>
-        <div>
+        <div style="padding-bottom: 30px">
             <div class="col-md-12 row">
               <dl class="dl-horizontal" ng-repeat="(key, value) in simpleDetails">
                 <dt>{{key}}</dt>
                 <dd>{{value}}</dd>
               </dl>
-              <button class="btn btn-danger btn-xs" type="button"
-                      ng-click="openRawDetailsModal(nodeData)">Raw data
-              </button>
+              <dl class="dl-horizontal">
+                <dd>
+                  <button class="btn btn-danger btn-xl" type="button"
+                        ng-click="openRawDetailsModal(rawNodeData)">Raw data
+                  </button>
+                </dd>
+              </dl>
             </div>
         </div>
         <table ng-table="tableParams" show-filter="true"
@@ -31,6 +35,11 @@
                 <td data-title="'Name'">{{device.info.Name}}</td>
                 <td data-title="'Type'">{{device.Type}}</td>
                 <td data-title="'ID'">{{device.id}}</td>
+                <td data-title="'Current power limit'">{{device.power_limit}}</td>
+                <td data-title="'Action'">
+                    <button class="btn btn-danger btn-xs" type="button"
+                        ng-click="openSetPowerLimitModal(selectedNode, device.id)">Set power limit</button>
+                </td>
               </tr>
         </table>
     </div>
@@ -44,11 +53,10 @@
     </div>
     <div class="modal-body">
         <div>
-            <div class="alert alert-info">
-                Raw data
-            </div>
             <div>
-              <pre pretty-json="nodeData" />
+              <pre style="outline: 1px solid #e9e9e9; padding: 5px; margin: 5px;">
+                <json-formatter json="nodeData.backend_info" open="1" ></json-formatter>
+              </pre>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-warning" type="button" ng-click="close()">Close</button>
@@ -57,6 +65,31 @@
     </div>
 
 </script>
+
+<script type="text/ng-template" id="PowerLimitModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Set power limit</h3>
+    </div>
+    <div class="modal-body">
+        <div>
+            <form name="powerLimitForm" novalidate>
+                <div class="form-group" ng-class="{ 'has-error': powerLimitForm.powerLimit.$invalid }">
+                    <label class="control-label">New power limit</label>
+                    <input type="text" name="powerLimit" class="form-control" ng-model="powerLimit" required/>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" type="button" ng-disabled="powerLimitForm.$invalid"
+                            ng-click="setPowerLimit()">Set
+                    </button>
+                    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</script>
+
 
 <script type="text/ng-template" id="/NodeTable.html">
       <div class="col-md-8" style="padding-top: 30px">
@@ -169,7 +202,8 @@
     </div>
 </div>
 
-<script src="bower_components/ng-prettyjson/dist/ng-prettyjson.min.js"></script>
+
+<script src="bower_components/json-formatter/dist/json-formatter.js"></script>
 <script src="bower_components/angular-animate/angular-animate.min.js"></script>
 <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
 <script src="bower_components/angular-resource/angular-resource.min.js"></script>
@@ -188,11 +222,12 @@
 <script src="js/RemoveNodeController.js"></script>
 <script src="js/NodeDetailsController.js"></script>
 <script src="js/NodeDetailsModalController.js"></script>
+<script src="js/PowerLimitModalController.js"></script>
 
 <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="bower_components/ng-table/dist/ng-table.min.css">
-<link rel="stylesheet" type="text/css" href="bower_components/angularjs-toaster/toaster.min.css"/>
-<link rel="stylesheet" type="text/css" href="bower_components/ng-prettyjson/dist/ng-prettyjson.min.css">
+<link rel="stylesheet" type="text/css" href="bower_components/angularjs-toaster/toaster.min.css">
+<link rel="stylesheet" type="text/css" href="bower_components/json-formatter/dist/json-formatter.css">
 
 </body>
 </html>

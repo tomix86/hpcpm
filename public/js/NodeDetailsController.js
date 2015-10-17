@@ -18,13 +18,30 @@ function nodeDetailsController($scope, $rootScope, DataService, $stateParams, Ng
       });
     };
 
+    $scope.openSetPowerLimitModal = function(name, id) {
+      var modalInstance = $uibModal.open({
+          animation: true,
+          templateUrl: 'PowerLimitModal.html',
+          controller: 'PowerLimitModalController',
+          resolve: {
+              nodeName: function () {
+                  return name;
+              },
+              deviceId: function () {
+                  return id;
+              }
+          }
+      });
+    };
+
     $scope.tableParams = new NgTableParams({count: 10}, {
         counts: [10, 20, 40, 80, 100],
         getData: function ($defer, params) {
             DataService.getComputationNode($stateParams.node_name).then(function (response) {
                 $scope.nodeData = response;
+                $scope.rawNodeData = angular.copy(response);
+                $scope.getPowerLimitsForDevices();
                 $defer.resolve($scope.nodeData);
-
                 $scope.simpleDetails = {
                   'Nickname': $scope.nodeData.name,
                   'Address': $scope.nodeData.address,
@@ -34,10 +51,23 @@ function nodeDetailsController($scope, $rootScope, DataService, $stateParams, Ng
                   'Version': $scope.nodeData.backend_info.version,
                   'Machine architecture': $scope.nodeData.backend_info.machine,
                   'Release': $scope.nodeData.backend_info.release,
-                }
+                };
 
             });
         }
 
+    });
+
+    $scope.getPowerLimitsForDevices = function() {
+        $scope.nodeData.backend_info.devices.forEach(function(device) {
+          DataService.getDevicePowerLimit($scope.nodeData.name, device.id).then(function (response) {
+            device.power_limit = response.power_limit;
+          });
+        });
+
+    };
+
+    $scope.$on('RefreshNodeDetails', function () {
+        $scope.tableParams.reload();
     });
 };

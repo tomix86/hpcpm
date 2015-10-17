@@ -1,4 +1,4 @@
-var app = angular.module('hpcpm-ui', ['restangular', 'ui.router', "ngTable", "ui.bootstrap", "toaster", 'ngPrettyJson']);
+var app = angular.module('hpcpm-ui', ['restangular', 'ui.router', "ngTable", "ui.bootstrap", "toaster", 'jsonFormatter']);
 
 
 app.config([
@@ -49,7 +49,6 @@ function nodesController($scope, $filter, NgTableParams, DataService, $uibModal,
         getData: function ($defer, params) {
             DataService.getAllComputationNodes(params.sorting(), params.filter()).then(function (response) {
                 var data = response;
-
                 data = params.sorting() ? data = $filter('orderBy')(data, params.orderBy()) : data;
 
                 $defer.resolve(data.slice((params.page() - 1) * params.count(), params.page() * params.count()));
