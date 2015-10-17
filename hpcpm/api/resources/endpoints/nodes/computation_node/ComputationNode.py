@@ -10,7 +10,7 @@ from hpcpm.api.helpers.utils import abort_when_port_invalid
 from hpcpm.api.helpers.constants import COMPUTATION_NODE_PARAM_NAME, COMPUTATION_NODE_PARAM_ADDRESS, \
     COMPUTATION_NODE_PARAM_PORT, COMPUTATION_NODE_ADDED_RESPONSE, COMPUTATION_NODE_NOT_FOUND_RESPONSE, \
     COMPUTATION_NODE_FETCHED_RESPONSE, COMPUTATION_NODE_PUT_NOT_FOUND_RESPONSE
-from hpcpm.api.helpers.requests import get_devices_list, delete_power_limit
+from hpcpm.api.helpers.requests import get_node_information, delete_power_limit
 
 
 class ComputationNode(Resource):
@@ -38,7 +38,7 @@ class ComputationNode(Resource):
             log.warning('Node with IP: %s:%s is present in database: %s', address, port, node_by_ip)
 
         try:
-            response = get_devices_list(address, port)
+            response = get_node_information(address, port)
         except requests.exceptions.ConnectionError:
             log.error('Connection could not be established to %s:%s', address, port)
             abort(406)

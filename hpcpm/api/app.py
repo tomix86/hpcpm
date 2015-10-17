@@ -37,6 +37,9 @@ def start_request(*_):
 
 @flask_app.after_request
 def end_request(response_class):
+    response_class.headers.add('Access-Control-Allow-Origin', '*')
+    response_class.headers.add('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE')
+    response_class.headers.add('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
     request.end_time = time.time()
     request_processing_time = '{0:.6f}'.format(request.end_time - request.start_time)
 

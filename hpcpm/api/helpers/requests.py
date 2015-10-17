@@ -1,8 +1,8 @@
 import requests
 
 
-def get_devices_list(address, port):
-    devices_query = str.format('http://{}:{}/devices_list', address, port)
+def get_node_information(address, port):
+    devices_query = str.format('http://{}:{}/node_information', address, port)
     return requests.get(devices_query)
 
 

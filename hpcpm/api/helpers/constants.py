@@ -45,6 +45,33 @@ COMPUTATION_NODE_ADDED_RESPONSE = {
     'message': 'Node added successfully'
 }
 
+ALL_COMPUTATION_NODES_SORT_PARAM = {
+    'name': 'sort',
+    'description': 'Records sorting order',
+    'required': False,
+    'allowMultiple': False,
+    'dataType': 'string',
+    'paramType': 'query'
+}
+
+ALL_COMPUTATION_NODES_FILTER_PARAM = {
+    'name': 'filter',
+    'description': 'Node name filter',
+    'required': False,
+    'allowMultiple': False,
+    'dataType': 'string',
+    'paramType': 'query'
+}
+
+ALL_COMPUTATION_NODES_PAGINATION_PARAM = {
+    'name': 'pagination',
+    'description': 'Database pagination',
+    'required': False,
+    'allowMultiple': False,
+    'dataType': 'string',
+    'paramType': 'query'
+}
+
 DEVICE_IDENTIFIER_PARAM = {
     'name': 'device_id',
     'description': 'Device identifier',
