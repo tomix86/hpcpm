@@ -3,7 +3,7 @@
 namespace devices {
 
 NVMLProxy::NVMLProxy( void ) :
-RLLProxy{ "libnvidia-ml.so" } {
+		RLLProxy{ "libnvidia-ml.so" } {
 }
 
 bool NVMLProxy::loadSymbols( void ) {

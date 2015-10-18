@@ -7,11 +7,11 @@ bool nullValidator( std::string ) {
 }
 
 Option::Option( std::string description, char shortName ) :
-shortName( shortName ),
-description( description ),
-callback( nullptr ),
-validator( &nullValidator ),
-required( false ) {
+		shortName( shortName ),
+		description( description ),
+		callback( nullptr ),
+		validator( &nullValidator ),
+		required( false ) {
 }
 
 

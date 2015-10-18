@@ -5,8 +5,8 @@ namespace network {
 namespace handlers {
 
 GetInfoFromDeviceHandler::GetInfoFromDeviceHandler( core::QueryExecutor::Ptr queryExecutor, core::Query::Type queryType ) :
-Handler{ queryExecutor },
-queryType{ queryType } {
+		Handler{ queryExecutor },
+		queryType{ queryType } {
 }
 
 GetInfoFromDeviceHandler::~GetInfoFromDeviceHandler( void ) {

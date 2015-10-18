@@ -25,14 +25,14 @@ private:
 class SetPowerLimitHandler : public SetDeviceParamHandler {
 public:
 	SetPowerLimitHandler( core::QueryExecutor::Ptr queryExecutor ) :
-	SetDeviceParamHandler{ queryExecutor, core::Query::Type::SetPowerLimit, "[0-9]+" } {
+			SetDeviceParamHandler{ queryExecutor, core::Query::Type::SetPowerLimit, "[0-9]+" } {
 	}
 };
 
 class SetPowerLimitPercentageHandler : public SetDeviceParamHandler {
 public:
 	SetPowerLimitPercentageHandler( core::QueryExecutor::Ptr queryExecutor ) :
-	SetDeviceParamHandler{ queryExecutor, core::Query::Type::SetPowerLimitPercentage, "(0|1|0\\.[0-9]{1,3})" } {
+			SetDeviceParamHandler{ queryExecutor, core::Query::Type::SetPowerLimitPercentage, "(0|1|0\\.[0-9]{1,3})" } {
 	}
 };
 

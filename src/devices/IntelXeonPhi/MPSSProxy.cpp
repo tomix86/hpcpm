@@ -3,7 +3,7 @@
 namespace devices {
 
 MPSSProxy::MPSSProxy( void ) :
-RLLProxy{ "libmicmgmt.so" } {
+		RLLProxy{ "libmicmgmt.so" } {
 }
 
 bool MPSSProxy::loadSymbols( void ) {

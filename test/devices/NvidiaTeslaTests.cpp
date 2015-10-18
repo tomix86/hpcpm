@@ -20,7 +20,7 @@ public:
 class NvidiaTeslaDeviceAccessor : public NvidiaTeslaDevice<MockTeslaCommunicationProvider> {
 public:
 	NvidiaTeslaDeviceAccessor( void ) :
-	NvidiaTeslaDevice<MockTeslaCommunicationProvider>{ "0" } {
+	NvidiaTeslaDevice<MockTeslaCommunicationProvider>{ "0", {} } {
 	}
 
 	using NvidiaTeslaDevice<MockTeslaCommunicationProvider>::communicationProvider;

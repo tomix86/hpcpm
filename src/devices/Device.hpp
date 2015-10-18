@@ -18,15 +18,16 @@ class Device {
 public:
 	typedef std::shared_ptr<Device> Ptr;
 
-	Device( void ) {
-		LOG( DEBUG ) << "Creating device: " << info.identifier;
+	Device( DeviceInformation&& info ) :
+			m_info( std::move( info ) ){
+		LOG( DEBUG ) << "Creating device: " << m_info.identifier;
 	}
 
 	virtual ~Device( void ) {
-		LOG( DEBUG ) << "Destroying device: " << info.identifier;
+		LOG( DEBUG ) << "Destroying device: " << m_info.identifier;
 	}
 
-	virtual const DeviceInformation& getInfo( void ) const { return info; }
+	virtual const DeviceInformation& getInfo( void ) const { return m_info; }
 
 	virtual void setPowerLimit( Power milliwatts ) = 0;
 	virtual void setPowerLimit( Percentage percentage ) = 0;
@@ -36,7 +37,7 @@ public:
 
 	virtual PowerLimitConstraints getPowerLimitConstraints( void ) const = 0;
 
-protected:
-	DeviceInformation info;
+private:
+	DeviceInformation m_info;
 };
 } // namespace devices

@@ -20,18 +20,18 @@ struct DeviceIdentifier {
 	idType id;
 
 	DeviceIdentifier( void ) :
-		type{ DeviceType::None },
-		id{ "None" } {
+			type{ DeviceType::None },
+			id{ "None" } {
 	}
 
 	DeviceIdentifier( DeviceType type, idType id ) :
-		type{ type },
-		id{ id } {
+			type{ type },
+			id{ id } {
 	}
 
 	DeviceIdentifier( std::string typeName, idType id ) :
-		type{ typeFromString( typeName ) },
-		id{ id } {
+			type{ typeFromString( typeName ) },
+			id{ id } {
 	}
 
 	std::string typeName( void ) const {

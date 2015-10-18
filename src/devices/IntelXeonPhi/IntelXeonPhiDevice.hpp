@@ -8,13 +8,8 @@ namespace devices {
 template <typename CommunicationProvider>
 class IntelXeonPhiDevice : public Device {
 public:
-	IntelXeonPhiDevice( DeviceIdentifier::idType id ) :
-		communicationProvider{ id } {
-			info.identifier = { DeviceType::IntelXeonPhi, id };
-		}
-
 	static std::vector<Device::Ptr> getAvailableDevices( void ) {
-		LOG( DEBUG ) << "Detecting XeonPhi devices";
+		LOG( DEBUG ) << "Detecting XeonPhi devices...";
 
 		std::vector<Device::Ptr> list;
 
@@ -23,9 +18,8 @@ public:
 
 			for ( auto handle : handles ) {
 				auto devId = CommunicationProvider::getPrimaryId( handle );
-				auto devPtr = std::make_shared<IntelXeonPhiDevice>( devId );
+				std::shared_ptr<IntelXeonPhiDevice> devPtr{ new IntelXeonPhiDevice{ devId, CommunicationProvider::getInfo( handle ) } };
 				list.push_back( devPtr );
-				devPtr->info.entries = CommunicationProvider::getInfo( handle );
 			}
 		}
 		catch ( const devices::MPSSError& ex ) {
@@ -47,7 +41,7 @@ public:
 	}
 
 	Power getCurrentPowerLimit( void ) const final {
-		return Power{};
+		return communicationProvider.getCurrentPowerLimit();
 	}
 
 	Percentage getCurrentPowerLimitPercentage( void ) const final {
@@ -58,8 +52,13 @@ public:
 		return PowerLimitConstraints{ 0, 0};
 	}
 
-private:
+protected:
 	CommunicationProvider communicationProvider;
+
+	IntelXeonPhiDevice( DeviceIdentifier::idType id, DeviceInformation::InfoContainer&& detailedInfo ) :
+			Device{ DeviceInformation{ { DeviceType::IntelXeonPhi, id }, std::move( detailedInfo ) } },
+			communicationProvider{ id } {
+	}
 };
 } // namespace devices
 

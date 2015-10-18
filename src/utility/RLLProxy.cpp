@@ -10,8 +10,8 @@ static_assert( sizeof( void* ) == sizeof( VoidFuncPtr ),
 	"Sizes of pointer-to-function and pointer-to-object doesn't match, proxy code will fail due to casts between those pointer being performed" );
 
 RLLProxy::RLLProxy( const char* libraryName ) :
-libHandle{ nullptr },
-libraryName{ libraryName }{
+		libHandle{ nullptr },
+		libraryName{ libraryName }{
 }
 
 RLLProxy::~RLLProxy( void ) {

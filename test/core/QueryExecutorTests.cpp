@@ -25,12 +25,20 @@ public:
 
 class MockDevice : public devices::Device {
 public:
+	MockDevice( void ) : devices::Device{ devices::DeviceInformation{ {}, {} } } {}
 	MOCK_CONST_METHOD0( getInfo, const devices::DeviceInformation& ( void ) );
 	MOCK_METHOD1( setPowerLimit, void ( devices::Power ) );
 	MOCK_METHOD1( setPowerLimit, void ( devices::Percentage ) );
 	MOCK_CONST_METHOD0( getCurrentPowerLimit, devices::Power ( void ) );
 	MOCK_CONST_METHOD0( getCurrentPowerLimitPercentage, devices::Percentage ( void ) );
 	MOCK_CONST_METHOD0( getPowerLimitConstraints, devices::PowerLimitConstraints ( void ) );
+};
+
+class MockIntelXeonDevice: public devices::IntelXeonDevice<devices::MockNMPRKCommunicationProvider> {
+public:
+	MockIntelXeonDevice( devices::DeviceIdentifier::idType id ) :
+	IntelXeonDevice<devices::MockNMPRKCommunicationProvider>{ id, {} } {
+	}
 };
 
 //This class is needed for ResponseTest and MultipleQueries test
@@ -79,9 +87,8 @@ TEST_F( QueryExecutorTestSuite, GetNodeInformation ) {
 	GetNodeInformationQueryHandler handler{ devicesManager };
 
 	std::vector<devices::Device::Ptr> devs;
-	devs.push_back( std::make_shared<devices::IntelXeonDevice<devices::MockMPSSCommunicationProvider>>( "123" ) );
-	devs.push_back( std::make_shared<devices::IntelXeonPhiDevice<devices::MockNMPRKCommunicationProvider>>( "456" ) );
-	devs.push_back( std::make_shared<devices::NvidiaTeslaDevice<devices::MockNVMLCommunicationProvider>>( "789" ) );
+	devs.push_back( std::make_shared<MockIntelXeonDevice>( "123" ) );
+	devs.push_back( std::make_shared<MockIntelXeonDevice>( "456" ) );
 
 	EXPECT_CALL( *devicesManager, getDevicesList() )
 		.WillOnce( ::testing::ReturnRef( devs ) );
@@ -89,8 +96,7 @@ TEST_F( QueryExecutorTestSuite, GetNodeInformation ) {
 	GetNodeInformationQueryHandler::Result::Ptr result;
 	ASSERT_NO_THROW( result = handler.handle( Query{ Query::Type::GetNodeInformation } ) );
 	ASSERT_TRUE( result->serialize().find( "\"Type\":\"IntelXeon\",\"id\":\"123\"" ) != std::string::npos );
-	ASSERT_TRUE( result->serialize().find( "\"Type\":\"IntelXeonPhi\",\"id\":\"456\"" ) != std::string::npos );
-	ASSERT_TRUE( result->serialize().find( "\"Type\":\"NvidiaTesla\",\"id\":\"789\"" ) != std::string::npos );
+	ASSERT_TRUE( result->serialize().find( "\"Type\":\"IntelXeon\",\"id\":\"456\"" ) != std::string::npos );
 }
 
 TEST_F( QueryExecutorTestSuite, GetPowerLimit ) {

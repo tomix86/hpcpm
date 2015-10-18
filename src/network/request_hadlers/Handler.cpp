@@ -4,7 +4,7 @@ namespace network {
 namespace handlers {
 
 Handler::Handler( core::QueryExecutor::Ptr queryExecutor ) :
-queryExecutor{ queryExecutor } {
+		queryExecutor{ queryExecutor } {
 }
 
 Handler::~Handler( void ) {

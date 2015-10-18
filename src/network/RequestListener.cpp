@@ -6,7 +6,7 @@
 
 namespace network {
 RequestListener::RequestListener ( core::QueryExecutor::Ptr queryExecutor ) :
-listenerBaseURI{ utility::ConfigLoader::getStringParam( "listener_base_url" ) } {
+		listenerBaseURI{ utility::ConfigLoader::getStringParam( "listener_base_url" ) } {
 	LOG( INFO ) << "Setting up listeners";
 
 	addListener( "power_limit", std::make_shared<handlers::GetPowerLimitHandler>( queryExecutor ), std::make_shared<handlers::SetPowerLimitHandler>( queryExecutor ) );

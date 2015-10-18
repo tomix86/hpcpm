@@ -8,22 +8,14 @@ namespace devices {
 template <typename CommunicationProvider>
 class IntelXeonDevice : public Device {
 public:
-	IntelXeonDevice( DeviceIdentifier::idType id ) :
-		communicationProvider{ id } {
-			info.identifier = { DeviceType::IntelXeon, id };
-		}
-
 	static std::vector<Device::Ptr> getAvailableDevices( void ) {
-		LOG( DEBUG ) << "Detecting Xeon devices";
+		LOG( DEBUG ) << "Detecting Xeon devices...";
 
 		std::vector<Device::Ptr> list;
 
 		try {
 			//TODO: remove placeholder
-			auto dev = std::make_shared<IntelXeonDevice>( "PLACEHOLDER" );
-
-			dev->info.entries = CommunicationProvider::getInfo();
-
+			std::shared_ptr<IntelXeonDevice> dev{ new IntelXeonDevice{ "PLACEHOLDER", CommunicationProvider::getInfo() } };
 			list.push_back( dev );
 		}
 		catch ( const devices::NMPRKError& ex ) {
@@ -55,7 +47,12 @@ public:
 		return PowerLimitConstraints{ 0, 0 };
 	}
 
-private:
+protected:
 	CommunicationProvider communicationProvider;
+
+	IntelXeonDevice( DeviceIdentifier::idType id, DeviceInformation::InfoContainer&& detailedInfo ) :
+			Device{ DeviceInformation{ { DeviceType::IntelXeon, id }, std::move( detailedInfo ) } },
+			communicationProvider{ id } {
+	}
 };
 } // namespace devices

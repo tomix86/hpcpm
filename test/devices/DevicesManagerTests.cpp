@@ -14,13 +14,20 @@ public:
 	using devices::DevicesManager::devicesList;
 };
 
+class MockIntelXeonDevice: public IntelXeonDevice<MockNMPRKCommunicationProvider> {
+public:
+	MockIntelXeonDevice( DeviceIdentifier::idType id ) :
+	IntelXeonDevice<MockNMPRKCommunicationProvider>{ id, {} } {
+	}
+};
+
 TEST( DevicesManagerTestSuite, getDeviceByIdentifierTest ) {
 	DevicesManagerAccessor devicesManager;
 
 	DeviceIdentifier devId{ DeviceType::IntelXeon, "0" };
 	ASSERT_THROW( devicesManager.getDeviceByIdentifier( devId ), DeviceNotFoundException );
 
-	devicesManager.devicesList.push_back( std::make_shared<devices::IntelXeonDevice<devices::MockNMPRKCommunicationProvider>>( devId.id ) );
+	devicesManager.devicesList.push_back( std::make_shared<MockIntelXeonDevice>( devId.id ) );
 
 	auto& dev = devicesManager.getDeviceByIdentifier( devId );
 	ASSERT_EQ( devId.type, dev.getInfo().identifier.type );

@@ -9,13 +9,8 @@ namespace devices {
 template <typename CommunicationProvider>
 class NvidiaTeslaDevice : public Device {
 public:
-	NvidiaTeslaDevice( DeviceIdentifier::idType id ) :
-	communicationProvider{ id } {
-		info.identifier = { DeviceType::NvidiaTesla, id };
-	}
-
 	static std::vector<Device::Ptr> getAvailableDevices( void ) {
-		LOG( DEBUG ) << "Detecting Nvidia devices";
+		LOG( DEBUG ) << "Detecting Nvidia devices...";
 
 		std::vector<Device::Ptr> list;
 
@@ -24,10 +19,8 @@ public:
 
 			for ( auto handle : handles ) {
 				auto devId = CommunicationProvider::getPrimaryId( handle );
-				auto devPtr = std::make_shared<NvidiaTeslaDevice>( devId );
+				std::shared_ptr<NvidiaTeslaDevice> devPtr{ new NvidiaTeslaDevice{ devId, CommunicationProvider::getInfo( handle ) } };
 				list.push_back( devPtr );
-
-				devPtr->info.entries = CommunicationProvider::getInfo( handle );
 			}
 		}
 		catch ( const devices::NVMLError& ex ) {
@@ -83,5 +76,10 @@ public:
 
 protected:
 	CommunicationProvider communicationProvider;
+
+	NvidiaTeslaDevice( DeviceIdentifier::idType id, DeviceInformation::InfoContainer&& detailedInfo ) :
+			Device{ DeviceInformation{ { DeviceType::NvidiaTesla, id }, std::move( detailedInfo ) } },
+			communicationProvider{ id } {
+	}
 };
 } // namespace devices

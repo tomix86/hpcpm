@@ -14,11 +14,11 @@ namespace devices {
 class NMPRKError : public utility::RuntimeError {
 public:
 	NMPRKError( std::string source, std::string message ) :
-		utility::RuntimeError{ source, message } {
+			utility::RuntimeError{ source, message } {
 	}
 
 	NMPRKError( std::string source, const nmprk::nmprkException* exception ) :
-		utility::RuntimeError{ source, nmprkExceptionToString( exception ) } {
+			utility::RuntimeError{ source, nmprkExceptionToString( exception ) } {
 	}
 
 	static std::string nmprkExceptionToString( const nmprk::nmprkException* exception ) {

@@ -5,9 +5,9 @@ namespace network {
 namespace handlers {
 
 SetDeviceParamHandler::SetDeviceParamHandler( core::QueryExecutor::Ptr queryExecutor, core::Query::Type queryType, std::string paramRegex ) :
-Handler{ queryExecutor },
-queryType{ queryType },
-paramRegex{ paramRegex } {
+		Handler{ queryExecutor },
+		queryType{ queryType },
+		paramRegex{ paramRegex } {
 }
 
 SetDeviceParamHandler::~SetDeviceParamHandler( void ) {

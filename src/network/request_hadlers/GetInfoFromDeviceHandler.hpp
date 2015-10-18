@@ -24,21 +24,21 @@ private:
 class GetPowerLimitConstraintsHandler : public GetInfoFromDeviceHandler {
 public:
 	GetPowerLimitConstraintsHandler( core::QueryExecutor::Ptr queryExecutor ) :
-	GetInfoFromDeviceHandler{ queryExecutor, core::Query::Type::GetPowerLimitConstraints } {
+			GetInfoFromDeviceHandler{ queryExecutor, core::Query::Type::GetPowerLimitConstraints } {
 	}
 };
 
 class GetPowerLimitHandler : public GetInfoFromDeviceHandler {
 public:
 	GetPowerLimitHandler( core::QueryExecutor::Ptr queryExecutor ) :
-	GetInfoFromDeviceHandler{ queryExecutor, core::Query::Type::GetPowerLimit } {
+			GetInfoFromDeviceHandler{ queryExecutor, core::Query::Type::GetPowerLimit } {
 	}
 };
 
 class GetPowerLimitPercentageHandler : public GetInfoFromDeviceHandler {
 public:
 	GetPowerLimitPercentageHandler( core::QueryExecutor::Ptr queryExecutor ) :
-	GetInfoFromDeviceHandler{ queryExecutor, core::Query::Type::GetPowerLimitPercentage } {
+			GetInfoFromDeviceHandler{ queryExecutor, core::Query::Type::GetPowerLimitPercentage } {
 	}
 };
 

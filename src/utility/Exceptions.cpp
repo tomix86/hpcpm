@@ -43,16 +43,9 @@ namespace utility {
 		exceptionInfo.insert( exceptionInfo.begin(), other.exceptionInfo.begin(), other.exceptionInfo.end() );
 	}
 
-	RuntimeError::RuntimeError( std::string src, std::string msg ) :
-		Exception( src, msg ) {
-	}
+	RuntimeError::RuntimeError( std::string src, std::string msg ) : Exception( src, msg ) {}
 
-	LogicError::LogicError( std::string src, std::string msg ) :
-		Exception( src, msg ) {
-	}
+	LogicError::LogicError( std::string src, std::string msg ) : Exception( src, msg ) {}
 
-	InvalidArgument::InvalidArgument( std::string src, std::string msg ) :
-		LogicError( src, msg ) {
-
-	}
+	InvalidArgument::InvalidArgument( std::string src, std::string msg ) : LogicError( src, msg ) {}
 } // namespace utility

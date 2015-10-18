@@ -21,7 +21,7 @@ public:
 	};
 
 	GetPowerLimitQueryHandler( std::shared_ptr<devices::DevicesManager> devicesManager ) :
-	QueryHandler( devicesManager ) {
+			QueryHandler( devicesManager ) {
 	}
 
 	QueryHandler::Result::Ptr handle( Query query ) final {

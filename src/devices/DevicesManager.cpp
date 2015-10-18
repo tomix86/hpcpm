@@ -21,7 +21,7 @@
 namespace devices {
 
 DevicesManager::DevicesManager( SupportedLibraries supportedLibraries ) :
-supportedLibraries( supportedLibraries ) {
+		supportedLibraries( supportedLibraries ) {
 	LOG( INFO ) << "Application is launching with following power management libraries enabled:";
 	if ( supportedLibraries.NVML ) {
 		LOG( INFO ) << "...NVML(for Nvidia Tesla)";

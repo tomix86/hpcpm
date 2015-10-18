@@ -58,7 +58,7 @@ public:
 	}
 
 	MockNVMLCommunicationProvider( DeviceIdentifier::idType id ) :
-	powerManagementLimit{ 190000 } {
+			powerManagementLimit{ 190000 } {
 		for( int i = 0; i <= 2; ++i ) {
 			if( id == getUUID( reinterpret_cast<nvmlDevice_t>( i ) ) ) {
 				deviceHandle = i;

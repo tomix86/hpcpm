@@ -29,7 +29,7 @@ public:
 	class ResultWithError : public Result {
 	public:
 		ResultWithError( std::string message ) :
-		message{ message } {
+				message{ message } {
 		}
 
 		std::string serialize( void ) const final {
@@ -47,7 +47,7 @@ public:
 	};
 
 	QueryHandler( std::shared_ptr<devices::DevicesManager> devicesMgr ) :
-	devicesManager( devicesMgr ) {
+			devicesManager( devicesMgr ) {
 	}
 
 	virtual ~QueryHandler( void ) {}

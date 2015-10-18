@@ -17,7 +17,7 @@ namespace devices {
 MPSSProxy MPSSCommunicationProvider::proxy;
 
 MPSSCommunicationProvider::MPSSCommunicationProvider( DeviceIdentifier::idType id ) :
-deviceHandle{ getDeviceById( id ) } {
+		deviceHandle{ getDeviceById( id ) } {
 }
 
 bool MPSSCommunicationProvider::init( void ) {
@@ -35,12 +35,20 @@ unsigned MPSSCommunicationProvider::getCurrentPowerLimit( void ) const {
 
 	std::uint32_t limit;
 	MPSS_ERROR_CHECK( proxy.mic_get_power_phys_limit( powerLimit, &limit ) );
-	MPSS_ERROR_CHECK( proxy.mic_get_power_hmrk( powerLimit, &limit ) ); //power limit 0
-	MPSS_ERROR_CHECK( proxy.mic_get_power_lmrk( powerLimit, &limit ) ); //power limit 1
+	LOG( INFO ) << "Phys limit: " << std::to_string( limit );
 
-//	std::uint32_t window;
-//	MPSS_ERROR_CHECK( proxy.mic_get_time_window0( powerLimit, &window );
-//	MPSS_ERROR_CHECK( proxy.mic_get_time_window1( powerLimit, &window );
+	MPSS_ERROR_CHECK( proxy.mic_get_power_hmrk( powerLimit, &limit ) ); //power limit 0
+	LOG( INFO ) << "PL0: " << std::to_string( limit );
+
+	MPSS_ERROR_CHECK( proxy.mic_get_power_lmrk( powerLimit, &limit ) ); //power limit 1
+	LOG( INFO ) << "PL1: "  << std::to_string( limit );
+
+	std::uint32_t window;
+	MPSS_ERROR_CHECK( proxy.mic_get_time_window0( powerLimit, &window ) );
+	LOG( INFO ) << "TW0: "  << std::to_string( window );
+
+	MPSS_ERROR_CHECK( proxy.mic_get_time_window1( powerLimit, &window ) );
+	LOG( INFO ) << "TW1: " << std::to_string( window );
 
 	return 0;
 }
@@ -59,10 +67,10 @@ std::pair<unsigned, unsigned> MPSSCommunicationProvider::getPowerLimitConstraint
 }
 
 std::vector<int> MPSSCommunicationProvider::listDevices( void ) {
-	auto devList = getDevicesList();
-
-	std::vector<int> list{ devList.getCount() };
+	std::vector<int> list( getDevicesList().getCount() );
 	std::iota( list.begin(), list.end(), 0 );
+
+	LOG( INFO ) << "Total number of devices: " << list.size();
 
 	return list;
 }
@@ -149,19 +157,19 @@ void MPSSCommunicationProvider::fillPciConfigInfo( DeviceInformation::InfoContai
 
 	std::uint16_t vendorId;
 	MPSS_ERROR_CHECK( proxy.mic_get_vendor_id( pciConfig, &vendorId ) );
-	info[ "VendorId" ] = utility::toHexString( vendorId );
+	info[ "VendorId" ] = "0x" + utility::toHexString( vendorId );
 
 	std::uint16_t deviceId;
 	MPSS_ERROR_CHECK( proxy.mic_get_device_id( pciConfig, &deviceId ) );
-	info[ "DeviceId" ] = utility::toHexString( deviceId );
+	info[ "DeviceId" ] = "0x" + utility::toHexString( deviceId );
 
 	std::uint8_t revisionId;
 	MPSS_ERROR_CHECK( proxy.mic_get_revision_id( pciConfig, &revisionId ) );
-	info[ "RevisionId" ] = utility::toHexString( revisionId );
+	info[ "RevisionId" ] = "0x" + utility::toHexString( revisionId );
 
 	std::uint16_t subsystemId;
 	MPSS_ERROR_CHECK( proxy.mic_get_subsystem_id( pciConfig, &subsystemId ) );
-	info[ "SubsysId" ] = utility::toHexString( subsystemId );
+	info[ "SubsysId" ] = "0x" + utility::toHexString( subsystemId );
 }
 
 void MPSSCommunicationProvider::fillMemoryInfo( DeviceInformation::InfoContainer& info, mic_device* dev ) {
@@ -172,7 +180,7 @@ void MPSSCommunicationProvider::fillMemoryInfo( DeviceInformation::InfoContainer
 	char stringBuf[ MAX_NAME_LENGTH ];
 	size_t size = MAX_NAME_LENGTH;
 	MPSS_ERROR_CHECK( proxy.mic_get_memory_vendor( memoryInfo, stringBuf, &size ) );
-	info[ "LinkSpeed" ] = stringBuf;
+	info[ "MemoryVendor" ] = stringBuf;
 
 	std::uint32_t revision;
 	MPSS_ERROR_CHECK( proxy.mic_get_memory_revision( memoryInfo, &revision ) );

@@ -9,7 +9,7 @@ namespace devices {
 class MockMPSSCommunicationProvider {
 public:
 	MockMPSSCommunicationProvider( DeviceIdentifier::idType deviceId ) :
-	powerManagementLimit{ 75000 } {
+			powerManagementLimit{ 75000 } {
 		(void)deviceId;
 	}
 

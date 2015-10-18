@@ -40,8 +40,8 @@ private:
 	class DevicesListWrapper {
 	public:
 		DevicesListWrapper( std::shared_ptr<mic_devices_list> list, int count ) :
-			listPtr{ list },
-			devicesCount{ count } {
+				listPtr{ list },
+				devicesCount{ count } {
 		}
 
 		int getCount( void ) const { return devicesCount; }

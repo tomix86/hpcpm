@@ -10,8 +10,8 @@ namespace core {
 std::atomic<bool> running{ true };
 
 core::Core::Core( devices::SupportedLibraries supportedLibraries ) :
-devicesManager { std::make_shared<devices::DevicesManager>( supportedLibraries ) },
-requestListener{ std::make_shared<QueryExecutor>( devicesManager ) } {
+		devicesManager { std::make_shared<devices::DevicesManager>( supportedLibraries ) },
+		requestListener{ std::make_shared<QueryExecutor>( devicesManager ) } {
 	signal( SIGINT, []( int ){ running = false; } );
 
 	devicesManager->init();

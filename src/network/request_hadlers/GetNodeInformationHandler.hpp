@@ -6,7 +6,7 @@ namespace handlers {
 class GetNodeInformationHandler : public Handler {
 public:
 	GetNodeInformationHandler( core::QueryExecutor::Ptr queryExecutor ) :
-	Handler{ queryExecutor } {
+			Handler{ queryExecutor } {
 	}
 
 protected:
