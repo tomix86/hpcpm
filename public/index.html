@@ -39,6 +39,8 @@
                 <td data-title="'Action'">
                     <button class="btn btn-danger btn-xs" type="button"
                         ng-click="openSetPowerLimitModal(selectedNode, device.id)">Set power limit</button>
+                    <button class="btn btn-danger btn-xs" type="button"
+                        ng-click="openRemovePowerLimitModal(selectedNode, device.id)">Remove power limit</button>
                 </td>
               </tr>
         </table>
@@ -59,7 +61,9 @@
               </pre>
             </div>
             <div class="modal-footer">
+                <button class="btn btn-info" type="button" ng-click="copy()">Copy raw JSON</button>
                 <button class="btn btn-warning" type="button" ng-click="close()">Close</button>
+                <div id="detailsModal"></div>
             </div>
         </div>
     </div>
@@ -90,6 +94,25 @@
 
 </script>
 
+<script type="text/ng-template" id="RemovePowerLimitModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Remove device power limit</h3>
+    </div>
+    <div class="modal-body">
+        <div>
+            <div class="alert alert-danger">
+                Do you wish to remove power limit for device <strong>{{device_id}}</strong> on node <strong>{{name}}</strong>?
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" type="button" ng-click="removePowerLimit()">
+                    Remove
+                </button>
+                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+</script>
 
 <script type="text/ng-template" id="/NodeTable.html">
       <div class="col-md-8" style="padding-top: 30px">
@@ -223,6 +246,7 @@
 <script src="js/NodeDetailsController.js"></script>
 <script src="js/NodeDetailsModalController.js"></script>
 <script src="js/PowerLimitModalController.js"></script>
+<script src="js/RemovePowerLimitModalController.js"></script>
 
 <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="bower_components/ng-table/dist/ng-table.min.css">

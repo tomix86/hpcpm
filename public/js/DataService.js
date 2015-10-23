@@ -21,6 +21,9 @@ function dataService(Restangular, EndpointsService) {
         },
         setDevicePowerLimit: function(name, device_id, power_limit) {
             return Restangular.one(EndpointsService.putPowerLimitUrl(), name).one(device_id, 'power_limit').put(power_limit);
+        },
+        removeDevicePowerLimit: function(name, device_id) {
+            return Restangular.one(EndpointsService.putPowerLimitUrl(), name).one(device_id, 'power_limit').remove();
         }
     }
 }
