@@ -72,7 +72,7 @@
 
 <script type="text/ng-template" id="PowerLimitModal.html">
     <div class="modal-header">
-        <h3 class="modal-title">Set power limit</h3>
+        <h3 class="modal-title">Set power limit for {{name}}:{{deviceId}}</h3>
     </div>
     <div class="modal-body">
         <div>
@@ -96,12 +96,12 @@
 
 <script type="text/ng-template" id="RemovePowerLimitModal.html">
     <div class="modal-header">
-        <h3 class="modal-title">Remove device power limit</h3>
+        <h3 class="modal-title">Remove device power limit for {{name}}:{{deviceId}}</h3>
     </div>
     <div class="modal-body">
         <div>
             <div class="alert alert-danger">
-                Do you wish to remove power limit for device <strong>{{device_id}}</strong> on node <strong>{{name}}</strong>?
+                Do you wish to remove power limit for device <strong>{{deviceId}}</strong> on node <strong>{{name}}</strong>?
             </div>
             <div class="modal-footer">
                 <button class="btn btn-danger" type="button" ng-click="removePowerLimit()">
