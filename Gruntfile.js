@@ -23,9 +23,13 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      options: {
+        mangle: false,
+        compress: true
+      },
       bower: {
         options: {
-          mangle: true,
+          mangle: false,
           compress: true
         },
         files: {
@@ -62,7 +66,7 @@ module.exports = function(grunt) {
 
     watch: {
       files: ['Gruntfile.js', 'server.js', 'config.js', 'public/js/*.js', 'test/*.js'],
-      tasks: ['jshint', 'nodemon']
+      tasks: ['jshint', 'nodemon:dev']
     },
 
     jshint: {

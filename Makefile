@@ -19,7 +19,10 @@ deps:
 	$(APTGI) nodejs nodejs-legacy npm openjdk-7-jdk
 	sudo npm install bower protractor jshint nodemon grunt-cli -g
 	npm install
-	bower install
+	bower install --allow-root
+
+dist: deps
+	grunt build
 
 test:
 	cd $(TEST_DIR)

@@ -11,7 +11,7 @@ app.use(function(req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*"); // set the Access-Control-Allow-Origin header
   return next();
 });
-console.log(__dirname);
+
 app.use(express.static(__dirname + '/public')); // set the static files location /public/img will be /img for users
 app.use(morgan(config.morganLevel)); // log every request to the console
 app.use(bodyParser.urlencoded({
@@ -24,7 +24,7 @@ app.use(bodyParser.json({
 app.use(methodOverride());
 
 // static resources paths
-app.use(express.static(__dirname + config.publicPath));
+app.use('/public', express.static(__dirname + config.publicPath));
 app.use('/bower_components', express.static(__dirname + config.bowerPath));
 
 app.get('*', function(req, res) {
