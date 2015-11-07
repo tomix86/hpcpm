@@ -86,4 +86,4 @@ function nodeDetailsController($scope, $rootScope, DataService, $stateParams, Ng
     $scope.$on('RefreshNodeDetails', function () {
         $scope.tableParams.reload();
     });
-};
+}

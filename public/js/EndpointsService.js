@@ -39,11 +39,11 @@ angular.module('hpcpm-ui').factory('EndpointsService', function() {
 
     o.getPowerLimitUrl = function() {
         return _endpoints.get_power_limit;
-    }
+    };
 
     o.putPowerLimitUrl = function() {
         return _endpoints.put_power_limit;
-    }
+    };
 
     o.getEndpoints = function() {
         return Object.keys(_endpoints);

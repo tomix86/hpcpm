@@ -17,7 +17,7 @@ run-server:
 
 deps:
 	$(APTGI) nodejs nodejs-legacy npm openjdk-7-jdk
-	sudo npm install bower protractor jshint nodemon -g
+	sudo npm install bower protractor jshint nodemon grunt-cli -g
 	npm install
 	bower install
 

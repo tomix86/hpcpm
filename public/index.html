@@ -4,7 +4,6 @@
 <head>
     <meta charset="utf-8">
     <title>HPC Power Management</title>
-    <script src="bower_components/angular/angular.js"></script>
 
 </head>
 
@@ -224,9 +223,9 @@
 
     </div>
 </div>
-
-
-<script src="bower_components/json-formatter/dist/json-formatter.js"></script>
+<!-- build:js(.) public/js/lib.min.js -->
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/json-formatter/dist/json-formatter.min.js"></script>
 <script src="bower_components/angular-animate/angular-animate.min.js"></script>
 <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
 <script src="bower_components/angular-resource/angular-resource.min.js"></script>
@@ -237,7 +236,9 @@
 <script src="bower_components/angularjs-toaster/toaster.min.js"></script>
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- endbuild -->
 
+<!-- build:js public/js/HPCPM.min.js -->
 <script src="js/controllers.js"></script>
 <script src="js/DataService.js"></script>
 <script src="js/EndpointsService.js"></script>
@@ -247,11 +248,14 @@
 <script src="js/NodeDetailsModalController.js"></script>
 <script src="js/PowerLimitModalController.js"></script>
 <script src="js/RemovePowerLimitModalController.js"></script>
+<!-- endbuild -->
 
+<!-- build:css(.) public/css/style.min.css -->
 <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="bower_components/ng-table/dist/ng-table.min.css">
 <link rel="stylesheet" type="text/css" href="bower_components/angularjs-toaster/toaster.min.css">
 <link rel="stylesheet" type="text/css" href="bower_components/json-formatter/dist/json-formatter.css">
+<!-- endbuild -->
 
 </body>
 </html>

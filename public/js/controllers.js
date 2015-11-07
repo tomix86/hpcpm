@@ -82,7 +82,7 @@ function nodesController($scope, $filter, NgTableParams, DataService, $uibModal,
         $timeout(function () {
             $scope.tableParams.reload();
             $scope.intervalFunction();
-        }, 5000)
+        }, 5000);
     };
 
     // Kick off the interval
