@@ -1,5 +1,6 @@
 from flask_restful import abort
 from hpcpm.api import log
+from hpcpm.api.helpers.database import database
 
 
 def abort_when_port_invalid(port):
@@ -19,3 +20,13 @@ def abort_when_not_int(number):
     except ValueError:
         log.error(str.format('Number is not valid: {}', number))
         abort(400)
+
+
+def abort_when_node_not_found(name):
+    node_info = database.get_computation_node_info(name)
+
+    if not node_info:
+        log.info('No such computation node info %s', name)
+        abort(404)
+
+    return node_info

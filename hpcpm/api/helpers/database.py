@@ -10,12 +10,16 @@ class Database:  # pylint: disable=too-few-public-methods
         self.database = None
         self.computation_nodes_collection = None
         self.power_limit_collection = None
+        self.statistics_data_collection = None
+        self.statistics_intervals_collection = None
 
     def configure(self, config):
         self.client = MongoClient(config.get('host'), int(config.get('port')))
         self.database = self.client[config.get('db')]
         self.computation_nodes_collection = self.database[config.get('computation_nodes_collection')]
         self.power_limit_collection = self.database[config.get('power_limit_collection')]
+        self.statistics_data_collection = self.database[config.get('statistics_data_collection')]
+        self.statistics_intervals_collection = self.database[config.get('statistics_intervals_collection')]
 
     def get_computation_node_info(self, name):
         return self.computation_nodes_collection.find_one({'name': name}, {'_id': False})
@@ -63,6 +67,17 @@ class Database:  # pylint: disable=too-few-public-methods
 
     def delete_power_limit_info(self, name, device_id):
         return self.power_limit_collection.find_one_and_delete({'name': name, 'device_id': device_id}, {'_id': False})
+
+    def replace_stats_interval_info(self, name, device_id, interval_info):
+        return self.statistics_intervals_collection.replace_one({'name': name, 'device_id': device_id}, interval_info,
+                                                                True)
+
+    def delete_stats_interval_info(self, name, device_id):
+        return self.statistics_intervals_collection.find_one_and_delete({'name': name, 'device_id': device_id},
+                                                                        {'_id': False})
+
+    def get_stats_interval_info(self, name, device_id):
+        return self.statistics_intervals_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False})
 
 
 database = Database()  # pylint: disable=invalid-name

@@ -81,9 +81,20 @@ DEVICE_IDENTIFIER_PARAM = {
     'paramType': 'path'
 }
 
+NODE_AND_DEVICE_PARAMS = [DEVICE_IDENTIFIER_PARAM, COMPUTATION_NODE_PARAM_NAME]
+
 DEVICE_POWER_LIMIT_PARAM = {
     'name': 'power_limit',
     'description': 'Power limit',
+    'required': True,
+    'allowMultiple': False,
+    'dataType': 'int',
+    'paramType': 'query'
+}
+
+STATISTICS_INTERVAL_PARAM = {
+    'name': 'statistics_interval',
+    'description': 'Statistics gathering interval in minutes',
     'required': True,
     'allowMultiple': False,
     'dataType': 'int',
@@ -108,4 +119,9 @@ POWER_LIMIT_DELETED_FROM_DB_BUT_NOT_FROM_DEVICE = {
 ALL_DEVICES_GET_OK_RESPONSE = {
     'code': 200,
     'message': 'Ok'
+}
+
+STATISTICS_INTERVAL_SET_RESPONSE = {
+    'code': 201,
+    'message': 'Statistics gathering interval set successfully'
 }

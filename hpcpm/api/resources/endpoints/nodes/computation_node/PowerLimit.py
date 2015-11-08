@@ -5,10 +5,11 @@ from flask_restful_swagger import swagger
 
 from hpcpm.api import log
 from hpcpm.api.helpers.database import database
-from hpcpm.api.helpers.utils import abort_when_not_int
+from hpcpm.api.helpers.utils import abort_when_not_int, abort_when_node_not_found
 from hpcpm.api.helpers.constants import COMPUTATION_NODE_PARAM_NAME, COMPUTATION_NODE_NOT_FOUND_RESPONSE, \
     COMPUTATION_NODE_FETCHED_RESPONSE, DEVICE_IDENTIFIER_PARAM, DEVICE_POWER_LIMIT_PARAM, \
-    DEVICE_POWER_LIMIT_SET_RESPONSE, DEVICE_NOT_FOUND_RESPONSE, POWER_LIMIT_DELETED_FROM_DB_BUT_NOT_FROM_DEVICE
+    DEVICE_POWER_LIMIT_SET_RESPONSE, DEVICE_NOT_FOUND_RESPONSE, POWER_LIMIT_DELETED_FROM_DB_BUT_NOT_FROM_DEVICE, \
+    NODE_AND_DEVICE_PARAMS
 from hpcpm.api.helpers.requests import put_power_limit, delete_power_limit
 
 
@@ -29,10 +30,7 @@ class PowerLimit(Resource):
     def put(self, name, device_id):
         power_limit = request.args.get('power_limit')
         abort_when_not_int(power_limit)
-        computation_node = database.get_computation_node_info(name)
-        if not computation_node:
-            log.error('There is no such computation node: %s', name)
-            abort(404)
+        computation_node = abort_when_node_not_found(name)
 
         if not any(d['id'] == device_id for d in computation_node['backend_info']['devices']):
             log.error('There is no such device: %s', device_id)
@@ -62,10 +60,7 @@ class PowerLimit(Resource):
     @swagger.operation(
         notes='This endpoint is used for getting power limit information from database',
         nickname='/nodes/computation_node/<string:name>/<string:device_id>/power_limit',
-        parameters=[
-            COMPUTATION_NODE_PARAM_NAME,
-            DEVICE_IDENTIFIER_PARAM
-        ],
+        parameters=NODE_AND_DEVICE_PARAMS,
         responseMessages=[
             COMPUTATION_NODE_FETCHED_RESPONSE,
             DEVICE_NOT_FOUND_RESPONSE
@@ -82,10 +77,7 @@ class PowerLimit(Resource):
     @swagger.operation(
         notes='This endpoint is used for removing power limit information from database and device',
         nickname='/nodes/computation_node/<string:name>/<string:device_id>/power_limit',
-        parameters=[
-            COMPUTATION_NODE_PARAM_NAME,
-            DEVICE_IDENTIFIER_PARAM
-        ],
+        parameters=NODE_AND_DEVICE_PARAMS,
         responseMessages=[
             COMPUTATION_NODE_FETCHED_RESPONSE,
             DEVICE_NOT_FOUND_RESPONSE,
@@ -93,11 +85,7 @@ class PowerLimit(Resource):
         ]
     )
     def delete(self, name, device_id):
-        node_info = database.get_computation_node_info(name)
-
-        if not node_info:
-            log.info('No such computation node info %s:%s', name, device_id)
-            abort(404)
+        node_info = abort_when_node_not_found(name)
 
         address = node_info['address']
         port = node_info['port']
