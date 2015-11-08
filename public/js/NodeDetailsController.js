@@ -1,5 +1,5 @@
 angular.module('hpcpm-ui').controller('NodeDetailsController', nodeDetailsController);
-nodeDetailsController.$inject = ["$scope", "$rootScope", "DataService", '$stateParams', 'NgTableParams', '$filter', '$uibModal'];
+nodeDetailsController.$inject = ['$scope', '$rootScope', 'DataService', '$stateParams', 'NgTableParams', '$filter', '$uibModal'];
 
 function nodeDetailsController($scope, $rootScope, DataService, $stateParams, NgTableParams, $filter, $uibModal) {
     $scope.selectedNode = $stateParams.node_name;

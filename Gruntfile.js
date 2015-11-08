@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        mangle: false,
+        mangle: true,
         compress: true
       },
       bower: {
@@ -61,6 +61,9 @@ module.exports = function(grunt) {
       },
       config: {
         src: 'config.js', dest: 'dist/config.js'
+      },
+      package: {
+        src: 'package.json', dest: 'dist/package.json'
       }
 	  },
 
@@ -87,9 +90,7 @@ module.exports = function(grunt) {
   grunt.registerTask('run', ['nodemon:dist']);
   grunt.registerTask('build', [
     'jshint',
-    'copy:server',
-    'copy:config',
-    'copy:html',
+    'copy',
     'useminPrepare',
     'concat:generated',
     'cssmin:generated',

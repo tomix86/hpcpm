@@ -1,4 +1,4 @@
-var app = angular.module('hpcpm-ui', ['restangular', 'ui.router', "ngTable", "ui.bootstrap", "toaster", 'jsonFormatter']);
+var app = angular.module('hpcpm-ui', ['restangular', 'ui.router', 'ngTable', 'ui.bootstrap', 'toaster', 'jsonFormatter']);
 
 
 app.config([
@@ -24,7 +24,9 @@ app.config([
     }
 ]);
 
-var bodyController = app.controller('BodyController', function ($scope, $state, $uibModal, $log) {
+var BodyController = app.controller('BodyController', bodyController);
+bodyController.$inject = ['$scope', '$state', '$uibModal', '$log'];
+function bodyController($scope, $state, $uibModal, $log) {
     $scope.OpenNewNodeModal = function () {
 
         var modalInstance = $uibModal.open({
@@ -38,11 +40,11 @@ var bodyController = app.controller('BodyController', function ($scope, $state, 
         });
     };
 
-});
+}
 
 
-var NodesController = app.controller("NodesController", nodesController);
-nodesController.$inject = ["$scope", "$filter", "NgTableParams", "DataService", "$uibModal", "$timeout"];
+var NodesController = app.controller('NodesController', nodesController);
+nodesController.$inject = ['$scope', '$filter', 'NgTableParams', 'DataService', '$uibModal', '$timeout'];
 function nodesController($scope, $filter, NgTableParams, DataService, $uibModal, $timeout) {
     $scope.tableParams = new NgTableParams({count: 10}, {
         counts: [10, 20, 40, 80, 100],
