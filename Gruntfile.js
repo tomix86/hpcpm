@@ -4,12 +4,16 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    nodemon: {
+    express: {
       dev: {
-        script: 'server.js'
+        options: {
+          script: 'server.js'
+        }
       },
-      dist: {
-        script: 'dist/server.js'
+      prod: {
+        options: {
+          script: 'dist/server.js'
+        }
       }
     },
 
@@ -68,12 +72,19 @@ module.exports = function(grunt) {
 	  },
 
     watch: {
-      files: ['Gruntfile.js', 'server.js', 'config.js', 'public/js/*.js', 'test/*.js'],
-      tasks: ['jshint', 'nodemon:dev']
+      dev: {
+        files: ['<%= jshint.files %>'],
+        tasks: ['jshint']
+      },
+      prod: {
+        options: { livereload: false},
+        files: ['<%= jshint.files %>'],
+        tasks: ['build']
+      }
     },
 
     jshint: {
-      files: ['<%= watch.files %>'],
+      files: ['Gruntfile.js', 'server.js', 'config.js', 'public/js/*.js', 'test/*.js'],
       options: {
         globals: {
           jQuery: true,
@@ -85,9 +96,8 @@ module.exports = function(grunt) {
     },
   });
 
-  grunt.registerTask('test', ['jshint']);
-  grunt.registerTask('run-dev', ['jshint', 'nodemon:dev']);
-  grunt.registerTask('run', ['nodemon:dist']);
+  grunt.registerTask('lint', ['jshint']);
+  grunt.registerTask('run', ['express:dev', 'watch:dev']);
   grunt.registerTask('build', [
     'jshint',
     'copy',
@@ -97,5 +107,5 @@ module.exports = function(grunt) {
     'uglify:generated',
     'usemin'
   ]);
-  grunt.registerTask('all', ['build', 'run']);
+  grunt.registerTask('serve', ['build', 'express:prod', 'watch:prod']);
 };

@@ -16,7 +16,6 @@
     "express": "^4.13.3",
     "method-override": "^2.3.5",
     "morgan": "^1.6.1",
-    "passport-local": "^1.0.0",
     "phantomjs": "^1.9.18"
   },
   "devDependencies": {
@@ -30,11 +29,9 @@
     "grunt-contrib-qunit": "^0.7.0",
     "grunt-contrib-uglify": "^0.10.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-express-server": "^0.5.1",
     "grunt-filerev": "^2.3.1",
-    "grunt-ngmin": "0.0.3",
-    "grunt-nodemon": "^0.4.0",
     "grunt-usemin": "^3.1.1",
-    "grunt-wiredep": "^2.0.0",
     "load-grunt-tasks": "^3.3.0"
   }
 }
