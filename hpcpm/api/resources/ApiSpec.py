@@ -6,6 +6,8 @@ from hpcpm.api.resources.endpoints.nodes.computation_node.ComputationNode import
 from hpcpm.api.resources.endpoints.nodes.computation_node.PowerLimit import PowerLimit
 from hpcpm.api.resources.endpoints.nodes.computation_node.AllComputationNodes import AllComputationNodes
 from hpcpm.api.resources.endpoints.nodes.computation_node.StatisticsInterval import StatisticsInterval
+from hpcpm.api.resources.endpoints.nodes.computation_node.StatisticsData import StatisticsData
+from hpcpm.api.resources.endpoints.nodes.computation_node.StatisticsDataWithInterval import StatisticsDataWithInterval
 
 
 class ApiSpec:  # pylint: disable=too-few-public-methods
@@ -19,3 +21,7 @@ class ApiSpec:  # pylint: disable=too-few-public-methods
         api.add_resource(AllComputationNodes, '/nodes/computation_nodes')
         api.add_resource(StatisticsInterval,
                          'nodes/computation_node/<string:name>/<string:device_id>/statistics_interval')
+        api.add_resource(StatisticsData,
+                         'nodes/computation_node/<string:name>/<string:device_id>/statistics_data/<string:date_time>')
+        api.add_resource(StatisticsDataWithInterval,
+                         'nodes/computation_node/<string:name>/<string:device_id>/statistics_data')

@@ -80,7 +80,7 @@ class StatisticsInterval(Resource):
         return result, 200
 
     @swagger.operation(
-        notes='This endpoint is used for removing statistics gathering interval information from database and device',
+        notes='This endpoint is used for removing statistics gathering interval information from database',
         nickname='/nodes/computation_node/<string:name>/<string:device_id>/statistics_interval',
         parameters=NODE_AND_DEVICE_PARAMS,
         responseMessages=[

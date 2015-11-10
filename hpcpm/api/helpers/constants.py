@@ -101,6 +101,42 @@ STATISTICS_INTERVAL_PARAM = {
     'paramType': 'query'
 }
 
+DATETIME_PARAM = {
+    'name': 'date_time',
+    'description': 'Date and time',
+    'required': True,
+    'allowMultiple': False,
+    'dataType': 'string',
+    'paramType': 'path'
+}
+
+DATETIME_PARAM_BEGIN = {
+    'name': 'date_time_begin',
+    'description': 'Date and time',
+    'required': False,
+    'allowMultiple': False,
+    'dataType': 'string',
+    'paramType': 'query'
+}
+
+DATETIME_PARAM_END = {
+    'name': 'date_time_end',
+    'description': 'Date and time',
+    'required': False,
+    'allowMultiple': False,
+    'dataType': 'string',
+    'paramType': 'query'
+}
+
+POWER_USAGE_PARAM = {
+    'name': 'power_usage',
+    'description': 'Power usage',
+    'required': True,
+    'allowMultiple': False,
+    'dataType': 'string',
+    'paramType': 'query'
+}
+
 DEVICE_POWER_LIMIT_SET_RESPONSE = {
     'code': 201,
     'message': 'Power limit set successfully'
@@ -125,3 +161,13 @@ STATISTICS_INTERVAL_SET_RESPONSE = {
     'code': 201,
     'message': 'Statistics gathering interval set successfully'
 }
+
+STATISTICS_DATA_UPDATED_RESPONSE = {
+    'code': 201,
+    'message': 'Statistics data updated successfully'
+}
+
+DEVICE_NOT_FOUND_AND_COMPUTATION_NODE_FETCHED_RESPONSES = [
+    DEVICE_NOT_FOUND_RESPONSE,
+    COMPUTATION_NODE_FETCHED_RESPONSE
+]

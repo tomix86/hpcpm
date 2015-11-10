@@ -79,5 +79,26 @@ class Database:  # pylint: disable=too-few-public-methods
     def get_stats_interval_info(self, name, device_id):
         return self.statistics_intervals_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False})
 
+    def check_stats_present(self, name, device_id):
+        return self.statistics_data_collection.find_one({'name': name, 'device_id': device_id})
+
+    def replace_stats_data(self, name, device_id, stats_data):
+        return self.statistics_data_collection.replace_one({'name': name, 'device_id': device_id}, stats_data, True)
+
+    def update_stats_data(self, name, device_id, stats_data):
+        return self.statistics_data_collection.update_one({'name': name, 'device_id': device_id}, {'$set': stats_data})
+
+    def get_stats_data(self, name, device_id):
+        return self.statistics_data_collection.find_one({'name': name, 'device_id': device_id},
+                                                        {'_id': False, 'name': False, 'device_id': False})
+
+    def get_stats_data_for_time(self, name, device_id, date_time):
+        return self.statistics_data_collection.find_one({'name': name, 'device_id': device_id},
+                                                        {date_time: True, '_id': False})
+
+    def delete_stats_for_time(self, name, device_id, stats_data):
+        return self.statistics_data_collection.update_one({'name': name, 'device_id': device_id},
+                                                          {'$unset': stats_data})
+
 
 database = Database()  # pylint: disable=invalid-name
