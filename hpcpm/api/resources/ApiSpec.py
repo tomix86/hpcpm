@@ -20,8 +20,8 @@ class ApiSpec:  # pylint: disable=too-few-public-methods
         api.add_resource(PowerLimit, '/nodes/computation_node/<string:name>/<string:device_id>/power_limit')
         api.add_resource(AllComputationNodes, '/nodes/computation_nodes')
         api.add_resource(StatisticsInterval,
-                         'nodes/computation_node/<string:name>/<string:device_id>/statistics_interval')
+                         '/nodes/computation_node/<string:name>/<string:device_id>/statistics_interval')
         api.add_resource(StatisticsData,
-                         'nodes/computation_node/<string:name>/<string:device_id>/statistics_data/<string:date_time>')
+                         '/nodes/computation_node/<string:name>/<string:device_id>/statistics_data/<string:date_time>')
         api.add_resource(StatisticsDataWithInterval,
-                         'nodes/computation_node/<string:name>/<string:device_id>/statistics_data')
+                         '/nodes/computation_node/<string:name>/<string:device_id>/statistics_data')
