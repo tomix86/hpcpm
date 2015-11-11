@@ -17,29 +17,11 @@ module.exports = function(grunt) {
       }
     },
 
-    bower_concat: {
-      options : {
-        sourceMap :true
-      },
-      all: {
-        dest: 'public/js/bower.js'
-      }
-    },
-
     uglify: {
       options: {
         mangle: true,
         compress: true
       },
-      bower: {
-        options: {
-          mangle: false,
-          compress: true
-        },
-        files: {
-          'dist/public/js/bower.min.js': 'dist/public/js/bower.js'
-        }
-      }
     },
 
     useminPrepare: {
@@ -57,6 +39,9 @@ module.exports = function(grunt) {
 	    html: {
 	    	src: 'public/index.html', dest: 'dist/public/index.html'
 	    },
+      favicon: {
+        src: 'public/favicon.ico', dest: 'dist/public/favicon.ico'
+      },
       bower: {
         src: 'public/js/bower.js', dest: 'dist/public/js/bower.js'
       },
