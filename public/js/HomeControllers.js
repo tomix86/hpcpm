@@ -1,4 +1,4 @@
-var app = angular.module('hpcpm-ui', ['restangular', 'ui.router', 'ngTable', 'ui.bootstrap', 'toaster', 'jsonFormatter']);
+var app = angular.module('hpcpm-ui', ['restangular', 'ui.router', 'ngTable', 'ui.bootstrap', 'toaster', 'jsonFormatter', 'chart.js', 'angularMoment', 'ui.bootstrap.datetimepicker']);
 
 
 app.config([
@@ -18,6 +18,11 @@ app.config([
                 params: {
                    node: null
                  }
+            })
+            .state('device_stats_show', {
+                url: '/node/:node_name/:device_id/statistics',
+                templateUrl: '/DeviceStatsShow.html',
+                controller: 'DeviceStatsShowController'
             });
 
         $urlRouterProvider.otherwise('/');

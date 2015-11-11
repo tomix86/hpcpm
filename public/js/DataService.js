@@ -24,6 +24,9 @@ function dataService(Restangular, EndpointsService) {
         },
         removeDevicePowerLimit: function(name, device_id) {
             return Restangular.one(EndpointsService.putPowerLimitUrl(), name).one(device_id, 'power_limit').remove();
+        },
+        getDeviceStatistics: function(name, device_id, begin_date, end_date) {
+            return Restangular.one(EndpointsService.getPowerLimitUrl(), name).one(device_id, 'statistics_data').get({date_time_begin: begin_date, date_time_end: end_date});
         }
     };
 }

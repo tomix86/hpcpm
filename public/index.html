@@ -39,12 +39,28 @@
                         ng-click="openSetPowerLimitModal(selectedNode, device.id)">Set power limit</button>
                     <button class="btn btn-danger btn-xs" type="button"
                         ng-click="openRemovePowerLimitModal(selectedNode, device.id)">Remove power limit</button>
+                    <a class="btn btn-danger btn-xs" ui-sref="device_stats_show({node_name: selectedNode, device_id: device.id})">Stats</a>
                 </td>
               </tr>
         </table>
     </div>
   </div>
   <div class="col-md-2"></div>
+</script>
+
+<script type="text/ng-template" id="/DeviceStatsShow.html">
+  <div class="col-md-8" style="padding-top: 30px" ng-controller="DeviceStatsShowController">
+    <div class="page-header">
+        <h1>Statistics chart for: {{node_name}}:{{device_id}}</h1>
+    </div>
+    <div>
+      <canvas id="bar" class="chart chart-bar" chart-data="data" chart-labels="labels">
+      </canvas>
+      <datetimepicker data-ng-model="date" data-on-set-time="onDateSet(newDate, oldDate)"></datetimepicker>
+      <button class="btn btn-danger btn-xs" type="button"
+          ng-click="getStats()">Get stats</button>
+    </div>
+  </div>
 </script>
 
 <script type="text/ng-template" id="NodeDetailsModal.html">
@@ -232,13 +248,20 @@
 <script src="bower_components/ng-table/dist/ng-table.min.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 <script src="bower_components/angularjs-toaster/toaster.min.js"></script>
+<script src="bower_components/Chart.js/Chart.min.js"></script>
+<script src="bower_components/angular-chart.js/dist/angular-chart.js"></script>
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/moment/min/moment.min.js"></script>
+<script src="bower_components/angular-moment/angular-moment.min.js"></script>
+<script src="bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
+
 <!-- endbuild -->
 
 <!-- build:js public/js/HPCPM.min.js -->
 <script src="js/HomeControllers.js"></script>
 <script src="js/DataService.js"></script>
+<script src="js/DeviceStatsShowController.js"></script>
 <script src="js/EndpointsService.js"></script>
 <script src="js/NewNodeController.js"></script>
 <script src="js/RemoveNodeController.js"></script>
@@ -253,6 +276,8 @@
 <link rel="stylesheet" type="text/css" href="bower_components/ng-table/dist/ng-table.min.css">
 <link rel="stylesheet" type="text/css" href="bower_components/angularjs-toaster/toaster.min.css">
 <link rel="stylesheet" type="text/css" href="bower_components/json-formatter/dist/json-formatter.css">
+<link rel="stylesheet" type="text/css" href="bower_components/angular-chart.js/dist/angular-chart.min.css">
+<link rel="stylesheet" type="text/css" href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css">
 <!-- endbuild -->
 
 </body>
