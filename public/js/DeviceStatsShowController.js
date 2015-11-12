@@ -1,7 +1,8 @@
 angular.module('hpcpm-ui').controller('DeviceStatsShowController', deviceStatsShowController);
-deviceStatsShowController.$inject = ['$scope', '$rootScope', 'DataService', '$stateParams', '$filter', 'amMoment'];
+deviceStatsShowController.$inject = ['$scope', '$rootScope', 'DataService', '$stateParams', '$filter', '$timeout', 'amMoment'];
 
-function deviceStatsShowController($scope, $rootScope, DataService, $stateParams, $filter, amMoment) {
+function deviceStatsShowController($scope, $rootScope, DataService, $stateParams, $filter, $timeout, amMoment) {
+  $scope.chartOptions = {showTooltips: false};
   $('#statsStartTime').combodate({
       minYear: 2008,
       minuteStep: 1,
@@ -25,17 +26,28 @@ function deviceStatsShowController($scope, $rootScope, DataService, $stateParams
     $scope.labels = [];
     $scope.series = ['power limit in watts'];
     DataService.getDeviceStatistics($scope.node_name, $scope.device_id, $scope.date.start.format('YYYY-MM-DDTHH:mm'), $scope.date.end.format('YYYY-MM-DDTHH:mm')).then(function(response) {
-      if(response != 404){
+      if(response != 404) {
+        var values = [[]];
+        var labels = [];
+        $scope.error = '';
         var data = response.plain();
         for (var i = 0; i < data.length; ++i) {
           for(var key in data[i]) {
-            $scope.labels.push(key);
-            $scope.data[0].push(data[i][key]);
+            labels.push(key);
+            values[0].push(data[i][key]);
           }
         }
+        $timeout(function() {
+            $scope.labels = labels;
+            $scope.data = values;
+        });
         $('#bar').css('display', 'inline');
       }
       else {
+        $timeout(function() {
+            $scope.labels = [];
+            $scope.data = [[]];
+        });
         $scope.error = 'No statistics data for given time span!';
       }
     });
