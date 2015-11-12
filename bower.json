@@ -20,7 +20,7 @@
   "dependencies": {
     "underscore": "~1.8.3",
     "restangular": "~1.5.1",
-    "angular": "angularjs#~1.4.6",
+    "angular": "angularjs#~1.4.7",
     "angular-resource": "~1.4.6",
     "angular-ui-router": "~0.2.15",
     "angular-bootstrap": "~0.14.0",
@@ -32,7 +32,7 @@
     "Chart.js": "~1.0.2",
     "moment": "~2.10.6",
     "angular-moment": "~0.10.3",
-    "angular-bootstrap-datetimepicker": "~0.3.15"
+    "combodate": "~1.1.0"
   },
   "resolutions": {
     "angular": "~1.4.6"

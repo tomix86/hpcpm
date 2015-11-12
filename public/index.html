@@ -4,6 +4,8 @@
 <head>
     <meta charset="utf-8">
     <title>HPC Power Management</title>
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
 </head>
 
 <script type="text/ng-template" id="/NodeDetails.html">
@@ -54,11 +56,22 @@
         <h1>Statistics chart for: {{node_name}}:{{device_id}}</h1>
     </div>
     <div>
-      <canvas id="bar" class="chart chart-bar" chart-data="data" chart-labels="labels">
-      </canvas>
-      <datetimepicker data-ng-model="date" data-on-set-time="onDateSet(newDate, oldDate)"></datetimepicker>
-      <button class="btn btn-danger btn-xs" type="button"
-          ng-click="getStats()">Get stats</button>
+      <div class="col-md-6">
+        <span title="Format: DD / MM / YY   HH:mm">Begin date (UTC):</span>
+        <input type="text" id="statsStartTime" data-format="DD-MM-YYYY HH:mm" data-template="DD / MM / YYYY     HH : mm" name="startdatetime">
+      </div>
+      <div class="col-md-6">
+        <span title="Format: DD / MM / YY   HH:mm">End date (UTC):</span>
+        <input type="text" id="statsEndTime" data-format="DD-MM-YYYY HH:mm" data-template="DD / MM / YYYY     HH : mm" name="enddatetime">
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-danger btn-xs" type="button" ng-click="getStats()">Get stats</button>
+      </div>
+      <div class="col-md-12" style="padding-top: 30px">
+        {{error}}
+        <canvas id="bar" class="chart chart-bar" chart-data="data" chart-labels="labels" style="display: none">
+        </canvas>
+      </div>      
     </div>
   </div>
 </script>
@@ -250,12 +263,10 @@
 <script src="bower_components/angularjs-toaster/toaster.min.js"></script>
 <script src="bower_components/Chart.js/Chart.min.js"></script>
 <script src="bower_components/angular-chart.js/dist/angular-chart.js"></script>
-<script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="bower_components/moment/min/moment.min.js"></script>
 <script src="bower_components/angular-moment/angular-moment.min.js"></script>
-<script src="bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
-
+<script src="bower_components/combodate/src/combodate.js"></script>
 <!-- endbuild -->
 
 <!-- build:js public/js/HPCPM.min.js -->
@@ -277,7 +288,7 @@
 <link rel="stylesheet" type="text/css" href="bower_components/angularjs-toaster/toaster.min.css">
 <link rel="stylesheet" type="text/css" href="bower_components/json-formatter/dist/json-formatter.css">
 <link rel="stylesheet" type="text/css" href="bower_components/angular-chart.js/dist/angular-chart.min.css">
-<link rel="stylesheet" type="text/css" href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css">
+<link rel="stylesheet" type="text/css" href="bower_components/ngQuickDate/dist/ng-quick-date.css">
 <!-- endbuild -->
 
 </body>

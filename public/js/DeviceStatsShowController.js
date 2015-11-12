@@ -2,27 +2,41 @@ angular.module('hpcpm-ui').controller('DeviceStatsShowController', deviceStatsSh
 deviceStatsShowController.$inject = ['$scope', '$rootScope', 'DataService', '$stateParams', '$filter', 'amMoment'];
 
 function deviceStatsShowController($scope, $rootScope, DataService, $stateParams, $filter, amMoment) {
+  $('#statsStartTime').combodate({
+      minYear: 2008,
+      minuteStep: 1,
+      value: moment().subtract(1, 'days').format('DD-MM-YYYY HH:mm')
+  });
+  $('#statsEndTime').combodate({
+      minYear: 2008,
+      minuteStep: 1,
+      value: moment().format('DD-MM-YYYY HH:mm')
+  });
   $scope.node_name = $stateParams.node_name;
   $scope.device_id = $stateParams.device_id;
   $scope.date = {};
-  $scope.labels = [];//[now.format('YYYY-MM-DD HH:mm'), now.add(5, 'm').format('YYYY-MM-DD HH:mm'), now.add(10, 'm').format('YYYY-MM-DD HH:mm'), now.add(15, 'm').format('YYYY-MM-DD HH:mm'), now.add(20, 'm').format('YYYY-MM-DD HH:mm'), now.add(25, 'm').format('YYYY-MM-DD HH:mm'), now.add(30, 'm').format('YYYY-MM-DD HH:mm'), now.add(35, 'm').format('YYYY-MM-DD HH:mm'), now.add(40, 'm').format('YYYY-MM-DD HH:mm'), now.add(45, 'm').format('YYYY-MM-DD HH:mm'), now.add(50, 'm').format('YYYY-MM-DD HH:mm')];
+  $scope.labels = [];
   $scope.series = ['power limit [W]'];
-  $scope.data = [
-    []
-    //[65, 59, 80, 81, 56, 55, 40,65, 59, 80, 11]
-  ];
-  $scope.onDateSet = function (newDate, oldDate) {
-    $scope.date.start = moment(newDate);
-    $scope.date.end = moment(oldDate);
-  };
+  $scope.data = [[]];
+
   $scope.getStats = function() {
+    $scope.date.start = $('#statsStartTime').combodate('getValue', null);
+    $scope.date.end = $('#statsEndTime').combodate('getValue', null);
+    $scope.data = [[]];
+    $scope.labels = [];
     DataService.getDeviceStatistics($scope.node_name, $scope.device_id, $scope.date.start.format('YYYY-MM-DDTHH:mm'), $scope.date.end.format('YYYY-MM-DDTHH:mm')).then(function(response) {
-      var data = response.plain();
-      for (var i = 0; i < data.length; ++i) {
-        for(var key in data[i]) {
-          $scope.labels.push(key);
-          $scope.data[0].push(data[i][key]);
+      if(response != 404){
+        var data = response.plain();
+        for (var i = 0; i < data.length; ++i) {
+          for(var key in data[i]) {
+            $scope.labels.push(key);
+            $scope.data[0].push(data[i][key]);
+          }
         }
+        $('#bar').css('display', 'inline');
+      }
+      else {
+        $scope.error = 'No statistics data for given time span!';
       }
     });
   };

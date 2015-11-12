@@ -1,4 +1,4 @@
-var app = angular.module('hpcpm-ui', ['restangular', 'ui.router', 'ngTable', 'ui.bootstrap', 'toaster', 'jsonFormatter', 'chart.js', 'angularMoment', 'ui.bootstrap.datetimepicker']);
+var app = angular.module('hpcpm-ui', ['restangular', 'ui.router', 'ngTable', 'ui.bootstrap', 'toaster', 'jsonFormatter', 'chart.js', 'angularMoment']);
 
 
 app.config([
@@ -47,7 +47,6 @@ function bodyController($scope, $state, $uibModal, $log) {
 
 }
 
-
 var NodesController = app.controller('NodesController', nodesController);
 nodesController.$inject = ['$scope', '$filter', 'NgTableParams', 'DataService', '$uibModal', '$timeout'];
 function nodesController($scope, $filter, NgTableParams, DataService, $uibModal, $timeout) {
@@ -84,7 +83,6 @@ function nodesController($scope, $filter, NgTableParams, DataService, $uibModal,
         });
     };
 
-    // Function to replicate setInterval using $timeout service.
     $scope.intervalFunction = function () {
         $timeout(function () {
             $scope.tableParams.reload();
@@ -92,7 +90,6 @@ function nodesController($scope, $filter, NgTableParams, DataService, $uibModal,
         }, 5000);
     };
 
-    // Kick off the interval
     $scope.intervalFunction();
 
 }
