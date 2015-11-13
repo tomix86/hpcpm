@@ -1,5 +1,5 @@
 #include "core/Core.hpp"
-#include "core/ArgsParser.hpp"
+#include "utility/ArgsParser.hpp"
 #include "utility/ConfigLoader.hpp"
 #include "utility/Exceptions.hpp"
 #include "utility/Logging.hpp"
@@ -8,7 +8,7 @@
 int main ( int argc, const char** argv ) {
 	utility::logging::setDefaultConfiguration();
 
-	core::ArgsParser argsParser;
+	utility::ArgsParser argsParser;
 
 	std::string configFilePath;
 	argsParser.addOption( "config", "path to config file", 'c' )

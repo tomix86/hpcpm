@@ -1,12 +1,12 @@
 #pragma once
-#include "QueryHandler.hpp"
+#include "Query.hpp"
 #include "utility/Functional.hpp"
 
 namespace core {
 
-class GetPowerLimitPercentageQueryHandler : public QueryHandler {
+class GetPowerLimitPercentageQuery : public Query {
 public:
-	class Result : public QueryHandler::Result {
+	class Result : public Query::Result {
 	public:
 		std::string serialize( void ) const final {
 			auto object = serializeDeviceIdentifierToJsonObject( deviceIdentifier );
@@ -15,18 +15,16 @@ public:
 		}
 
 	private:
-		friend class GetPowerLimitPercentageQueryHandler;
+		friend class GetPowerLimitPercentageQuery;
 
 		devices::DeviceIdentifier deviceIdentifier;
 		devices::Percentage powerLimit;
 	};
 
-	GetPowerLimitPercentageQueryHandler( std::shared_ptr<devices::DevicesManager> devicesManager ) :
-			QueryHandler( devicesManager ) {
-	}
+	std::string getTypeName( void ) const final { return "GetPowerLimitPercentage"; }
 
-	QueryHandler::Result::Ptr handle( Query query ) final {
-		auto& dev = devicesManager->getDeviceByIdentifier( query.getDeviceIdentifier() );
+	Query::Result::Ptr execute( std::shared_ptr<devices::DevicesManager> devicesManager ) const final {
+		auto& dev = devicesManager->getDeviceByIdentifier( getDeviceIdentifier() );
 		auto result = std::make_shared<Result>();
 		result->powerLimit = dev.getCurrentPowerLimitPercentage();
 		result->deviceIdentifier = dev.getInfo().identifier;

@@ -11,18 +11,19 @@ public:
 
 protected:
 	// Query string syntax: should be empty
-	std::vector<core::Query> splitIntoQueries( http_request request ) final {
+	std::vector<core::Query::Ptr> splitIntoQueries( http_request request ) final {
 		if ( ! request.request_uri().query().empty() ) {
 			LOG( WARNING ) << "Query string should be empty but it's not, it contains: "
 						   << request.request_uri().query();
 		}
 
-		std::vector<core::Query> queries{ 1, core::Query::Type::GetNodeInformation };
+		auto query = core::QueryFactory::createQuery( core::QueryType::GetNodeInformation );
+		std::vector<core::Query::Ptr> queries{ 1, query  };
 
 		return queries;
 	}
 
-	http_response serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr> result ) final {
+	http_response serializeQueriesResults( std::vector<core::Query::Result::Ptr> result ) final {
 		http_response response;
 		response.set_body( result[0]->serialize(), JSON_RESPONSE_TYPE );
 		return response;

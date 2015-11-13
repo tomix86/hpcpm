@@ -4,7 +4,7 @@
 #include "Option.hpp"
 #include "ParserExceptions.hpp"
 
-namespace core {
+namespace utility {
 
 class ArgsParser {
 public:
@@ -44,4 +44,4 @@ private:
 	bool hasValue( std::string opstr );
 };
 
-} // namespace core
+} // namespace utility

@@ -28,7 +28,7 @@ protected:
 	static std::ostringstream sink;
 };
 
-class MockQueryResult : public core::QueryHandler::Result {
+class MockQueryResult : public core::Query::Result {
 public:
 	MOCK_CONST_METHOD0( serialize, std::string ( void ) );
 };

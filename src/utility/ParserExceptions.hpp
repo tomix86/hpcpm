@@ -1,7 +1,7 @@
 #pragma once
 #include "utility/Exceptions.hpp"
 
-namespace core {
+namespace utility {
 
 class ArgsParserException : public utility::RuntimeError {
 public:
@@ -42,4 +42,4 @@ class OptionRedefinitionException : public utility::LogicError {
 public:
 	OptionRedefinitionException( std::string source, std::string msg ) : utility::LogicError( source, msg ) { }
 };
-} // namespace core
+} // namespace utility

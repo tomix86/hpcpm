@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include "core/ArgsParser.hpp"
+#include "utility/ArgsParser.hpp"
 
 void mockCallback(std::string) { }
 bool mockFailingValidator(std::string) { return false; }
 
 TEST(ArgsParserTestSuite, ParsingSuccessful) {
-	core::ArgsParser argsParser;
+	utility::ArgsParser argsParser;
 
 	argsParser.addOption("tt", "test", 't')
 		.setCallback(mockCallback);
@@ -21,7 +21,7 @@ TEST(ArgsParserTestSuite, ParsingSuccessful) {
 }
 
 TEST(ArgsParserTestSuite, NonexistentOption) {
-	core::ArgsParser argsParser;
+	utility::ArgsParser argsParser;
 
 	argsParser.addOption("tt", "test", 't');
 
@@ -30,14 +30,14 @@ TEST(ArgsParserTestSuite, NonexistentOption) {
 
 	std::streambuf* oldcerr = std::cerr.rdbuf(nullptr);
 	std::streambuf* oldcout = std::cout.rdbuf(nullptr);
-	ASSERT_THROW(argsParser.parse(2, argv), core::InvalidOptionException);
-	ASSERT_THROW(argsParser.parse(2, argv2), core::InvalidOptionException);
+	ASSERT_THROW(argsParser.parse(2, argv), utility::InvalidOptionException);
+	ASSERT_THROW(argsParser.parse(2, argv2), utility::InvalidOptionException);
 	std::cerr.rdbuf(oldcerr);
 	std::cout.rdbuf(oldcout);
 }
 
 TEST(ArgsParserTestSuite, InvalidCommandLineSyntax) {
-	core::ArgsParser argsParser;
+	utility::ArgsParser argsParser;
 
 	argsParser.addOption("tt", "test", 't');
 
@@ -47,15 +47,15 @@ TEST(ArgsParserTestSuite, InvalidCommandLineSyntax) {
 
 	std::streambuf* oldcerr = std::cerr.rdbuf(nullptr);
 	std::streambuf* oldcout = std::cout.rdbuf(nullptr);
-	ASSERT_THROW(argsParser.parse(2, argv), core::InvalidOptionSyntaxException);
-	ASSERT_THROW(argsParser.parse(2, argv2), core::InvalidOptionSyntaxException);
-	ASSERT_THROW(argsParser.parse(2, argv3), core::InvalidOptionSyntaxException);
+	ASSERT_THROW(argsParser.parse(2, argv), utility::InvalidOptionSyntaxException);
+	ASSERT_THROW(argsParser.parse(2, argv2), utility::InvalidOptionSyntaxException);
+	ASSERT_THROW(argsParser.parse(2, argv3), utility::InvalidOptionSyntaxException);
 	std::cerr.rdbuf(oldcerr);
 	std::cout.rdbuf(oldcout);
 }
 
 TEST(ArgsParserTestSuite, OptionValueValidationFailed) {
-	core::ArgsParser argsParser;
+	utility::ArgsParser argsParser;
 
 	argsParser.addOption("tt", "test", 't')
 		.setValidator(mockFailingValidator);
@@ -64,13 +64,13 @@ TEST(ArgsParserTestSuite, OptionValueValidationFailed) {
 
 	std::streambuf* oldcerr = std::cerr.rdbuf(nullptr);
 	std::streambuf* oldcout = std::cout.rdbuf(nullptr);
-	ASSERT_THROW(argsParser.parse(2, argv), core::ValidatorException);
+	ASSERT_THROW(argsParser.parse(2, argv), utility::ValidatorException);
 	std::cerr.rdbuf(oldcerr);
 	std::cout.rdbuf(oldcout);
 }
 
 TEST(ArgsParserTestSuite, RequiredOptionNotSupplied) {
-	core::ArgsParser argsParser;
+	utility::ArgsParser argsParser;
 
 	argsParser.addOption("tt", "test", 't')
 		.setRequired(true);
@@ -82,16 +82,16 @@ TEST(ArgsParserTestSuite, RequiredOptionNotSupplied) {
 
 	std::streambuf* oldcerr = std::cerr.rdbuf(nullptr);
 	std::streambuf* oldcout = std::cout.rdbuf(nullptr);
-	ASSERT_THROW(argsParser.parse(2, argv), core::RequiredOptionOmittedException);
+	ASSERT_THROW(argsParser.parse(2, argv), utility::RequiredOptionOmittedException);
 	std::cerr.rdbuf(oldcerr);
 	std::cout.rdbuf(oldcout);
 }
 
 TEST(ArgsParserTestSuite, NameRedefinition) {
-	core::ArgsParser argsParser;
+	utility::ArgsParser argsParser;
 
 	argsParser.addOption("tt", "test", 't');
 
-	ASSERT_THROW(argsParser.addOption("tt", "test", 'p'), core::OptionRedefinitionException);
-	ASSERT_THROW(argsParser.addOption("ts", "test", 't'), core::OptionRedefinitionException);
+	ASSERT_THROW(argsParser.addOption("tt", "test", 'p'), utility::OptionRedefinitionException);
+	ASSERT_THROW(argsParser.addOption("ts", "test", 't'), utility::OptionRedefinitionException);
 }

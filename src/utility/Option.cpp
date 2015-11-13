@@ -1,6 +1,6 @@
 #include "Option.hpp"
 
-namespace core{
+namespace utility {
 
 bool nullValidator( std::string ) {
 	return true;
@@ -65,4 +65,4 @@ Option& Option::setRequired( bool value ) {
 	return *this;
 }
 
-} // namespace core
+} // namespace utility

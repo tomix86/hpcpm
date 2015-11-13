@@ -4,7 +4,7 @@
 class SetDeviceParamHandlerAccessor: public SetDeviceParamHandler {
 public:
 	SetDeviceParamHandlerAccessor( std::string regex ) :
-		SetDeviceParamHandler{ nullptr, core::Query::Type::None, regex } {
+		SetDeviceParamHandler{ nullptr, core::QueryType::GetNodeInformation, regex } {
 	}
 
 	using SetDeviceParamHandler::splitIntoQueries;
@@ -37,13 +37,13 @@ TEST_F( RequestHandlersTestSuite, SetDeviceParamHandler_SplittingTest ) {
 	http_request req;
 	req.set_request_uri( "http://localhost:1234/power_limit?NvidiaTesla,GPU-7cf39d4a-359b-5922-79a9-049ebd8a7ca5=1&IntelXeon,2=2&IntelXeonPhi,af321e60ddd21877bbd8dc7128ff66f3=3" );
 
-	std::vector<Query> queries;
+	std::vector<Query::Ptr> queries;
 	ASSERT_NO_THROW( queries = handler.splitIntoQueries( req ) );
 	ASSERT_EQ( 3, queries.size() );
-	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::NvidiaTesla, "GPU-7cf39d4a-359b-5922-79a9-049ebd8a7ca5" ), queries[ 0 ].getDeviceIdentifier() );
-	ASSERT_STREQ( "1", queries[ 0 ].getArgument().c_str() );
-	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::IntelXeon, "2" ), queries[ 1 ].getDeviceIdentifier() );
-	ASSERT_STREQ( "2", queries[ 1 ].getArgument().c_str() );
-	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::IntelXeonPhi, "af321e60ddd21877bbd8dc7128ff66f3" ), queries[ 2 ].getDeviceIdentifier() );
-	ASSERT_STREQ( "3", queries[ 2 ].getArgument().c_str() );
+	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::NvidiaTesla, "GPU-7cf39d4a-359b-5922-79a9-049ebd8a7ca5" ), queries[ 0 ]->getDeviceIdentifier() );
+	ASSERT_STREQ( "1", queries[ 0 ]->getArgument().c_str() );
+	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::IntelXeon, "2" ), queries[ 1 ]->getDeviceIdentifier() );
+	ASSERT_STREQ( "2", queries[ 1 ]->getArgument().c_str() );
+	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::IntelXeonPhi, "af321e60ddd21877bbd8dc7128ff66f3" ), queries[ 2 ]->getDeviceIdentifier() );
+	ASSERT_STREQ( "3", queries[ 2 ]->getArgument().c_str() );
 }

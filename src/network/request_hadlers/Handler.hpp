@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "core/QueryExecutor.hpp"
+#include "core/queries/QueryFactory.hpp"
 #include "network/cpprest.hpp"
 #include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
@@ -30,9 +31,9 @@ protected:
 
 	core::QueryExecutor::Ptr queryExecutor;
 
-	virtual std::vector<core::Query> splitIntoQueries( http_request request ) = 0;
+	virtual std::vector<core::Query::Ptr> splitIntoQueries( http_request request ) = 0;
 
-	virtual http_response serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr> result );
+	virtual http_response serializeQueriesResults( std::vector<core::Query::Result::Ptr> result );
 
 	constexpr static const char* NvidiaTeslaIdRegex = "GPU-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	constexpr static const char* IntelXeonIdRegex = "[0-9]";

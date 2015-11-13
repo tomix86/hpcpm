@@ -2,7 +2,7 @@
 #include <string>
 #include <functional>
 
-namespace core {
+namespace utility {
 
 class Option {
 private:
@@ -33,4 +33,4 @@ private:
 	bool required;
 };
 
-} // namespace core
+} // namespace utility

@@ -4,7 +4,7 @@
 namespace network {
 namespace handlers {
 
-SetDeviceParamHandler::SetDeviceParamHandler( core::QueryExecutor::Ptr queryExecutor, core::Query::Type queryType, std::string paramRegex ) :
+SetDeviceParamHandler::SetDeviceParamHandler( core::QueryExecutor::Ptr queryExecutor, core::QueryType queryType, std::string paramRegex ) :
 		Handler{ queryExecutor },
 		queryType{ queryType },
 		paramRegex{ paramRegex } {
@@ -13,7 +13,7 @@ SetDeviceParamHandler::SetDeviceParamHandler( core::QueryExecutor::Ptr queryExec
 SetDeviceParamHandler::~SetDeviceParamHandler( void ) {
 }
 
-std::vector<core::Query> SetDeviceParamHandler::splitIntoQueries( http_request request ) {
+std::vector<core::Query::Ptr> SetDeviceParamHandler::splitIntoQueries( http_request request ) {
 	auto queryString = request.request_uri().query();
 	if ( queryString.empty() ) {
 		LOG ( WARNING ) << "Query string was empty.";
@@ -23,16 +23,16 @@ std::vector<core::Query> SetDeviceParamHandler::splitIntoQueries( http_request r
 		throw MalformedQueryException( "SetDeviceParamHandler::splitIntoQueries", "malformed query string: " + queryString );
 	}
 
-	std::vector<core::Query> queries;
+	std::vector<core::Query::Ptr> queries;
 	for( auto devString : utility::tokenizeString( queryString, '&' ) ) {
 		auto tokenizedDevString  = utility::tokenizeString( devString, '=' );
 
 		auto tokenizedDevIdString = utility::tokenizeString( tokenizedDevString.at( 0 ), ',' );
-		core::Query query{ queryType };
-		query.setDeviceIdentifier( { tokenizedDevIdString.at( 0 ), tokenizedDevIdString.at( 1 ) } );
+		auto query = core::QueryFactory::createQuery( queryType );
+		query->setDeviceIdentifier( { tokenizedDevIdString.at( 0 ), tokenizedDevIdString.at( 1 ) } );
 
 		auto queryArgument = tokenizedDevString.at( 1 );
-		query.setArgument( queryArgument );
+		query->setArgument( queryArgument );
 
 		queries.push_back( query );
 	}

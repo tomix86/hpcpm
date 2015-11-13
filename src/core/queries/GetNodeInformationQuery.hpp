@@ -3,13 +3,13 @@ extern "C" {
 	#include <sys/utsname.h>
 }
 #include "network/cpprest.hpp"
-#include "QueryHandler.hpp"
+#include "Query.hpp"
 
 namespace core {
 
-class GetNodeInformationQueryHandler : public QueryHandler {
+class GetNodeInformationQuery : public Query {
 public:
-	class Result : public QueryHandler::Result {
+	class Result : public Query::Result {
 	public:
 		std::string serialize( void ) const final {
 			web::json::value mainObject;
@@ -40,20 +40,16 @@ public:
 		}
 
 	private:
-		friend class GetNodeInformationQueryHandler;
+		friend class GetNodeInformationQuery;
 
 		utsname sysInfo;
 		std::vector<devices::Device::Ptr> devices;
 		devices::SupportedLibraries supportedLibraries;
 	};
 
-	GetNodeInformationQueryHandler( std::shared_ptr<devices::DevicesManager> devicesManager ) :
-			QueryHandler( devicesManager ) {
-	}
+	std::string getTypeName( void ) const final { return "GetNodeInformation"; }
 
-	QueryHandler::Result::Ptr handle( Query query ) final {
-		(void)query; //cast to avoid unused-parameter warning
-
+	Query::Result::Ptr execute( std::shared_ptr<devices::DevicesManager> devicesManager ) const final {
 		auto result = std::make_shared<Result>();
 		uname( &result->sysInfo );
 

@@ -1,7 +1,7 @@
 #pragma once
 #include <boost/noncopyable.hpp>
 #include <map>
-#include "query_handlers/QueryHandler.hpp"
+#include "queries/Query.hpp"
 
 namespace core {
 
@@ -12,9 +12,9 @@ public:
 	QueryExecutor( std::shared_ptr<devices::DevicesManager> devicesManager );
 	virtual ~QueryExecutor( void ) {}
 
-	virtual QueryHandler::Result::Ptr execute( Query query );
+	virtual Query::Result::Ptr execute( Query::Ptr query );
 
 protected:
-	std::map<Query::Type, std::unique_ptr<QueryHandler>> queryHandlers;
+	std::shared_ptr<devices::DevicesManager> m_devicesManager;
 };
 } // namespace core

@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "core/QueryExecutor.hpp"
-#include "core/query_handlers/GetNodeInformationQueryHandler.hpp"
-#include "core/query_handlers/GetPowerLimitQueryHandler.hpp"
+#include "core/queries/QueryFactory.hpp"
 #include "devices/IntelXeon/IntelXeonDevice.hpp"
 #include "devices/IntelXeon/MockNMPRKCommunicationProvider.hpp"
 #include "devices/IntelXeonPhi/IntelXeonPhiDevice.hpp"
@@ -70,22 +69,7 @@ protected:
 	std::shared_ptr<MockDevicesManager2> devicesManager2;
 };
 
-TEST_F( QueryExecutorTestSuite, InvalidQueryTypeExecutionTest ) {
-	std::ostringstream sink;
-	auto oldBuf = std::cout.rdbuf( sink.rdbuf() );
-
-	QueryExecutor queryExecutor{ nullptr };
-	core::QueryHandler::NullResult null;
-	Query q( Query::Type::None );
-	ASSERT_STREQ( null.serialize().c_str(), queryExecutor.execute( q )->serialize().c_str() );
-	ASSERT_TRUE( sink.str().find( "ERROR: Invalid query type" ) != std::string::npos );
-
-	std::cout.rdbuf( oldBuf );
-}
-
 TEST_F( QueryExecutorTestSuite, GetNodeInformation ) {
-	GetNodeInformationQueryHandler handler{ devicesManager };
-
 	std::vector<devices::Device::Ptr> devs;
 	devs.push_back( std::make_shared<MockIntelXeonDevice>( "123" ) );
 	devs.push_back( std::make_shared<MockIntelXeonDevice>( "456" ) );
@@ -93,15 +77,14 @@ TEST_F( QueryExecutorTestSuite, GetNodeInformation ) {
 	EXPECT_CALL( *devicesManager, getDevicesList() )
 		.WillOnce( ::testing::ReturnRef( devs ) );
 
-	GetNodeInformationQueryHandler::Result::Ptr result;
-	ASSERT_NO_THROW( result = handler.handle( Query{ Query::Type::GetNodeInformation } ) );
+	auto query = core::QueryFactory::createQuery( QueryType::GetNodeInformation );
+	GetNodeInformationQuery::Result::Ptr result;
+	ASSERT_NO_THROW( result = query->execute( devicesManager ) );
 	ASSERT_TRUE( result->serialize().find( "\"Type\":\"IntelXeon\",\"id\":\"123\"" ) != std::string::npos );
 	ASSERT_TRUE( result->serialize().find( "\"Type\":\"IntelXeon\",\"id\":\"456\"" ) != std::string::npos );
 }
 
 TEST_F( QueryExecutorTestSuite, GetPowerLimit ) {
-	GetPowerLimitQueryHandler handler{ devicesManager2 };
-
 	EXPECT_CALL( devicesManager2->deviceMock, getCurrentPowerLimit() )
 		.WillOnce( ::testing::Return( devices::Power{ 1000 } ) );
 
@@ -111,7 +94,7 @@ TEST_F( QueryExecutorTestSuite, GetPowerLimit ) {
 	EXPECT_CALL( devicesManager2->deviceMock, getInfo() )
 		.WillOnce( ::testing::ReturnRef( info ) );
 
-	Query query{ Query::Type::GetPowerLimit };
-	query.setDeviceIdentifier( deviceIdentifier );
-	ASSERT_STREQ( "{\"PowerLimit\":1000,\"Type\":\"IntelXeon\",\"id\":\"0\"}", handler.handle( query )->serialize().c_str() );
+	auto query = core::QueryFactory::createQuery( QueryType::GetPowerLimit );
+	query->setDeviceIdentifier( deviceIdentifier );
+	ASSERT_STREQ( "{\"PowerLimit\":1000,\"Type\":\"IntelXeon\",\"id\":\"0\"}", query->execute( devicesManager2 )->serialize().c_str() );
 }

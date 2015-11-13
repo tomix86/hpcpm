@@ -1,11 +1,11 @@
 #pragma once
-#include "QueryHandler.hpp"
+#include "Query.hpp"
 
 namespace core {
 
-class SetPowerLimitQueryHandler : public QueryHandler {
+class SetPowerLimitQuery : public Query {
 public:
-	class Result : public QueryHandler::Result {
+	class Result : public Query::Result {
 	public:
 		std::string serialize( void ) const final {
 			auto object = serializeDeviceIdentifierToJsonObject( deviceIdentifier );
@@ -14,23 +14,21 @@ public:
 		}
 
 	private:
-		friend class SetPowerLimitQueryHandler;
+		friend class SetPowerLimitQuery;
 
 		devices::DeviceIdentifier deviceIdentifier;
 		std::string status;
 	};
 
-	SetPowerLimitQueryHandler( std::shared_ptr<devices::DevicesManager> devicesManager ) :
-			QueryHandler( devicesManager ) {
-	}
+	std::string getTypeName( void ) const final { return "SetPowerLimit"; }
 
-	QueryHandler::Result::Ptr handle( Query query ) final {
-		auto& dev = devicesManager->getDeviceByIdentifier( query.getDeviceIdentifier() );
+	Query::Result::Ptr execute( std::shared_ptr<devices::DevicesManager> devicesManager ) const final {
+		auto& dev = devicesManager->getDeviceByIdentifier( getDeviceIdentifier() );
 		auto result = std::make_shared<Result>();
 		result->deviceIdentifier = dev.getInfo().identifier;
 
 		try {
-			unsigned arg = std::stoi( query.getArgument() );
+			unsigned arg = std::stoi( getArgument() );
 			dev.setPowerLimit( arg );
 			result->status = "Success";
 		}

@@ -11,16 +11,16 @@ struct GetNodeInformationHandlerAccessor : public GetNodeInformationHandler {
 };
 
 TEST_F( RequestHandlersTestSuite, GetNodeInformationHandler_ValidURISplittingTest ) {
-	std::vector<Query> queries;
+	std::vector<Query::Ptr> queries;
 	GetNodeInformationHandlerAccessor handler;
 
 	ASSERT_NO_THROW( queries = handler.splitIntoQueries( http_request{} ) );
 	ASSERT_EQ( 1, queries.size() );
-	ASSERT_EQ( Query::Type::GetNodeInformation, queries[0].getType() );
+	ASSERT_STREQ( "GetNodeInformation", queries[0]->getTypeName().c_str() );
 }
 
 TEST_F( RequestHandlersTestSuite, GetNodeInformationHandler_InvalidURISplittingTest ) {
-	std::vector<Query> queries;
+	std::vector<Query::Ptr> queries;
 	GetNodeInformationHandlerAccessor handler;
 
 	http_request req;
@@ -28,7 +28,7 @@ TEST_F( RequestHandlersTestSuite, GetNodeInformationHandler_InvalidURISplittingT
 
 	ASSERT_NO_THROW( queries = handler.splitIntoQueries( req ) );
 	ASSERT_EQ( 1, queries.size() );
-	ASSERT_EQ( Query::Type::GetNodeInformation, queries[0].getType() );
+	ASSERT_STREQ( "GetNodeInformation", queries[0]->getTypeName().c_str() );
 	ASSERT_STREQ( "WARN : Query string should be empty but it's not, it contains: test\n", sink.str().c_str() );
 }
 
@@ -36,7 +36,7 @@ TEST_F( RequestHandlersTestSuite, GetNodeInformationHandler_SerializationTest ) 
 	GetNodeInformationHandlerAccessor handler;
 
 	auto result1 = std::make_shared<MockQueryResult>();
-	std::vector<core::QueryHandler::Result::Ptr> input;
+	std::vector<core::Query::Result::Ptr> input;
 	input.push_back( result1 );
 
 	std::string s1 = "{\"Type\":\"IntelXeon\",\"id\":\"0\"}";

@@ -18,7 +18,7 @@ public:
 	core::QueryExecutor{ std::make_shared<MockDevicesManager>() } {
 	}
 
-	MOCK_METHOD1( execute, core::QueryHandler::Result::Ptr( Query ) );
+	MOCK_METHOD1( execute, core::Query::Result::Ptr( core::Query::Ptr ) );
 };
 
 class MockHandler : public Handler {
@@ -27,8 +27,8 @@ public:
 		Handler( queryExecutor ) {
 	}
 
-	MOCK_METHOD1( splitIntoQueries, std::vector<Query>( http_request request ) );
-	MOCK_METHOD1( serializeQueriesResults, http_response( std::vector<core::QueryHandler::Result::Ptr> ) );
+	MOCK_METHOD1( splitIntoQueries, std::vector<Query::Ptr>( http_request request ) );
+	MOCK_METHOD1( serializeQueriesResults, http_response( std::vector<core::Query::Result::Ptr> ) );
 };
 
 //This class is needed for ResponseTest and MultipleQueries test
@@ -40,7 +40,7 @@ public:
 	executionResult{ result } {
 	}
 
-	core::QueryHandler::Result::Ptr execute( Query query ) {
+	core::Query::Result::Ptr execute( Query::Ptr query ) {
 		(void)query;
 		return executionResult;
 	}
@@ -53,12 +53,12 @@ TEST_F( RequestHandlersTestSuite, ResponseTest ) {
 	MockHandler handler( std::make_shared<MockQueryExecutor2>( queryResult ) );
 
 	EXPECT_CALL( handler, splitIntoQueries( testing::_ ) )
-		.WillOnce( testing::Return( std::vector<Query>{ Query{ Query::Type::GetNodeInformation } } ) );
+		.WillOnce( testing::Return( std::vector<Query::Ptr>{ core::QueryFactory::createQuery( core::QueryType::GetNodeInformation ) } ) );
 
 	http_response serializationResult( status_codes::OK );
 	serializationResult.set_body( "Misza" );
 
-	EXPECT_CALL( handler, serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr>{ queryResult } ) )
+	EXPECT_CALL( handler, serializeQueriesResults( std::vector<core::Query::Result::Ptr>{ queryResult } ) )
 		.WillOnce( testing::Return( serializationResult ) );
 
 	http_response result;
@@ -72,9 +72,9 @@ TEST_F( RequestHandlersTestSuite, MultipleQueriesTest ) {
 	MockHandler handler( std::make_shared<MockQueryExecutor2>( queryResult ) );
 
 	EXPECT_CALL( handler, splitIntoQueries( testing::_ ) )
-		.WillOnce( testing::Return( std::vector<Query>{ 5, Query{ Query::Type::GetNodeInformation } } ) );
+		.WillOnce( testing::Return( std::vector<Query::Ptr>{ 5,core::QueryFactory::createQuery( core::QueryType::GetNodeInformation ) } ) );
 
-	EXPECT_CALL( handler, serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr>{ 5, queryResult } ) );
+	EXPECT_CALL( handler, serializeQueriesResults( std::vector<core::Query::Result::Ptr>{ 5, queryResult } ) );
 
 	ASSERT_NO_THROW( handler.handle( http_request{} ) );
 }
@@ -149,9 +149,9 @@ struct BaseHandlerAccessor : public Handler {
 	Handler{ nullptr } {
 	}
 
-	std::vector<core::Query> splitIntoQueries( http_request request ) {
+	std::vector<core::Query::Ptr> splitIntoQueries( http_request request ) {
 		(void)request;
-		return std::vector<core::Query>{};
+		return {};
 	}
 
 	using Handler::serializeQueriesResults;
@@ -162,7 +162,7 @@ TEST_F( RequestHandlersTestSuite, SerializationTest ) {
 
 	auto result1 = std::make_shared<MockQueryResult>();
 	auto result2 = std::make_shared<MockQueryResult>();
-	std::vector<core::QueryHandler::Result::Ptr> input;
+	std::vector<core::Query::Result::Ptr> input;
 	input.push_back( result1 );
 	input.push_back( result2 );
 

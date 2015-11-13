@@ -25,7 +25,7 @@ http_response Handler::handle( http_request request ) {
 	}
 }
 
-http_response Handler::serializeQueriesResults( std::vector<core::QueryHandler::Result::Ptr> result ) {
+http_response Handler::serializeQueriesResults( std::vector<core::Query::Result::Ptr> result ) {
 	web::json::value array;
 	for ( auto element : result ) {
 		array[ array.size() ] = web::json::value::parse( element->serialize() );
@@ -39,7 +39,7 @@ http_response Handler::serializeQueriesResults( std::vector<core::QueryHandler::
 http_response Handler::process( http_request request ) {
 	auto queries = splitIntoQueries( request );
 
-	std::vector<core::QueryHandler::Result::Ptr> results;
+	std::vector<core::Query::Result::Ptr> results;
 	for ( auto& query : queries ) {
 		results.push_back( queryExecutor->execute( query ) );
 	}

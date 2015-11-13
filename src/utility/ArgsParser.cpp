@@ -3,7 +3,7 @@
 #include "ArgsParser.hpp"
 #include "ParserExceptions.hpp"
 
-namespace core {
+namespace utility {
 ArgsParser::ArgsParser( void ) {
 	addOption( "help", "Shows all available options.", 'h' )
 		.setCallback( std::bind( &ArgsParser::showUsageInfoAdapter, this, std::placeholders::_1 ) );
@@ -204,4 +204,4 @@ bool ArgsParser::isLongOption( std::string opstr ) {
 bool ArgsParser::hasValue( std::string opstr ) {
 	return opstr.find( '=' ) != std::string::npos;
 }
-} // namespace core
+} // namespace utility

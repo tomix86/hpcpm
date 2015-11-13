@@ -4,7 +4,7 @@
 class GetInfoFromDeviceHandlerAccessor : public GetInfoFromDeviceHandler {
 public:
 	GetInfoFromDeviceHandlerAccessor( void ) :
-		GetInfoFromDeviceHandler{ nullptr, Query::Type::None } {
+		GetInfoFromDeviceHandler{ nullptr, core::QueryType::GetNodeInformation } {
 	}
 
 	using GetInfoFromDeviceHandler::splitIntoQueries;
@@ -36,10 +36,10 @@ TEST_F( RequestHandlersTestSuite, GetInfoFromDeviceHandler_SplittingTest ) {
 	http_request req;
 	req.set_request_uri( "http://localhost:1234/power_limit?NvidiaTesla=GPU-7cf39d4a-359b-5922-79a9-049ebd8a7ca5&IntelXeon=5&IntelXeonPhi=af321e60ddd21877bbd8dc7128ff66f3" );
 
-	std::vector<Query> queries;
+	std::vector<Query::Ptr> queries;
 	ASSERT_NO_THROW( queries = handler.splitIntoQueries( req ) );
 	ASSERT_EQ( 3, queries.size() );
-	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::NvidiaTesla, "GPU-7cf39d4a-359b-5922-79a9-049ebd8a7ca5" ), queries[ 0 ].getDeviceIdentifier() );
-	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::IntelXeon, "5" ), queries[ 1 ].getDeviceIdentifier() );
-	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::IntelXeonPhi, "af321e60ddd21877bbd8dc7128ff66f3" ), queries[ 2 ].getDeviceIdentifier() );
+	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::NvidiaTesla, "GPU-7cf39d4a-359b-5922-79a9-049ebd8a7ca5" ), queries[ 0 ]->getDeviceIdentifier() );
+	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::IntelXeon, "5" ), queries[ 1 ]->getDeviceIdentifier() );
+	ASSERT_EQ( devices::DeviceIdentifier( devices::DeviceType::IntelXeonPhi, "af321e60ddd21877bbd8dc7128ff66f3" ), queries[ 2 ]->getDeviceIdentifier() );
 }
