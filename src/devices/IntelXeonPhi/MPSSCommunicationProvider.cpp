@@ -8,20 +8,19 @@
 #include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
-#define S( x ) #x
-#define STR( x ) S( x )
-#define MPSS_ERROR_CHECK( statusCode ) checkMPSSErrors( "MPSS error at line:" STR( __LINE__ ), statusCode )
-
 namespace devices {
 
 MPSSProxy MPSSCommunicationProvider::proxy;
 
 MPSSCommunicationProvider::MPSSCommunicationProvider( DeviceIdentifier::idType id ) :
-		deviceHandle{ getDeviceById( id ) } {
+		device{ getDeviceById( id ) },
+		powerLimitHelper{ device } {
 }
 
 bool MPSSCommunicationProvider::init( void ) {
-	return proxy.init();
+	auto returnVal = proxy.init();
+	MPSSPowerLimitHelper::init( proxy );
+	return returnVal;
 }
 
 bool MPSSCommunicationProvider::shutdown( void ) {
@@ -29,41 +28,15 @@ bool MPSSCommunicationProvider::shutdown( void ) {
 }
 
 unsigned MPSSCommunicationProvider::getCurrentPowerLimit( void ) const {
-	mic_power_limit* powerLimit;
-	proxy.mic_get_power_limit( deviceHandle.get(), &powerLimit );
-	std::shared_ptr<mic_power_limit> powerLimitRAIIGuard{ powerLimit, []( mic_power_limit* ptr ) { proxy.mic_free_power_limit( ptr ); } };
-
-	std::uint32_t limit;
-	MPSS_ERROR_CHECK( proxy.mic_get_power_phys_limit( powerLimit, &limit ) );
-	LOG( INFO ) << "Phys limit: " << std::to_string( limit );
-
-	MPSS_ERROR_CHECK( proxy.mic_get_power_hmrk( powerLimit, &limit ) ); //power limit 0
-	LOG( INFO ) << "PL0: " << std::to_string( limit );
-
-	MPSS_ERROR_CHECK( proxy.mic_get_power_lmrk( powerLimit, &limit ) ); //power limit 1
-	LOG( INFO ) << "PL1: "  << std::to_string( limit );
-
-	std::uint32_t window;
-	MPSS_ERROR_CHECK( proxy.mic_get_time_window0( powerLimit, &window ) );
-	LOG( INFO ) << "TW0: "  << std::to_string( window );
-
-	MPSS_ERROR_CHECK( proxy.mic_get_time_window1( powerLimit, &window ) );
-	LOG( INFO ) << "TW1: " << std::to_string( window );
-
-	return 0;
+	return powerLimitHelper.getPowerLimit();
 }
 
-void MPSSCommunicationProvider::setPowerLimit( unsigned milliwatts ) {
-	auto dev = deviceHandle.get();
-
-	std::uint32_t hmrk, lmrk;
-	hmrk = lmrk = milliwatts;
-	MPSS_ERROR_CHECK( proxy.mic_set_power_limit0( dev, hmrk, TIME_WINDOW_0 ) );
-	MPSS_ERROR_CHECK( proxy.mic_set_power_limit1( dev, lmrk, TIME_WINDOW_1 ) );
+void MPSSCommunicationProvider::setPowerLimit( unsigned watts ) {
+	powerLimitHelper.setPowerLimit( watts );
 }
 
 std::pair<unsigned, unsigned> MPSSCommunicationProvider::getPowerLimitConstraints( void ) const {
-	return {}; //TODO: implement
+	return { powerLimitHelper.getPowerLimitLowerConstraint(), powerLimitHelper.getPowerLimitUpperConstraint() };
 }
 
 std::vector<int> MPSSCommunicationProvider::listDevices( void ) {
@@ -207,14 +180,6 @@ void MPSSCommunicationProvider::fillMemoryInfo( DeviceInformation::InfoContainer
 	info[ "ECCMode" ] = std::to_string( ecc );
 }
 
-void MPSSCommunicationProvider::checkMPSSErrors( const char* source, int status ) {
-	if ( status != E_MIC_SUCCESS ) {
-		std::ostringstream err;
-		err << proxy.mic_get_error_string() << ": " << strerror( errno );
-		throw MPSSError( source, err.str());
-	}
-}
-
 MPSSCommunicationProvider::DevicesListWrapper MPSSCommunicationProvider::getDevicesList( void ) {
 	mic_devices_list* micDevicesList;
 
@@ -280,6 +245,14 @@ std::string MPSSCommunicationProvider::getUUID( int index ) {
 	}
 
 	return UUIDstring;
+}
+
+void MPSSCommunicationProvider::checkMPSSErrors( const char* source, int status ) {
+	if ( status != E_MIC_SUCCESS ) {
+		std::ostringstream err;
+		err << proxy.mic_get_error_string() << ": " << strerror( errno );
+		throw MPSSError( source, err.str());
+	}
 }
 
 } // namespace devices

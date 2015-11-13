@@ -20,7 +20,7 @@ public:
 
 	static std::vector<nvmlDevice_t> listDevices( void );
 
-	static devices::DeviceIdentifier::idType getPrimaryId( nvmlDevice_t deviceHandle );
+	static DeviceIdentifier::idType getPrimaryId( nvmlDevice_t deviceHandle );
 
 	static DeviceInformation::InfoContainer getInfo( nvmlDevice_t deviceHandle );
 

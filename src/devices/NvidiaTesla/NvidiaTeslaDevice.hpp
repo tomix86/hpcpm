@@ -4,7 +4,7 @@
 #include "NVMLCommunicationProvider.hpp"
 #include "utility/Logging.hpp"
 
-namespace devices {
+namespace devices { //TODO: dostosowac do wattow, a nie milliwattow
 
 template <typename CommunicationProvider>
 class NvidiaTeslaDevice : public Device {
@@ -42,17 +42,8 @@ public:
 	}
 
 	void setPowerLimit( Percentage percentage ) final {
-		if ( percentage < 0.f || percentage > 1.f ) {
-			throw ArgumentOutOfBounds( "NvidiaTeslaDevice::setPowerLimit(Percentage)", "power limit value out of bounds" );
-		}
-
-		auto constraints = getPowerLimitConstraints();
-		auto range = constraints.upper - constraints.lower;
-		auto newPowerLimit =  static_cast<unsigned>( constraints.lower + range * percentage );
-
-		//make sure that new power limit never gets out of bounds
-		newPowerLimit = std::min( std::max( newPowerLimit, constraints.lower ), constraints.upper );
-		communicationProvider.setPowerLimit( newPowerLimit );
+		auto powerLimit = getLimitFromPercentageAndConstraints( percentage, getPowerLimitConstraints() );
+		communicationProvider.setPowerLimit( powerLimit );
 	}
 
 	Power getCurrentPowerLimit( void ) const final {
@@ -60,13 +51,7 @@ public:
 	}
 
 	Percentage getCurrentPowerLimitPercentage( void ) const final {
-		auto constraints = getPowerLimitConstraints();
-		auto range = constraints.upper - constraints.lower;
-		auto percentage = static_cast<float>( ( getCurrentPowerLimit() - constraints.lower ) ) / range;
-
-		//make sure that the percentage never goes out of bounds
-		percentage = std::min ( std::max( percentage, 0.f ), 1.f );
-		return percentage;
+		return getPercentageFromLimitAndConstraints( getCurrentPowerLimit(), getPowerLimitConstraints() );
 	}
 
 	PowerLimitConstraints getPowerLimitConstraints( void ) const final {

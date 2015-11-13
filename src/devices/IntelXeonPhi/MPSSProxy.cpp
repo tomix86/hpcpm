@@ -66,6 +66,12 @@ bool MPSSProxy::loadSymbols( void ) {
 	SYM_LOAD( mic_open_device );
 	SYM_LOAD( mic_close_device );
 	SYM_LOAD( mic_get_error_string );
+	SYM_LOAD( mic_get_power_utilization_info );
+	SYM_LOAD( mic_get_total_power_readings_w0 );
+	SYM_LOAD( mic_get_total_power_readings_w1 );
+	SYM_LOAD( mic_get_inst_power_readings );
+	SYM_LOAD( mic_get_max_inst_power_readings );
+	SYM_LOAD( mic_free_power_utilization_info );
 	return true;
 }
 

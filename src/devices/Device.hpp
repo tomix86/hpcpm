@@ -37,6 +37,31 @@ public:
 
 	virtual PowerLimitConstraints getPowerLimitConstraints( void ) const = 0;
 
+protected: //TODO: zrobic unit test dla tego
+	Power getLimitFromPercentageAndConstraints( Percentage percentage, PowerLimitConstraints constraints ) const {
+		if ( percentage < 0.f || percentage > 1.f ) {
+			throw ArgumentOutOfBounds( "Device::getLimitFromPercentageAndConstraints", "power limit value out of bounds" );
+		}
+
+		auto range = constraints.upper - constraints.lower;
+		auto powerLimit =  static_cast<unsigned>( constraints.lower + range * percentage );
+
+		//make sure that new power limit never gets out of bounds
+		powerLimit = std::min( std::max( powerLimit, constraints.lower ), constraints.upper );
+
+		return powerLimit;
+	}
+
+	Percentage getPercentageFromLimitAndConstraints( Power limit, PowerLimitConstraints constraints ) const {
+		auto range = constraints.upper - constraints.lower;
+		auto percentage = static_cast<float>( ( limit - constraints.lower ) ) / range;
+
+		//make sure that the percentage never goes out of bounds
+		percentage = std::min ( std::max( percentage, 0.f ), 1.f );
+
+		return percentage;
+	}
+
 private:
 	DeviceInformation m_info;
 };

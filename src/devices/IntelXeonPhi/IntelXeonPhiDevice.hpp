@@ -5,6 +5,7 @@
 #include "utility/Logging.hpp"
 
 namespace devices {
+
 template <typename CommunicationProvider>
 class IntelXeonPhiDevice : public Device {
 public:
@@ -32,12 +33,18 @@ public:
 		return list;
 	}
 
-	void setPowerLimit( Power ) final {
+	void setPowerLimit( Power watts ) final {
+		auto constraints = communicationProvider.getPowerLimitConstraints();
+		if ( watts < constraints.first || watts > constraints.second ) {
+			throw ArgumentOutOfBounds( "IntelXeonPhiDevice::setPowerLimit(Power)", "power limit value out of bounds" );
+		}
 
+		communicationProvider.setPowerLimit( watts );
 	}
 
-	void setPowerLimit( Percentage ) final {
-
+	void setPowerLimit( Percentage percentage ) final {
+		auto powerLimit = getLimitFromPercentageAndConstraints( percentage, getPowerLimitConstraints() );
+		communicationProvider.setPowerLimit( powerLimit );
 	}
 
 	Power getCurrentPowerLimit( void ) const final {
@@ -45,11 +52,12 @@ public:
 	}
 
 	Percentage getCurrentPowerLimitPercentage( void ) const final {
-		return Percentage{};
+		return getPercentageFromLimitAndConstraints( getCurrentPowerLimit(), getPowerLimitConstraints() );
 	}
 
 	PowerLimitConstraints getPowerLimitConstraints( void ) const final {
-		return PowerLimitConstraints{ 0, 0};
+		auto constraints = communicationProvider.getPowerLimitConstraints();
+		return { constraints.first, constraints.second };
 	}
 
 protected:
@@ -60,5 +68,5 @@ protected:
 			communicationProvider{ id } {
 	}
 };
-} // namespace devices
 
+} // namespace devices

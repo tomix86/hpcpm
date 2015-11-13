@@ -44,7 +44,7 @@ public:
 
 	unsigned getCurrentPowerLimit( void ) const;
 
-	void setPowerLimit( unsigned watts ); // TODO: do we want watts or milliwatts here?
+	void setPowerLimit( unsigned watts );
 
 	std::pair<unsigned, unsigned> getPowerLimitConstraints( void ) const;
 

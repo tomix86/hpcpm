@@ -1,15 +1,8 @@
 #pragma once
-#include <memory>
-#include <vector>
 #include "devices/DeviceInformation.hpp"
-#include "MPSSProxy.hpp"
-#include "utility/Exceptions.hpp"
+#include "MPSSPowerLimitHelper.hpp"
 
 namespace devices {
-
-DEFINE_RUNTIME_ERROR_DERIVATIVE( MPSSError );
-
-typedef std::shared_ptr<mic_device> MicDevicePtr;
 
 class MPSSCommunicationProvider {
 public:
@@ -23,7 +16,7 @@ public:
 
 	unsigned getCurrentPowerLimit( void ) const;
 
-	void setPowerLimit( unsigned milliwatts );
+	void setPowerLimit( unsigned watts );
 
 	std::pair<unsigned, unsigned> getPowerLimitConstraints( void ) const;
 
@@ -34,7 +27,8 @@ public:
 	static DeviceInformation::InfoContainer getInfo( int index );
 
 private:
-	MicDevicePtr deviceHandle;
+	MicDevicePtr device;
+	MPSSPowerLimitHelper powerLimitHelper;
 	static MPSSProxy proxy;
 
 	class DevicesListWrapper {
@@ -53,21 +47,19 @@ private:
 	};
 
 	static const unsigned MAX_NAME_LENGTH = 1000;
-	static const unsigned TIME_WINDOW_0 = 50; //TODO: should we use constant values for time window?
-	static const unsigned TIME_WINDOW_1 = 300; // maybe we should pull them from config file?
 
 	static void fillVersionInfo( DeviceInformation::InfoContainer& info, mic_device* dev );
 	static void fillProcessorInfo( DeviceInformation::InfoContainer& info, mic_device* dev );
 	static void fillPciConfigInfo( DeviceInformation::InfoContainer& info, mic_device* dev );
 	static void fillMemoryInfo( DeviceInformation::InfoContainer& info, mic_device* dev );
 
-	static void checkMPSSErrors( const char* source, int status );
-
 	static DevicesListWrapper getDevicesList( void );
 
 	static MicDevicePtr getDeviceByIndex( int index );
 	static MicDevicePtr getDeviceById( DeviceIdentifier::idType id );
 	static std::string getUUID( int index );
+
+	static void checkMPSSErrors( const char* source, int status );
 };
 
 } // namespace devices

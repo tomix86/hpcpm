@@ -41,7 +41,7 @@ public:
 		info[ "DeviceId" ] = "8784";
 		info[ "ECCMode" ] = "1";
 		info[ "FlashVersion" ] = "2.1.02.0390";
-		info[ "LinkSpeed" ] = "Elpida";
+		info[ "MemoryVendor" ] = "Elpida";
 		info[ "MemoryDensity" ] = "2048";
 		info[ "MemoryFrequency" ] = "2500000";
 		info[ "MemoryRevision" ] = "1";

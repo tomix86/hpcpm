@@ -66,6 +66,12 @@ public:
 	int ( *mic_open_device )( mic_device **device, uint32_t device_num );
 	int ( *mic_close_device )( mic_device *device );
 	const char* ( *mic_get_error_string )( void );
+	int ( *mic_get_power_utilization_info )( mic_device *mdh, mic_power_util_info **power );
+	int ( *mic_get_total_power_readings_w0 )( mic_power_util_info *power, uint32_t *pwr );
+	int ( *mic_get_total_power_readings_w1 )( mic_power_util_info *power, uint32_t *pwr );
+	int ( *mic_get_inst_power_readings )( mic_power_util_info *power, uint32_t *pwr );
+	int ( *mic_get_max_inst_power_readings )( mic_power_util_info *power, uint32_t *pwr );
+	int ( *mic_free_power_utilization_info )( mic_power_util_info *power );
 
 private:
 	bool loadSymbols( void );
