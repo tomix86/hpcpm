@@ -9,7 +9,7 @@ namespace devices {
 class MockMPSSCommunicationProvider {
 public:
 	MockMPSSCommunicationProvider( DeviceIdentifier::idType deviceId ) :
-			powerManagementLimit{ 75000 } {
+			powerManagementLimit{ 75 } {
 		(void)deviceId;
 	}
 
@@ -68,11 +68,11 @@ public:
 		static std::mt19937 generator{ std::random_device{}() };
 
 		if( std::bernoulli_distribution{ utility::ConfigLoader::getFloatParam( "mocks_invalid_power_probability" ) }( generator ) ) {
-			if ( powerManagementLimit < ( 40000 + 200000 ) / 2 ) {
-				powerManagementLimit += 17000;
+			if ( powerManagementLimit < ( 40 + 200 ) / 2 ) {
+				powerManagementLimit += 17;
 			}
 			else {
-				powerManagementLimit -= 17000;
+				powerManagementLimit -= 17;
 			}
 		}
 
@@ -84,7 +84,11 @@ public:
 	}
 
 	std::pair<unsigned, unsigned> getPowerLimitConstraints( void ) const {
-		return { 40000, 200000};
+		return { 40, 200};
+	}
+
+	unsigned getCurrentPowerUsage( void ) const {
+		return 100;
 	}
 
 private:

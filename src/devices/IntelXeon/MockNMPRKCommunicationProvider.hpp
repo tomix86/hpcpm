@@ -6,8 +6,8 @@ namespace devices {
 
 class MockNMPRKCommunicationProvider {
 public:
-	MockNMPRKCommunicationProvider( DeviceIdentifier::idType deviceId ) {
-		(void)deviceId;
+	static devices::DeviceIdentifier::idType getDeviceId( void ) {
+		return "ABCDEF";
 	}
 
 	static bool init( void ) {
@@ -37,5 +37,8 @@ public:
 		return std::pair<unsigned, unsigned>{};
 	}
 
+	unsigned getCurrentPowerUsage( void ) const {
+		return 100;
+	}
 };
 } // namespace devices

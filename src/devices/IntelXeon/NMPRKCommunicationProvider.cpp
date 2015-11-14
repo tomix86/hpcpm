@@ -9,41 +9,50 @@
 
 #include <memory>
 #include "NMPRKCommunicationProvider.hpp"
+#include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
+// Documentation states that NMPRK functions will never return false or nullptr as
+// it would be preceeded by exception being thrown inside function body.
+// Nevertheless it's better to check the return value just to make sure.
+#define NMPRK_CHECK_RETURN_VAL( x ) if( !x ) { throw NMPRKError{ UTILITY_STRINGIFY( x ), "Return value check failed at line:" UTILITY_STRINGIFY( __LINE__ ) };  }
+
 // IMPORTANT NOTE: nmprkException MUST BE caught by pointer, not by reference
-// I don't know why it's the case but it doesn't seem to work when we catch ( const constconst it by reference
+// I don't know why it's the case but it doesn't seem to work when we catch it by reference
+
+//TODO: czy przy wyjsciu z aplikacji uzywac delPolicy() ?
 
 namespace devices {
 
 nmprk::ipmi::device NMPRKCommunicationProvider::d;
+std::string NMPRKCommunicationProvider::deviceId;
+const unsigned NMPRKCommunicationProvider::POLICY_ID;
+unsigned NMPRKCommunicationProvider::correctionTime;
+unsigned NMPRKCommunicationProvider::statReportingPeriod;
+unsigned NMPRKCommunicationProvider::minValue;
+unsigned NMPRKCommunicationProvider::maxValue;
 
 using namespace nmprk;
 
-NMPRKCommunicationProvider::NMPRKCommunicationProvider( DeviceIdentifier::idType deviceId ) {
-	(void)deviceId;
-}
-
 bool NMPRKCommunicationProvider::init( void ) {
 	try {
-		if ( translation::swSubSystemSetup( translation::initLibrary, nullptr ) ) {
-			LOG( INFO ) << "NMPRK - library initialized";
-		}
-		else {
-			LOG( ERROR ) << "NMPRK - library initialization failed";
-			return false;
-		}
+		NMPRK_CHECK_RETURN_VAL( translation::swSubSystemSetup( translation::initLibrary, nullptr ) );
+		LOG( INFO ) << "NMPRK - library initialized";
 
 		d.type = ipmi::device_nm;
 		d.address = "local";
 
-		if ( translation::swSubSystemSetup( translation::initDevice, &d ) ) {
-			LOG( INFO ) << "NMPRK - device initialized";
-		}
-		else {
-			LOG( ERROR ) << "NMPRK - device initialization failed";
-			return false;
-		}
+		NMPRK_CHECK_RETURN_VAL( translation::swSubSystemSetup( translation::initDevice, &d ) );
+		LOG( INFO ) << "NMPRK - device initialized";
+
+		NMPRK_CHECK_RETURN_VAL( ipmi::connectDevice( &d ) );
+		LOG( INFO ) << "NMPRK - connection to device succeeded";
+
+		NMPRK_CHECK_RETURN_VAL( !ipmi::initSystemForLocal() );
+		LOG( INFO ) << "NMPRK - initSystemForLocal() succeeded";
+
+		minValue = 0;
+		maxValue = getCurrentPowerUsage();
 
 		return true;
 	}
@@ -55,16 +64,14 @@ bool NMPRKCommunicationProvider::init( void ) {
 
 bool NMPRKCommunicationProvider::shutdown( void ) {
 	try {
-		translation::swSubSystemSetup( translation::unInitDevice, &d );
+		NMPRK_CHECK_RETURN_VAL( !ipmi::disconnectDevice( &d ) );
 
-		if ( translation::swSubSystemSetup( translation::unInitLibrary, nullptr ) ) {
-			LOG( INFO ) << "NMPRK Library uninitialized.";
-			return true;
-		}
-		else {
-			LOG( ERROR ) << "NMPRK Library uninitialization failed.";
-			return false;
-		}
+		NMPRK_CHECK_RETURN_VAL( translation::swSubSystemSetup( translation::unInitDevice, &d ) );
+
+		NMPRK_CHECK_RETURN_VAL( translation::swSubSystemSetup( translation::unInitLibrary, nullptr ) );
+		LOG( INFO ) << "NMPRK Library uninitialized.";
+
+		return true;
 	}
 	catch ( const nmprkException* e ) {
 		LOG( ERROR ) << NMPRKError::nmprkExceptionToString( e );
@@ -76,66 +83,17 @@ DeviceInformation::InfoContainer NMPRKCommunicationProvider::getInfo( void ) {
 	DeviceInformation::InfoContainer info;
 
 	try {
-		auto capabilities = translation::getCapabilities( &d );
-		std::shared_ptr<translation::capabilities_t> capabilitiesRAIIGuard{ capabilities };
+		fillCapabilitiesInfo( info );
+		fillVersionInfo( info );
 
-		if( capabilities == nullptr ) {
-			throw NMPRKError{ "NMPRKCommunicationProvider::getInfo", "getCapabilities() returned a null pointer" };
-		}
+		auto devId = ipmi::global::getDeviceId( &d );
+		NMPRK_CHECK_RETURN_VAL( devId );
+		std::shared_ptr<ipmi::getDeviceIdRsp> deviceRAIIGuard{ devId };
 
-		auto version = translation::getNMVersion( &d );
-		std::shared_ptr<translation::nmVersion_t> versionRAIIGuard{ version };
-		if( version == nullptr ) {
-			throw NMPRKError{ "NMPRKCommunicationProvider::getInfo", "getNMVersion() returned a null pointer" };
-		}
-
-		if( version->nmVersion_2pt0 ) {
-			info[ "NodeManagerVersion" ] = "2.0";
-		}
-		else if( version->nmVersion_1pt5 ) {
-			info[ "NodeManagerVersion" ] = "1.5";
-		}
-		else {
-			info[ "NodeManagerVersion" ] = "Unknown";
-		}
-
-		if( version->ipmiVersion_2pt0 ) {
-			info[ "IPMIVersion" ] = "2.0";
-		}
-		else if( version->ipmiVersion_1pt0 ) {
-			info[ "IPMIVersion" ] = "1.0";
-		}
-		else {
-			info[ "IPMIVersion" ] = "Unknown";
-		}
-
-		if ( ipmi::connectDevice( &d ) ) {
-			auto deviceId = ipmi::global::getDeviceId( &d );
-			std::shared_ptr<ipmi::getDeviceIdRsp> versionRAIIGuard{ deviceId };
-			if( deviceId  == nullptr ) {
-				throw NMPRKError{ "NMPRKCommunicationProvider::getInfo", "getDeviceId() returned a null pointer" };
-			}
-
-			info[ "DeviceId" ] = "0x" + helper::int2HexStr( deviceId->deviceId );
-			info[ "DeviceRevision" ] = "0x" + helper::int2HexStr( deviceId->deviceRev );
-			info[ "FirmwareRevision" ] = "0x" + helper::int2HexStr( deviceId->firmwareRev );
-			info[ "FirmwareRevision2" ] = "0x" + helper::int2HexStr( deviceId->firmwareRev2 );
-
-			if ( !ipmi::disconnectDevice( &d ) ) {
-				throw NMPRKError{ "NMPRKCommunicationProvider::getInfo", "Disconnection from device failed" };
-			}
-		}
-		else {
-			throw NMPRKError{ "NMPRKCommunicationProvider::getInfo", "Connection attempt to device failed" };
-		}
-
-		info[ "MaxConcurentConnections" ] = std::to_string( capabilities->maxConSettings );
-		info[ "MaxTriggerValue(for policies)" ] = std::to_string( capabilities->maxTriggerValue );
-		info[ "MinTriggerValue(for policies)" ] = std::to_string( capabilities->minTriggerValue );
-		info[ "MaxCorrectionTime(for policies)" ] = std::to_string( capabilities->maxCorrectionTime );
-		info[ "MinCorrectionTime(for policies)" ] = std::to_string( capabilities->minCorrectionTime );
-		info[ "MaxStatisticsReportingPeriod" ] = std::to_string( capabilities->maxStatReportPeriod );
-		info[ "MinStatisticsReportingPeriod" ] = std::to_string( capabilities->minStatReportPeriod );
+		deviceId = info[ "DeviceId" ] = "0x" + helper::int2HexStr( devId->deviceId );
+		info[ "DeviceRevision" ] = "0x" + helper::int2HexStr( devId->deviceRev );
+		info[ "FirmwareRevision" ] = "0x" + helper::int2HexStr( devId->firmwareRev );
+		info[ "FirmwareRevision2" ] = "0x" + helper::int2HexStr( devId->firmwareRev2 );
 	}
 	catch ( const nmprkException* e ) {
 		throw NMPRKError{ "NMPRKCommunicationProvider::getInfo", e };
@@ -144,16 +102,46 @@ DeviceInformation::InfoContainer NMPRKCommunicationProvider::getInfo( void ) {
 	return info;
 }
 
-unsigned NMPRKCommunicationProvider::getCurrentPowerLimit( void ) const {
+unsigned NMPRKCommunicationProvider::getCurrentPowerLimit( void ) {
+	translation::policy_t policy;
+	NMPRK_CHECK_RETURN_VAL( translation::getPolicy( &d, &policy ) );
+	return policy.policyLimit;
+}
+
+void NMPRKCommunicationProvider::setPowerLimit( unsigned watts ) {
+	translation::policy_t policy;
+	policy.policyId = POLICY_ID;
+	policy.policyType = translation::policyPower;
+	policy.component = translation::domainSystem;
+	//policy.sendAlert = false;
+	policy.shutdown = false;
+	policy.policyLimit = watts;
+	policy.statReportingPeriod = statReportingPeriod;
+	policy.correctionTime = correctionTime;
+	policy.policyEnabled = true;
+
+	try { //TODO: we may need to disable policy before changing it, see tips at the end of ImplementationGuide-NMPRK.docx
+		NMPRK_CHECK_RETURN_VAL( translation::setPolicy( &d, &policy ) );
+	}
+	catch ( const nmprkException* e ) {
+		throw NMPRKError{ "NMPRKCommunicationProvider::setPowerLimit", e };
+	}
+}
+
+std::pair<unsigned, unsigned> NMPRKCommunicationProvider::getPowerLimitConstraints( void ) {
+	return { minValue, maxValue };
+}
+
+unsigned NMPRKCommunicationProvider::getCurrentPowerUsage( void ) {
 	try {
 		auto sample = translation::getSample( &d, translation::samplePower, translation::domainSystem, nullptr );
+		NMPRK_CHECK_RETURN_VAL( sample );
 		std::shared_ptr<translation::sample_t> sampleRAIIGuard{ sample };
-		if( sample == nullptr ) {
-			throw NMPRKError{ "NMPRKCommunicationProvider::getCurrentPowerLimit", "getSample() returned a null pointer" };
-		}
 
 		auto reading = sample->avg;
-		translation::resetStatistics( &d, translation::domainSystem, nullptr );
+
+		NMPRK_CHECK_RETURN_VAL( translation::resetStatistics( &d, translation::domainSystem, nullptr ) ); //czy to w ogole jest potrzebne?
+
 		return reading;
 	}
 	catch ( const nmprkException* e ) {
@@ -161,33 +149,48 @@ unsigned NMPRKCommunicationProvider::getCurrentPowerLimit( void ) const {
 	}
 }
 
-void NMPRKCommunicationProvider::setPowerLimit( unsigned watts ) {
-	translation::policy_t policy;
-	policy.policyId = 0x02;
-	policy.policyEnabled = true;
-	policy.policyType = translation::policyPower; // power limit, not thermal limit
-	policy.component = translation::domainSystem; // set a limit for the whole system TODO: zamienic na CPU?
-	policy.sendAlert = true; // send alert if policy.policyLimit is breached for longer then policy.correctionTime
-	policy.shutdown = false; // shutdown system if policy.policyLimit is breached for longer then policy.correctionTime
-	policy.statReportingPeriod = 10; // how long values are averaged over
-	policy.correctionTime = 10; // how long a policy can be over its limit before policy.sendAlert and policy.shutdown are performed if true
-	policy.policyLimit = watts;
+void NMPRKCommunicationProvider::fillCapabilitiesInfo( DeviceInformation::InfoContainer& container ) {
+	auto capabilities = translation::getCapabilities( &d );
+	NMPRK_CHECK_RETURN_VAL( capabilities );
+	std::shared_ptr<translation::capabilities_t> capabilitiesRAIIGuard{ capabilities };
 
-	try { //TODO: we may need to disable policy before changing it, see tips at the end of ImplementationGuide-NMPRK.docx
-		if ( translation::setPolicy( &d, &policy ) ) {
-			LOG( INFO ) << "Power cap set to " << policy.policyLimit << "W"; //TODO: wiecej logowania diagnostycznego we wszystkich comm providerach
-		}
-		else {
-			LOG( ERROR ) << "Setting power cap failed.";
-		}
-	}
-	catch ( const nmprkException* e ) {
-		throw NMPRKError{ "NMPRKCommunicationProvider::setPowerLimit", e };
-	}
+	container[ "SuportsPowerManagement" ] = utility::toString( capabilities->supportsPowerManagement );
+	container[ "MaxTriggerValue(for policies)" ] = std::to_string( capabilities->maxTriggerValue );
+	container[ "MinTriggerValue(for policies)" ] = std::to_string( capabilities->minTriggerValue );
+	container[ "MaxCorrectionTime(for policies)" ] = std::to_string( capabilities->maxCorrectionTime );
+	container[ "MinCorrectionTime(for policies)" ] = std::to_string( capabilities->minCorrectionTime );
+	container[ "MaxStatisticsReportingPeriod" ] = std::to_string( capabilities->maxStatReportPeriod );
+	container[ "MinStatisticsReportingPeriod" ] = std::to_string( capabilities->minStatReportPeriod );
+
+	// both of those two below can be manually set to 0 to force using the default value
+	correctionTime = capabilities->minCorrectionTime;
+	statReportingPeriod = capabilities->minStatReportPeriod;
 }
 
-std::pair<unsigned, unsigned> NMPRKCommunicationProvider::getPowerLimitConstraints( void ) const {
-	return { 0, 0 };
+void NMPRKCommunicationProvider::fillVersionInfo( DeviceInformation::InfoContainer& container ) {
+	auto version = translation::getNMVersion( &d );
+	NMPRK_CHECK_RETURN_VAL( version );
+	std::shared_ptr<translation::nmVersion_t> versionRAIIGuard{ version };
+
+	if( version->nmVersion_2pt0 ) {
+		container[ "NodeManagerVersion" ] = "2.0";
+	}
+	else if( version->nmVersion_1pt5 ) {
+		container[ "NodeManagerVersion" ] = "1.5";
+	}
+	else {
+		container[ "NodeManagerVersion" ] = "Unknown";
+	}
+
+	if( version->ipmiVersion_2pt0 ) {
+		container[ "IPMIVersion" ] = "2.0";
+	}
+	else if( version->ipmiVersion_1pt0 ) {
+		container[ "IPMIVersion" ] = "1.0";
+	}
+	else {
+		container[ "IPMIVersion" ] = "Unknown";
+	}
 }
 
 } // namespace devices

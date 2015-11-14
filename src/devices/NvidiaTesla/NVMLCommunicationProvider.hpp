@@ -30,6 +30,8 @@ public:
 
 	std::pair<unsigned, unsigned> getPowerLimitConstraints( void ) const;
 
+	unsigned getCurrentPowerUsage( void ) const;
+
 private:
 	nvmlDevice_t deviceHandle;
 	static NVMLProxy proxy;

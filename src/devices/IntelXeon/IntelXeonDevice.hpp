@@ -14,8 +14,7 @@ public:
 		std::vector<Device::Ptr> list;
 
 		try {
-			//TODO: remove placeholder
-			std::shared_ptr<IntelXeonDevice> dev{ new IntelXeonDevice{ "PLACEHOLDER", CommunicationProvider::getInfo() } };
+			std::shared_ptr<IntelXeonDevice> dev{ new IntelXeonDevice{ CommunicationProvider::getDeviceId(), CommunicationProvider::getInfo() } };
 			list.push_back( dev );
 		}
 		catch ( const devices::NMPRKError& ex ) {
@@ -49,12 +48,15 @@ public:
 		return { constraints.first, constraints.second };
 	}
 
+	Power getCurrentPowerUsage( void ) const final {
+		return communicationProvider.getCurrentPowerUsage();
+	}
+
 protected:
 	CommunicationProvider communicationProvider;
 
 	IntelXeonDevice( DeviceIdentifier::idType id, DeviceInformation::InfoContainer&& detailedInfo ) :
-			Device{ DeviceInformation{ { DeviceType::IntelXeon, id }, std::move( detailedInfo ) } },
-			communicationProvider{ id } {
+			Device{ DeviceInformation{ { DeviceType::IntelXeon, id }, std::move( detailedInfo ) } } {
 	}
 };
 } // namespace devices

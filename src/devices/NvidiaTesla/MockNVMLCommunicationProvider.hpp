@@ -33,7 +33,7 @@ public:
 		info[ "ComputeMode" ] = "Default";
 		info[ "CurrentECCMode" ] = "Enabled";
 		info[ "CurrentGpuOperationMode" ] = "Compute";
-		info[ "DefaultPowerManagementLimit" ] = "190000";
+		info[ "DefaultPowerManagementLimit" ] = "190";
 		info[ "InforomImageVersion" ] = "2081.0208.01.09";
 		info[ "MaxGraphicsClock" ] = "758";
 		info[ "MaxMemoryClock" ] = "2600";
@@ -58,7 +58,7 @@ public:
 	}
 
 	MockNVMLCommunicationProvider( DeviceIdentifier::idType id ) :
-			powerManagementLimit{ 190000 } {
+			powerManagementLimit{ 190 } {
 		for( int i = 0; i <= 2; ++i ) {
 			if( id == getUUID( reinterpret_cast<nvmlDevice_t>( i ) ) ) {
 				deviceHandle = i;
@@ -72,11 +72,11 @@ public:
 		static std::mt19937 generator{ std::random_device{}() };
 
 		if( std::bernoulli_distribution{ utility::ConfigLoader::getFloatParam( "mocks_invalid_power_probability" ) }( generator ) ) {
-			if ( powerManagementLimit < ( 150000 + 225000 ) / 2 ) {
-				powerManagementLimit += 10000;
+			if ( powerManagementLimit < ( 150 + 225 ) / 2 ) {
+				powerManagementLimit += 10;
 			}
 			else {
-				powerManagementLimit -= 10000;
+				powerManagementLimit -= 10;
 			}
 		}
 
@@ -85,12 +85,16 @@ public:
 
 	std::pair<unsigned, unsigned> getPowerLimitConstraints( void ) const {
 		LOG( DEBUG ) << "MOCK NVML returning power limit constraints for device: " << deviceHandle;
-		return std::make_pair( 150000, 225000 );
+		return std::make_pair( 150, 225 );
 	}
 
-	void setPowerLimit( unsigned milliwatts ) {
-		LOG( DEBUG ) << "MOCK NVML setting power limit for device: " << deviceHandle << " to: " << milliwatts;
-		powerManagementLimit = milliwatts;
+	void setPowerLimit( unsigned watts ) {
+		LOG( DEBUG ) << "MOCK NVML setting power limit for device: " << deviceHandle << " to: " << watts;
+		powerManagementLimit = watts;
+	}
+
+	unsigned getCurrentPowerUsage( void ) const {
+		return 179;
 	}
 
 private:

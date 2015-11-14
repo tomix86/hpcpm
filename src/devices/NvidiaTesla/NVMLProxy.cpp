@@ -35,6 +35,7 @@ bool NVMLProxy::loadSymbols( void ) {
 	SYM_LOAD( nvmlDeviceSetPowerManagementLimit );
 	SYM_LOAD( nvmlDeviceGetPowerManagementLimitConstraints );
 	SYM_LOAD( nvmlDeviceGetPowerManagementMode );
+	SYM_LOAD( nvmlDeviceGetPowerUsage );
 	SYM_LOAD( nvmlErrorString );
 
 	return true;

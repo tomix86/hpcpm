@@ -39,6 +39,10 @@ std::pair<unsigned, unsigned> MPSSCommunicationProvider::getPowerLimitConstraint
 	return { powerLimitHelper.getPowerLimitLowerConstraint(), powerLimitHelper.getPowerLimitUpperConstraint() };
 }
 
+unsigned MPSSCommunicationProvider::getCurrentPowerUsage( void ) const {
+	return powerLimitHelper.getCurrentPowerUsage();
+}
+
 std::vector<int> MPSSCommunicationProvider::listDevices( void ) {
 	std::vector<int> list( getDevicesList().getCount() );
 	std::iota( list.begin(), list.end(), 0 );

@@ -1,4 +1,5 @@
 #pragma once
+#include "GetCurrentPowerUsageQuery.hpp"
 #include "GetNodeInformationQuery.hpp"
 #include "GetPowerLimitConstraintsQuery.hpp"
 #include "GetPowerLimitPercentageQuery.hpp"
@@ -9,6 +10,7 @@
 namespace core {
 
 enum class QueryType {
+	GetCurrentPowerUsage,
 	GetNodeInformation,
 	GetPowerLimit,
 	GetPowerLimitConstraints,
@@ -21,6 +23,8 @@ class QueryFactory {
 public:
 	static Query::Ptr createQuery( QueryType type ) {
 		switch( type ) {
+		case QueryType::GetCurrentPowerUsage:
+			return std::make_shared<GetCurrentPowerUsageQuery>();
 		case QueryType::GetNodeInformation:
 			return std::make_shared<GetNodeInformationQuery>();
 		case QueryType::GetPowerLimit:

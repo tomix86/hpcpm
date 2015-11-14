@@ -2,9 +2,7 @@
 #include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
-#define S( x ) #x
-#define STR( x ) S( x )
-#define NVML_ERROR_CHECK( statusCode ) checkNVMLErrors( "NVML error at line:" STR( __LINE__ ), statusCode )
+#define NVML_ERROR_CHECK( statusCode ) checkNVMLErrors( "NVML error at line:" UTILITY_STRINGIFY( __LINE__ ), statusCode )
 
 //TODO: use nvmlDeviceGetEnforcedPowerLimit ?
 namespace devices {
@@ -94,8 +92,8 @@ DeviceInformation::InfoContainer NVMLCommunicationProvider::getInfo( nvmlDevice_
 	info[ "UUID" ] = UUID;
 
 	char serial[ NVML_DEVICE_SERIAL_BUFFER_SIZE ];
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetSerial( deviceHandle, serial, NVML_DEVICE_SERIAL_BUFFER_SIZE ) );
-	info[ "SerialNumber" ] = serial;
+	auto ret = proxy.nvmlDeviceGetSerial( deviceHandle, serial, NVML_DEVICE_SERIAL_BUFFER_SIZE );
+	setIfSupported( ret, info[ "SerialNumber" ], serial );
 
 	unsigned index;
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetIndex( deviceHandle, &index ) );
@@ -112,20 +110,20 @@ DeviceInformation::InfoContainer NVMLCommunicationProvider::getInfo( nvmlDevice_
 	info[ "ComputeMode" ] = computeModeToString( computeMode );
 
 	unsigned pcieLinkGeneration;
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetCurrPcieLinkGeneration( deviceHandle, &pcieLinkGeneration ) );
-	info[ "PcieLinkGeneration" ] = std::to_string( pcieLinkGeneration );
+	ret = proxy.nvmlDeviceGetCurrPcieLinkGeneration( deviceHandle, &pcieLinkGeneration );
+	setIfSupported( ret, info[ "PcieLinkGeneration" ], std::to_string( pcieLinkGeneration ) );
 
 	unsigned pcieLinkWidth;
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetCurrPcieLinkWidth( deviceHandle, &pcieLinkWidth ) );
-	info[ "PcieLinkWidth" ] = std::to_string( pcieLinkWidth );
+	ret = proxy.nvmlDeviceGetCurrPcieLinkWidth( deviceHandle, &pcieLinkWidth );
+	setIfSupported( ret, info[ "PcieLinkWidth" ], std::to_string( pcieLinkWidth ) );
 
 	nvmlEnableState_t currentEccMode, pendingEccMode;
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetEccMode( deviceHandle, &currentEccMode, &pendingEccMode ) );
-	info[ "CurrentECCMode" ] = ( currentEccMode == NVML_FEATURE_ENABLED ? "Enabled" : "Disabled" );
-	info[ "PendingECCMode" ] = ( pendingEccMode == NVML_FEATURE_ENABLED ? "Enabled" : "Disabled" );
+	ret = proxy.nvmlDeviceGetEccMode( deviceHandle, &currentEccMode, &pendingEccMode );
+	setIfSupported( ret, info[ "CurrentECCMode" ], ( currentEccMode == NVML_FEATURE_ENABLED ? "Enabled" : "Disabled" ) );
+	setIfSupported( ret, info[ "PendingECCMode" ], ( pendingEccMode == NVML_FEATURE_ENABLED ? "Enabled" : "Disabled" ) );
 
 	nvmlGpuOperationMode_t currentGpuOperationMode, pendingGpuOperationMode;
-	auto ret = proxy.nvmlDeviceGetGpuOperationMode( deviceHandle, &currentGpuOperationMode, &pendingGpuOperationMode ) ;
+	ret = proxy.nvmlDeviceGetGpuOperationMode( deviceHandle, &currentGpuOperationMode, &pendingGpuOperationMode ) ;
 	setIfSupported( ret, info[ "CurrentGpuOperationMode" ], gpuOperationModeToString( currentGpuOperationMode ) );
 	setIfSupported( ret, info[ "PendingGpuOperationMode" ], gpuOperationModeToString( pendingGpuOperationMode ) );
 
@@ -134,12 +132,12 @@ DeviceInformation::InfoContainer NVMLCommunicationProvider::getInfo( nvmlDevice_
 	setIfSupported( ret, info[ "InforomImageVersion" ], inforomImageVersion );
 
 	unsigned clock;
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetMaxClockInfo( deviceHandle, NVML_CLOCK_GRAPHICS, &clock ) );
-	info[ "MaxGraphicsClock" ] = std::to_string( clock );
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetMaxClockInfo( deviceHandle, NVML_CLOCK_SM, &clock ) );
-	info[ "MaxSMClock" ] = std::to_string( clock );
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetMaxClockInfo( deviceHandle, NVML_CLOCK_MEM, &clock ) );
-	info[ "MaxMemoryClock" ] = std::to_string( clock );
+	ret = proxy.nvmlDeviceGetMaxClockInfo( deviceHandle, NVML_CLOCK_GRAPHICS, &clock );
+	setIfSupported( ret, info[ "MaxGraphicsClock" ], std::to_string( clock ) );
+	ret = proxy.nvmlDeviceGetMaxClockInfo( deviceHandle, NVML_CLOCK_SM, &clock );
+	setIfSupported( ret, info[ "MaxSMClock" ], std::to_string( clock ) );
+	ret = proxy.nvmlDeviceGetMaxClockInfo( deviceHandle, NVML_CLOCK_MEM, &clock );
+	setIfSupported( ret, info[ "MaxMemoryClock" ], std::to_string( clock ) );
 
 	char name[ NVML_DEVICE_NAME_BUFFER_SIZE ];
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetName( deviceHandle, name, NVML_DEVICE_NAME_BUFFER_SIZE ) );
@@ -173,6 +171,12 @@ unsigned NVMLCommunicationProvider::getCurrentPowerLimit( void ) const {
 	unsigned currentLimit;
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetPowerManagementLimit( deviceHandle, &currentLimit ) );
 	return currentLimit;
+}
+
+unsigned NVMLCommunicationProvider::getCurrentPowerUsage( void ) const {
+	unsigned power;
+	NVML_ERROR_CHECK( proxy.nvmlDeviceGetPowerUsage( deviceHandle, &power ) );
+	return power / 1000;
 }
 
 void NVMLCommunicationProvider::setPowerLimit( unsigned milliwatts ) {

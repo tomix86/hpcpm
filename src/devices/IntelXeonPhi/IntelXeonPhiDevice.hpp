@@ -60,6 +60,10 @@ public:
 		return { constraints.first, constraints.second };
 	}
 
+	Power getCurrentPowerUsage( void ) const final {
+		return communicationProvider.getCurrentPowerUsage();
+	}
+
 protected:
 	CommunicationProvider communicationProvider;
 

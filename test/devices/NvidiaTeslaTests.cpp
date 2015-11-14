@@ -15,6 +15,8 @@ public:
 	MOCK_CONST_METHOD0( getPowerLimitConstraints, std::pair<unsigned, unsigned>( void ) );
 
 	MOCK_METHOD1( setPowerLimit, void( unsigned ) );
+
+	MOCK_CONST_METHOD0( getCurrentPowerUsage, unsigned( void ) );
 };
 
 class NvidiaTeslaDeviceAccessor : public NvidiaTeslaDevice<MockTeslaCommunicationProvider> {
@@ -36,11 +38,11 @@ TEST( NvidiaTeslaTestSuite, setPowerLimitArgumentCorectnessTest ) {
 	EXPECT_CALL( device.communicationProvider, setPowerLimit( ::testing::_ ) )
 		.Times( 3 );
 
-	ASSERT_THROW( device.setPowerLimit( devices::Power{ 99000 } ), ArgumentOutOfBounds );
-	ASSERT_THROW( device.setPowerLimit( devices::Power{ 151000 } ), ArgumentOutOfBounds );
-	ASSERT_NO_THROW( device.setPowerLimit( devices::Power{ 100000 } ) );
-	ASSERT_NO_THROW( device.setPowerLimit( devices::Power{ 125000 } ) );
-	ASSERT_NO_THROW( device.setPowerLimit( devices::Power{ 150000 } ) );
+	ASSERT_THROW( device.setPowerLimit( devices::Power{ 99 } ), ArgumentOutOfBounds );
+	ASSERT_THROW( device.setPowerLimit( devices::Power{ 151 } ), ArgumentOutOfBounds );
+	ASSERT_NO_THROW( device.setPowerLimit( devices::Power{ 100 } ) );
+	ASSERT_NO_THROW( device.setPowerLimit( devices::Power{ 125 } ) );
+	ASSERT_NO_THROW( device.setPowerLimit( devices::Power{ 150 } ) );
 }
 
 TEST( NvidiaTeslaTestSuite, setPowerLimitPercentageArgumentCorectnessTest ) {

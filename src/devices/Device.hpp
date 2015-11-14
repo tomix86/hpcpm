@@ -37,6 +37,8 @@ public:
 
 	virtual PowerLimitConstraints getPowerLimitConstraints( void ) const = 0;
 
+	virtual Power getCurrentPowerUsage( void ) const = 0;
+
 protected: //TODO: zrobic unit test dla tego
 	Power getLimitFromPercentageAndConstraints( Percentage percentage, PowerLimitConstraints constraints ) const {
 		if ( percentage < 0.f || percentage > 1.f ) {

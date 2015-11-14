@@ -7,6 +7,9 @@
 #include <vector>
 #include "Exceptions.hpp"
 
+#define UTILITY_STRINGIFY_HELPER( x ) #x
+#define UTILITY_STRINGIFY( x ) UTILITY_STRINGIFY_HELPER( x )
+
 namespace utility {
 
 bool toBool( std::string str );

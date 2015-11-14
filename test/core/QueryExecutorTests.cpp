@@ -31,6 +31,7 @@ public:
 	MOCK_CONST_METHOD0( getCurrentPowerLimit, devices::Power ( void ) );
 	MOCK_CONST_METHOD0( getCurrentPowerLimitPercentage, devices::Percentage ( void ) );
 	MOCK_CONST_METHOD0( getPowerLimitConstraints, devices::PowerLimitConstraints ( void ) );
+	MOCK_CONST_METHOD0( getCurrentPowerUsage, devices::Power( void ) );
 };
 
 class MockIntelXeonDevice: public devices::IntelXeonDevice<devices::MockNMPRKCommunicationProvider> {

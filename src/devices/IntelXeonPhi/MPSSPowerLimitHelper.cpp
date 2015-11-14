@@ -66,13 +66,17 @@ void MPSSPowerLimitHelper::setPowerLimit( unsigned watts ) {
 	gracePeriodCounter = gracePeriodDuration;
 }
 
+unsigned MPSSPowerLimitHelper::getCurrentPowerUsage( void ) const {
+	return getPowerRunningAverage();
+}
+
 void MPSSPowerLimitHelper::watcherFunction( void ) {
 	try {
 		while( running ) {
 			try {
 				Lock lock{ powerLimitMutex };
 				if( gracePeriodCounter == 0 ) {
-					addSample( getCurrentPowerUsage() );
+					addSample( _getCurrentPowerUsage() );
 					checkPowerRunningAverage();
 				}
 				else {
@@ -94,7 +98,7 @@ void MPSSPowerLimitHelper::watcherFunction( void ) {
 	}
 }
 
-unsigned MPSSPowerLimitHelper::getCurrentPowerUsage( void ) const {
+unsigned MPSSPowerLimitHelper::_getCurrentPowerUsage( void ) const {
 	mic_power_util_info* powerInfo;
 	MPSS_ERROR_CHECK( proxy->mic_get_power_utilization_info( deviceHandle.get(), &powerInfo ) );
 	std::shared_ptr<mic_power_util_info> powerInfoRAIIGuard{ powerInfo, [this]( mic_power_util_info* ptr ) { proxy->mic_free_power_utilization_info( ptr ); } };
@@ -106,7 +110,7 @@ unsigned MPSSPowerLimitHelper::getCurrentPowerUsage( void ) const {
 }
 
 void MPSSPowerLimitHelper::checkPowerRunningAverage( void ) {
-	auto powerUsageRunningAverage = std::accumulate( powerReadings.begin(), powerReadings.end(), 0 ) / powerReadings.size();
+	auto powerUsageRunningAverage = getPowerRunningAverage();
 
 	if ( powerUsageRunningAverage - RUNNING_AVERAGE_DISCREPANCY_TOLERANCE > powerLimit ) {
 		if ( powerLimit - POWER_LIMIT_ADJUSTMENT_STEP >= getPowerLimitLowerConstraint() ) {
@@ -120,6 +124,10 @@ void MPSSPowerLimitHelper::checkPowerRunningAverage( void ) {
 			gracePeriodCounter = gracePeriodDuration; // Enable grace period so the running average can stabilize before next check
 		}
 	}
+}
+
+unsigned MPSSPowerLimitHelper::getPowerRunningAverage( void ) const {
+	return std::accumulate( powerReadings.begin(), powerReadings.end(), 0 ) / powerReadings.size();
 }
 
 void MPSSPowerLimitHelper::addSample( unsigned powerReading ) {

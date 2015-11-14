@@ -20,6 +20,8 @@ public:
 
 	std::pair<unsigned, unsigned> getPowerLimitConstraints( void ) const;
 
+	unsigned getCurrentPowerUsage( void ) const;
+
 	static std::vector<int> listDevices( void );
 
 	static DeviceIdentifier::idType getPrimaryId( int index );

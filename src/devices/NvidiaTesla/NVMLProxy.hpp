@@ -36,6 +36,7 @@ public:
 	nvmlReturn_t ( *nvmlDeviceSetPowerManagementLimit )( nvmlDevice_t device, unsigned int limit );
 	nvmlReturn_t ( *nvmlDeviceGetPowerManagementLimitConstraints )( nvmlDevice_t device, unsigned int *minLimit, unsigned int *maxLimit );
 	nvmlReturn_t ( *nvmlDeviceGetPowerManagementMode )( nvmlDevice_t device, nvmlEnableState_t *mode );
+	nvmlReturn_t ( *nvmlDeviceGetPowerUsage )( nvmlDevice_t device, unsigned int *power);
 	const char* ( *nvmlErrorString )( nvmlReturn_t result );
 
 private:

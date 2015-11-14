@@ -32,22 +32,24 @@ public:
 		return list;
 	}
 
-	void setPowerLimit( Power milliwatts ) final {
+	void setPowerLimit( Power watts ) final {
+		watts *= 1000; // convert to milliwatts
 		auto constraints = communicationProvider.getPowerLimitConstraints();
-		if ( milliwatts < constraints.first || milliwatts > constraints.second ) {
+		if ( watts < constraints.first || watts > constraints.second ) {
 			throw ArgumentOutOfBounds( "NvidiaTeslaDevice::setPowerLimit(Power)", "power limit value out of bounds" );
 		}
 
-		communicationProvider.setPowerLimit( milliwatts );
+		communicationProvider.setPowerLimit( watts );
 	}
 
 	void setPowerLimit( Percentage percentage ) final {
-		auto powerLimit = getLimitFromPercentageAndConstraints( percentage, getPowerLimitConstraints() );
+		auto constraints = communicationProvider.getPowerLimitConstraints();
+		auto powerLimit = getLimitFromPercentageAndConstraints( percentage, { constraints.first, constraints.second } );
 		communicationProvider.setPowerLimit( powerLimit );
 	}
 
 	Power getCurrentPowerLimit( void ) const final {
-		return communicationProvider.getCurrentPowerLimit();
+		return communicationProvider.getCurrentPowerLimit() / 1000;
 	}
 
 	Percentage getCurrentPowerLimitPercentage( void ) const final {
@@ -56,7 +58,11 @@ public:
 
 	PowerLimitConstraints getPowerLimitConstraints( void ) const final {
 		auto constraints = communicationProvider.getPowerLimitConstraints();
-		return PowerLimitConstraints{ constraints.first, constraints.second };
+		return PowerLimitConstraints{ constraints.first / 1000, constraints.second / 1000 };
+	}
+
+	Power getCurrentPowerUsage( void ) const final {
+		return communicationProvider.getCurrentPowerUsage() / 1000;
 	}
 
 protected:

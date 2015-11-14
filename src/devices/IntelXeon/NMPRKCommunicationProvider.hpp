@@ -30,25 +30,34 @@ public:
 
 class NMPRKCommunicationProvider {
 public:
-	NMPRKCommunicationProvider( DeviceIdentifier::idType deviceId );
-
 	static bool init( void );
 
 	static bool shutdown( void );
 
-//	static std::vector<nvmlDevice_t> listDevices( void );
-
-//	static devices::DeviceIdentifier::idType getPrimaryId( nvmlDevice_t deviceHandle );
+	static devices::DeviceIdentifier::idType getDeviceId( void ) { return deviceId; }
 
 	static DeviceInformation::InfoContainer getInfo( void );
 
-	unsigned getCurrentPowerLimit( void ) const;
+	static unsigned getCurrentPowerLimit( void );
 
-	void setPowerLimit( unsigned watts );
+	static void setPowerLimit( unsigned watts );
 
-	std::pair<unsigned, unsigned> getPowerLimitConstraints( void ) const;
+	static std::pair<unsigned, unsigned> getPowerLimitConstraints( void );
+
+	static unsigned getCurrentPowerUsage( void );
 
 private:
 	static nmprk::ipmi::device d;
+	static std::string deviceId;
+
+	static void fillCapabilitiesInfo( DeviceInformation::InfoContainer& container );
+	static void fillVersionInfo( DeviceInformation::InfoContainer& container );
+
+	static const unsigned POLICY_ID = 19;
+
+	static unsigned correctionTime;
+	static unsigned statReportingPeriod;
+	static unsigned minValue;
+	static unsigned maxValue;
 };
 } // namespace devices

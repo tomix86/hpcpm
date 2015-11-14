@@ -42,5 +42,12 @@ public:
 	}
 };
 
+class GetCurrentPowerUsageHandler : public GetInfoFromDeviceHandler {
+public:
+	GetCurrentPowerUsageHandler( core::QueryExecutor::Ptr queryExecutor ) :
+			GetInfoFromDeviceHandler{ queryExecutor, core::QueryType::GetCurrentPowerUsage } {
+	}
+};
+
 } // namespace handlers
 } // namespace network

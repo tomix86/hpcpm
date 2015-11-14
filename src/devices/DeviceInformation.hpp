@@ -80,6 +80,6 @@ public:
 
 	typedef std::map<std::string, std::string> InfoContainer;
 
-    std::map<std::string, std::string> entries;
+	InfoContainer entries;
 };
 } // namespace devices

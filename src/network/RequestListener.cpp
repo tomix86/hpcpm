@@ -9,6 +9,7 @@ RequestListener::RequestListener ( core::QueryExecutor::Ptr queryExecutor ) :
 		listenerBaseURI{ utility::ConfigLoader::getStringParam( "listener_base_url" ) } {
 	LOG( INFO ) << "Setting up listeners";
 
+	addListener( "power_usage", std::make_shared<handlers::GetCurrentPowerUsageHandler>( queryExecutor ) );
 	addListener( "power_limit", std::make_shared<handlers::GetPowerLimitHandler>( queryExecutor ), std::make_shared<handlers::SetPowerLimitHandler>( queryExecutor ) );
 	addListener( "power_limit_percentage", std::make_shared<handlers::GetPowerLimitPercentageHandler>( queryExecutor ), std::make_shared<handlers::SetPowerLimitPercentageHandler>( queryExecutor ) );
 	addListener( "power_limit_constraints", std::make_shared<handlers::GetPowerLimitConstraintsHandler>( queryExecutor ) );

@@ -8,6 +8,7 @@
 #include <vector>
 #include "MPSSProxy.hpp"
 #include "utility/Exceptions.hpp"
+#include "utility/Functional.hpp"
 
 /*
 The Intel® Xeon PhiTM coprocessor supports 2 power threshold levels, PL0 and PL1,
@@ -43,9 +44,7 @@ typedef std::shared_ptr<mic_device> MicDevicePtr;
 
 DEFINE_RUNTIME_ERROR_DERIVATIVE( MPSSError );
 
-#define MPSS_S( x ) #x
-#define MPSS_STR( x ) MPSS_S( x )
-#define MPSS_ERROR_CHECK( statusCode ) checkMPSSErrors( "MPSS error at line:" MPSS_STR( __LINE__ ), statusCode )
+#define MPSS_ERROR_CHECK( statusCode ) checkMPSSErrors( "MPSS error at line:" UTILITY_STRINGIFY( __LINE__ ), statusCode )
 
 class MPSSPowerLimitHelper {
 public:
@@ -58,6 +57,7 @@ public:
 	unsigned getPowerLimitUpperConstraint( void ) const;
 	unsigned getPowerLimit( void ) const;
 	void setPowerLimit( unsigned watts );
+	unsigned getCurrentPowerUsage( void ) const;
 
 private:
 	// Documentation states:
@@ -92,8 +92,9 @@ private:
 	unsigned expectedPowerLimit1;
 
 	void watcherFunction( void );
-	unsigned getCurrentPowerUsage( void ) const;
+	unsigned _getCurrentPowerUsage( void ) const;
 	void checkPowerRunningAverage( void );
+	unsigned getPowerRunningAverage( void ) const;
 	void addSample( unsigned powerReading );
 
 	// Check if TW0, TW1, PL0 or PL1 was changed by external process
