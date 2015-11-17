@@ -14,7 +14,8 @@ public:
 		std::vector<Device::Ptr> list;
 
 		try {
-			std::shared_ptr<IntelXeonDevice> dev{ new IntelXeonDevice{ CommunicationProvider::getDeviceId(), CommunicationProvider::getInfo() } };
+			auto info = CommunicationProvider::getInfo();
+			std::shared_ptr<IntelXeonDevice> dev{ new IntelXeonDevice{ CommunicationProvider::getDeviceId(), std::move( info ) } };
 			list.push_back( dev );
 		}
 		catch ( const devices::NMPRKError& ex ) {

@@ -48,13 +48,24 @@ bool NMPRKCommunicationProvider::init( void ) {
 		NMPRK_CHECK_RETURN_VAL( ipmi::connectDevice( &d ) );
 		LOG( INFO ) << "NMPRK - connection to device succeeded";
 
-		NMPRK_CHECK_RETURN_VAL( !ipmi::initSystemForLocal() );
+		NMPRK_CHECK_RETURN_VAL( ipmi::initSystemForLocal() );
 		LOG( INFO ) << "NMPRK - initSystemForLocal() succeeded";
 
 		minValue = 0;
-		maxValue = getCurrentPowerUsage();
+
+		try {
+			maxValue = getCurrentPowerUsage();
+		}
+		catch ( ... ) {
+			LOG ( WARNING ) << "Failed to get upper power limit, upper constraints set to 0";
+			maxValue = 0;
+		}
 
 		return true;
+	}
+	catch ( const NMPRKError& e ) {
+		LOG( ERROR ) << e.info();
+		return false;
 	}
 	catch ( const nmprkException* e ) {
 		LOG( ERROR ) << NMPRKError::nmprkExceptionToString( e );
@@ -72,6 +83,10 @@ bool NMPRKCommunicationProvider::shutdown( void ) {
 		LOG( INFO ) << "NMPRK Library uninitialized.";
 
 		return true;
+	}
+	catch ( const NMPRKError& e ) {
+		LOG( ERROR ) << e.info();
+		return false;
 	}
 	catch ( const nmprkException* e ) {
 		LOG( ERROR ) << NMPRKError::nmprkExceptionToString( e );
@@ -150,46 +165,57 @@ unsigned NMPRKCommunicationProvider::getCurrentPowerUsage( void ) {
 }
 
 void NMPRKCommunicationProvider::fillCapabilitiesInfo( DeviceInformation::InfoContainer& container ) {
-	auto capabilities = translation::getCapabilities( &d );
-	NMPRK_CHECK_RETURN_VAL( capabilities );
-	std::shared_ptr<translation::capabilities_t> capabilitiesRAIIGuard{ capabilities };
+	try {
+		auto capabilities = translation::getCapabilities( &d );
+		NMPRK_CHECK_RETURN_VAL( capabilities );
+		std::shared_ptr<translation::capabilities_t> capabilitiesRAIIGuard{ capabilities };
 
-	container[ "SuportsPowerManagement" ] = utility::toString( capabilities->supportsPowerManagement );
-	container[ "MaxTriggerValue(for policies)" ] = std::to_string( capabilities->maxTriggerValue );
-	container[ "MinTriggerValue(for policies)" ] = std::to_string( capabilities->minTriggerValue );
-	container[ "MaxCorrectionTime(for policies)" ] = std::to_string( capabilities->maxCorrectionTime );
-	container[ "MinCorrectionTime(for policies)" ] = std::to_string( capabilities->minCorrectionTime );
-	container[ "MaxStatisticsReportingPeriod" ] = std::to_string( capabilities->maxStatReportPeriod );
-	container[ "MinStatisticsReportingPeriod" ] = std::to_string( capabilities->minStatReportPeriod );
+		container[ "SuportsPowerManagement" ] = utility::toString( capabilities->supportsPowerManagement );
+		container[ "MaxTriggerValue(for policies)" ] = std::to_string( capabilities->maxTriggerValue );
+		container[ "MinTriggerValue(for policies)" ] = std::to_string( capabilities->minTriggerValue );
+		container[ "MaxCorrectionTime(for policies)" ] = std::to_string( capabilities->maxCorrectionTime );
+		container[ "MinCorrectionTime(for policies)" ] = std::to_string( capabilities->minCorrectionTime );
+		container[ "MaxStatisticsReportingPeriod" ] = std::to_string( capabilities->maxStatReportPeriod );
+		container[ "MinStatisticsReportingPeriod" ] = std::to_string( capabilities->minStatReportPeriod );
 
-	// both of those two below can be manually set to 0 to force using the default value
-	correctionTime = capabilities->minCorrectionTime;
-	statReportingPeriod = capabilities->minStatReportPeriod;
+		// both of those two below can be manually set to 0 to force using the default value
+		correctionTime = capabilities->minCorrectionTime;
+		statReportingPeriod = capabilities->minStatReportPeriod;
+	}
+	catch ( const nmprkException* e ) {
+		container[ "SuportsPowerManagement" ] = "false";
+	}
 }
 
 void NMPRKCommunicationProvider::fillVersionInfo( DeviceInformation::InfoContainer& container ) {
-	auto version = translation::getNMVersion( &d );
-	NMPRK_CHECK_RETURN_VAL( version );
-	std::shared_ptr<translation::nmVersion_t> versionRAIIGuard{ version };
+	try {
+		auto version = translation::getNMVersion( &d );
+		NMPRK_CHECK_RETURN_VAL( version );
+		std::shared_ptr<translation::nmVersion_t> versionRAIIGuard{ version };
 
-	if( version->nmVersion_2pt0 ) {
-		container[ "NodeManagerVersion" ] = "2.0";
-	}
-	else if( version->nmVersion_1pt5 ) {
-		container[ "NodeManagerVersion" ] = "1.5";
-	}
-	else {
-		container[ "NodeManagerVersion" ] = "Unknown";
-	}
+		if( version->nmVersion_2pt0 ) {
+			container[ "NodeManagerVersion" ] = "2.0";
+		}
+		else if( version->nmVersion_1pt5 ) {
+			container[ "NodeManagerVersion" ] = "1.5";
+		}
+		else {
+			container[ "NodeManagerVersion" ] = "Unknown";
+		}
 
-	if( version->ipmiVersion_2pt0 ) {
-		container[ "IPMIVersion" ] = "2.0";
+		if( version->ipmiVersion_2pt0 ) {
+			container[ "IPMIVersion" ] = "2.0";
+		}
+		else if( version->ipmiVersion_1pt0 ) {
+			container[ "IPMIVersion" ] = "1.0";
+		}
+		else {
+			container[ "IPMIVersion" ] = "Unknown";
+		}
 	}
-	else if( version->ipmiVersion_1pt0 ) {
-		container[ "IPMIVersion" ] = "1.0";
-	}
-	else {
-		container[ "IPMIVersion" ] = "Unknown";
+	catch ( const nmprkException* e ) {
+		container[ "NodeManagerVersion" ] = "N/A";
+		container[ "IPMIVersion" ] = "N/A";
 	}
 }
 
