@@ -8,7 +8,7 @@ app.config([
         $stateProvider
             .state('home', {
                 url: '/',
-                templateUrl: '/NodeTable.html',
+                templateUrl: '/Nodes.html',
                 controller: 'NodesController'
             })
             .state('node_details', {
@@ -36,7 +36,7 @@ function bodyController($scope, $state, $uibModal, $log) {
 
         var modalInstance = $uibModal.open({
             animation: true,
-            templateUrl: 'AddNode.html',
+            templateUrl: 'NewNode.html',
             controller: 'NewNodeController'
         });
 
