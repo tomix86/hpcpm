@@ -65,7 +65,7 @@ module.exports = function(grunt) {
     watch: {
       dev: {
         files: ['<%= jshint.files %>'],
-        tasks: ['jshint', 'karma:unit:run']
+        tasks: ['jshint', 'karma:unit']
       },
       prod: {
         options: { livereload: false},

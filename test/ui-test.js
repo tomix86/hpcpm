@@ -1,3 +1,68 @@
+describe('EndpointsService', function() {
+  beforeEach(module('hpcpm-ui'));
+
+  beforeEach(inject(function(_EndpointsService_){
+    EndpointsService = _EndpointsService_;
+  }));
+
+  describe('endpoints URLs', function() {
+    it('checks if the getStatusUrl result is correct', function() {
+      expect(EndpointsService.getStatusUrl()).not.toBeUndefined();
+      expect(EndpointsService.getStatusUrl()).toEqual('status');
+    });
+
+    it('checks if the getComputationNodeUrl result is correct', function() {
+      expect(EndpointsService.getComputationNodeUrl()).not.toBeUndefined();
+      expect(EndpointsService.getComputationNodeUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the getAllComputationNodesUrl result is correct', function() {
+      expect(EndpointsService.getAllComputationNodesUrl()).not.toBeUndefined();
+      expect(EndpointsService.getAllComputationNodesUrl()).toEqual('nodes/computation_nodes');
+    });
+
+    it('checks if the putComputationNodeUrl result is correct', function() {
+      expect(EndpointsService.putComputationNodeUrl()).not.toBeUndefined();
+      expect(EndpointsService.putComputationNodeUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the deleteComputationNodeUrl result is correct', function() {
+      expect(EndpointsService.deleteComputationNodeUrl()).not.toBeUndefined();
+      expect(EndpointsService.deleteComputationNodeUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the getPowerLimitUrl result is correct', function() {
+      expect(EndpointsService.getPowerLimitUrl()).not.toBeUndefined();
+      expect(EndpointsService.getPowerLimitUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the putPowerLimitUrl result is correct', function() {
+      expect(EndpointsService.putPowerLimitUrl()).not.toBeUndefined();
+      expect(EndpointsService.putPowerLimitUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the getStatisticsUrl result is correct', function() {
+      expect(EndpointsService.getStatisticsUrl()).not.toBeUndefined();
+      expect(EndpointsService.getStatisticsUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the getEndpoints result is correct', function() {
+      expect(EndpointsService.getEndpoints().length).toBeGreaterThan(0);
+      expect(EndpointsService.getEndpoints()).toEqual([
+        'status',
+        'get_computation_node',
+        'put_computation_node',
+        'delete_computation_node',
+        'get_power_limit',
+        'put_power_limit',
+        'delete_power_limit',
+        'get_all_computation_nodes',
+        'get_statistics'
+      ]);
+    });
+  });
+});
+
 describe('BodyController', function() {
   beforeEach(module('hpcpm-ui'));
 
@@ -21,7 +86,7 @@ describe('BodyController', function() {
     });
 
     it('checks if the OpenNewNodeModal is not null', function() {
-      expect($scope.OpenNewNodeModal).not.toBe(null);
+      expect($scope.OpenNewNodeModal).not.toBeNull();
     });
   });
 });
@@ -52,7 +117,7 @@ describe('NodesController', function() {
     });
 
     it('checks if the tableParams is not undefined', function() {
-      expect($scope.tableParams).not.toBe(undefined);
+      expect($scope.tableParams).not.toBeUndefined();
     });
   });
 });

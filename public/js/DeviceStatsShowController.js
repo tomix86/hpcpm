@@ -24,7 +24,7 @@ function deviceStatsShowController($scope, $rootScope, DataService, $stateParams
     $scope.date.end = $('#statsEndTime').combodate('getValue', null);
     $scope.data = [[]];
     $scope.labels = [];
-    $scope.series = ['power limit in watts'];
+    $scope.series = ['power usage in watts'];
     DataService.getDeviceStatistics($scope.node_name, $scope.device_id, $scope.date.start.format('YYYY-MM-DDTHH:mm'), $scope.date.end.format('YYYY-MM-DDTHH:mm')).then(function(response) {
       if(response != 404) {
         var values = [[]];

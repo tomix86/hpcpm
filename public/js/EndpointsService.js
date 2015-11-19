@@ -8,7 +8,7 @@ angular.module('hpcpm-ui').factory('EndpointsService', function() {
         'put_power_limit': 'nodes/computation_node',
         'delete_power_limit': 'nodes/computation_node',
         'get_all_computation_nodes': 'nodes/computation_nodes',
-        'get_statictics': 'nodes/computation_nodes'
+        'get_statistics': 'nodes/computation_node'
     };
     var _baseUrl = 'http://vps.lel.lu:8080/api/hpcpm/';
 
@@ -47,7 +47,7 @@ angular.module('hpcpm-ui').factory('EndpointsService', function() {
     };
 
     o.getStatisticsUrl = function() {
-        return _endpoints.get_statictics;
+        return _endpoints.get_statistics;
     };
 
     o.getEndpoints = function() {
