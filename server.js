@@ -27,7 +27,7 @@ app.use(methodOverride());
 app.use('/public', express.static(__dirname + config.publicPath));
 app.use('/bower_components', express.static(__dirname + config.bowerPath));
 
-app.get('*', function(req, res) {
+app.get('/', function(req, res) {
   res.sendFile('index.html', {
     root: path.join(__dirname, '/public')
   }); // load the single view file (angular will handle the page changes on the front-end)

@@ -32,7 +32,8 @@
     "Chart.js": "~1.0.2",
     "moment": "~2.10.6",
     "angular-moment": "~0.10.3",
-    "combodate": "~1.1.0"
+    "combodate": "~1.1.0",
+    "angular-mocks": "~1.4.7"
   },
   "resolutions": {
     "angular": "~1.4.6"

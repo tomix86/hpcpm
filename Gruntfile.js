@@ -4,6 +4,12 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js'
+      }
+    },
+
     express: {
       dev: {
         options: {
@@ -59,7 +65,7 @@ module.exports = function(grunt) {
     watch: {
       dev: {
         files: ['<%= jshint.files %>'],
-        tasks: ['jshint']
+        tasks: ['jshint', 'karma:unit:run']
       },
       prod: {
         options: { livereload: false},
@@ -82,6 +88,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('lint', ['jshint']);
+  grunt.registerTask('test', ['karma:unit']);
   grunt.registerTask('run', ['express:dev', 'watch:dev']);
   grunt.registerTask('build', [
     'jshint',
