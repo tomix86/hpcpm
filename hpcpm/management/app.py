@@ -4,6 +4,8 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from hpcpm.management import log
 from hpcpm.management.api_requests import ApiRequests
 from hpcpm.management.backend_requests import BackendRequests
+from hpcpm.management import rules
+from hpcpm.management.utils import find
 
 
 class App:
@@ -109,11 +111,40 @@ class App:
                                               usage[0]['PowerUsage'])
         log.debug('stored statistics data for %s: %s', node_name, device_id)
 
+    def run_rules(self):
+        start_time = datetime.utcnow()
+        log.debug('run_rules job started')
+
+        rule_types = rules.Rule.__subclasses__()  # pylint: disable=no-member
+
+        computation_nodes = self.api_requests.get_all_computation_nodes_info().json()
+        log.info('computation nodes: %s', computation_nodes)
+
+        for node in computation_nodes:
+            node_name = node['name']
+
+            log.debug('started retrieving node details for %s', node_name)
+            node_details = self.api_requests.get_computation_node_details(node_name).json()
+            log.info('node details for %s received: %s', node_name, node_details)
+
+            for device in node_details['backend_info']['devices']:
+                device_id = device['id']
+                rule_info = self.api_requests.get_rule_for_device(node_name, device_id).json()
+                rule_type = rule_info['rule_type']
+                obj, _ = find(lambda t, rt=rule_type: t.__name__ == rt, rule_types)
+                rule = obj(node, device_id)
+                rule.proceed(rule_info['rule_params'])
+
+        finish_time = datetime.utcnow()
+        log.info('run_rules job finished, it took %s seconds',
+                 (finish_time - start_time).total_seconds())
+
     def do_work(self):
         self.gather_statistics_data()
         self.check_and_set_nodes_power_limit()
+        self.run_rules()
 
     def run(self):
         sched = BlockingScheduler()
-        sched.add_job(self.do_work, 'interval', minutes=self.interval)
+        sched.add_job(self.do_work, 'interval', seconds=self.interval)
         sched.start()

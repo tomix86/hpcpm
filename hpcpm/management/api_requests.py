@@ -24,3 +24,7 @@ class ApiRequests:
             'http://{0}/nodes/computation_node/{1}/{2}/statistics_data/{3}'.format(self.base_uri, node_name, device_id,
                                                                                    date_time),
             params={'power_usage': power_usage})
+
+    def get_rule_for_device(self, node_name, device_id):
+        return requests.get(
+            'http://{0}/nodes/computation_node/{1}/{2}/rule'.format(self.base_uri, node_name, device_id))
