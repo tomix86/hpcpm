@@ -41,6 +41,9 @@ class PowerLimit(Resource):
             'device_id': device_id,
             'power_limit': power_limit
         }
+
+        [device_type] = [d['Type'] for d in computation_node['backend_info']['devices'] if d['id'] == device_id]
+
         upsert_result = database.replace_power_limit_for_device(name, device_id, limit_info)
         if upsert_result.modified_count:
             log.info('Power limit for device %s:%s was already set in a database to %s', name, device_id, power_limit)
@@ -49,7 +52,8 @@ class PowerLimit(Resource):
             log.info('Stored power limit info %s on id %s', limit_info, upsert_result.upserted_id)
 
         try:
-            response = put_power_limit(computation_node['address'], computation_node['port'], device_id, power_limit)
+            response = put_power_limit(computation_node['address'], computation_node['port'],
+                                       device_id, device_type, power_limit)
             log.info(response.text)
         except requests.exceptions.ConnectionError:
             log.error('Connection could not be established to %s:%s', computation_node['address'],
