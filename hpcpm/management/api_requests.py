@@ -14,3 +14,13 @@ class ApiRequests:
     def get_power_limit_info_for_device(self, node_name, device_id):
         return requests.get(
             'http://{0}/nodes/computation_node/{1}/{2}/power_limit'.format(self.base_uri, node_name, device_id))
+
+    def get_statistics_interval_info(self, node_name, device_id):
+        return requests.get(
+            'http://{0}/nodes/computation_node/{1}/{2}/statistics_interval'.format(self.base_uri, node_name, device_id))
+
+    def put_statistics_data(self, node_name, device_id, date_time, power_usage):
+        return requests.put(
+            'http://{0}/nodes/computation_node/{1}/{2}/statistics_data/{3}'.format(self.base_uri, node_name, device_id,
+                                                                                   date_time),
+            params={'power_usage': power_usage})
