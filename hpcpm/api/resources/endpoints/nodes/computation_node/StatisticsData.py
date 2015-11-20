@@ -46,7 +46,15 @@ class StatisticsData(Resource):
             database.replace_stats_data(name, device_id, {'name': name, 'device_id': device_id, date_time: power_usage})
             log.debug('Stats set for device %s:%s, date: %s, power usage: %s', name, device_id, date_time, power_usage)
 
-        return 'Statistics gathering interval successfully set', 201
+        interval_info = database.get_stats_interval_info(name, device_id)
+        interval = datetime.timedelta(minutes=interval_info['interval'])
+        new_next_measurement = (datetime.datetime.utcnow() + interval)
+        new_next_measurement_str = new_next_measurement.strftime('%Y-%m-%dT%H:%M')  # pylint: disable=no-member
+        interval_info['next_measurement'] = new_next_measurement_str
+
+        database.replace_stats_interval_info(name, device_id, interval_info)
+
+        return 'Statistics data successfully set', 201
 
     @swagger.operation(
         notes='This endpoint is used for getting statistics data from database for given device and time.',
