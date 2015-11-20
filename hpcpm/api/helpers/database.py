@@ -3,7 +3,7 @@ from bson.regex import Regex
 import re
 
 
-class Database:  # pylint: disable=too-few-public-methods
+class Database:  # pylint: disable=too-many-public-methods
 
     def __init__(self):
         self.client = None
@@ -12,6 +12,7 @@ class Database:  # pylint: disable=too-few-public-methods
         self.power_limit_collection = None
         self.statistics_data_collection = None
         self.statistics_intervals_collection = None
+        self.rules_collection = None
 
     def configure(self, config):
         self.client = MongoClient(config.get('host'), int(config.get('port')))
@@ -20,6 +21,7 @@ class Database:  # pylint: disable=too-few-public-methods
         self.power_limit_collection = self.database[config.get('power_limit_collection')]
         self.statistics_data_collection = self.database[config.get('statistics_data_collection')]
         self.statistics_intervals_collection = self.database[config.get('statistics_intervals_collection')]
+        self.rules_collection = self.database[config.get('rules_collection')]
 
     def get_computation_node_info(self, name):
         return self.computation_nodes_collection.find_one({'name': name}, {'_id': False})
@@ -100,5 +102,13 @@ class Database:  # pylint: disable=too-few-public-methods
         return self.statistics_data_collection.update_one({'name': name, 'device_id': device_id},
                                                           {'$unset': stats_data})
 
+    def get_rule_for_device(self, name, device_id):
+        return self.rules_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False})
+
+    def replace_rule_for_device(self, name, device_id, rule):
+        return self.rules_collection.replace_one({'name': name, 'device_id': device_id}, rule, True)
+
+    def delete_rule(self, name, device_id):
+        return self.rules_collection.find_one_and_delete({'name': name, 'device_id': device_id}, {'_id': False})
 
 database = Database()  # pylint: disable=invalid-name

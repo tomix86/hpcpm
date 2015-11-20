@@ -8,6 +8,8 @@ from hpcpm.api.resources.endpoints.nodes.computation_node.AllComputationNodes im
 from hpcpm.api.resources.endpoints.nodes.computation_node.StatisticsInterval import StatisticsInterval
 from hpcpm.api.resources.endpoints.nodes.computation_node.StatisticsData import StatisticsData
 from hpcpm.api.resources.endpoints.nodes.computation_node.StatisticsDataWithInterval import StatisticsDataWithInterval
+from hpcpm.api.resources.endpoints.RuleTypes import RuleTypes
+from hpcpm.api.resources.endpoints.nodes.computation_node.Rule import Rule
 
 
 class ApiSpec:  # pylint: disable=too-few-public-methods
@@ -25,3 +27,5 @@ class ApiSpec:  # pylint: disable=too-few-public-methods
                          '/nodes/computation_node/<string:name>/<string:device_id>/statistics_data/<string:date_time>')
         api.add_resource(StatisticsDataWithInterval,
                          '/nodes/computation_node/<string:name>/<string:device_id>/statistics_data')
+        api.add_resource(RuleTypes, '/rule_types')
+        api.add_resource(Rule, '/nodes/computation_node/<string:name>/<string:device_id>/rule')

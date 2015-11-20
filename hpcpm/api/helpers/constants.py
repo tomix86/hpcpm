@@ -137,9 +137,32 @@ POWER_USAGE_PARAM = {
     'paramType': 'query'
 }
 
+RULE_TYPE_PARAM = {
+    'name': 'rule_type',
+    'description': 'Rule type',
+    'required': True,
+    'allowMultiple': False,
+    'dataType': 'string',
+    'paramType': 'query'
+}
+
+RULE_PARAMS_PARAM = {
+    'name': 'rule_params',
+    'description': 'Rule parameters',
+    'required': True,
+    'allowMultiple': False,
+    'dataType': 'json',
+    'paramType': 'body'
+}
+
 DEVICE_POWER_LIMIT_SET_RESPONSE = {
     'code': 201,
     'message': 'Power limit set successfully'
+}
+
+RULE_SET_RESPONSE = {
+    'code': 201,
+    'message': 'Rule set successfully'
 }
 
 DEVICE_NOT_FOUND_RESPONSE = {
@@ -170,4 +193,8 @@ STATISTICS_DATA_UPDATED_RESPONSE = {
 DEVICE_NOT_FOUND_AND_COMPUTATION_NODE_FETCHED_RESPONSES = [
     DEVICE_NOT_FOUND_RESPONSE,
     COMPUTATION_NODE_FETCHED_RESPONSE
+]
+
+AVAILABLE_RULE_TYPES = [
+    'TimeBased'
 ]
