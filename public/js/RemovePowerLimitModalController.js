@@ -15,6 +15,9 @@ function removePowerLimitModalController($scope, $rootScope, $modalInstance, toa
             $scope.response = response;
             toaster.pop('success', 'Success', 'Device' + $scope.deviceId + ' power on node ' + $scope.name + ' removed successfully');
             $rootScope.$broadcast('RefreshNodeDetails');
+        },
+        function (error) {
+          toaster.pop('error', 'Error ' + error.status, 'Cannot remove power limit from device: ' + $scope.deviceId);
         });
         $modalInstance.close();
     };

@@ -1,12 +1,12 @@
 angular.module('hpcpm-ui').controller('DeviceStatsShowController', deviceStatsShowController);
-deviceStatsShowController.$inject = ['$scope', '$rootScope', 'DataService', '$stateParams', '$filter', '$timeout', 'amMoment'];
+deviceStatsShowController.$inject = ['$scope', '$rootScope', 'DataService', '$stateParams', '$filter', '$timeout', 'amMoment', 'toaster'];
 
-function deviceStatsShowController($scope, $rootScope, DataService, $stateParams, $filter, $timeout, amMoment) {
+function deviceStatsShowController($scope, $rootScope, DataService, $stateParams, $filter, $timeout, amMoment, toaster) {
   $scope.chartOptions = {showTooltips: false};
   $('#statsStartTime').combodate({
       minYear: 2008,
       minuteStep: 1,
-      value: moment().subtract(1, 'days').format('DD-MM-YYYY HH:mm')
+      value: moment().subtract(1, 'hours').format('DD-MM-YYYY HH:mm')
   });
   $('#statsEndTime').combodate({
       minYear: 2008,
@@ -44,6 +44,8 @@ function deviceStatsShowController($scope, $rootScope, DataService, $stateParams
         $('#bar').css('display', 'inline');
       }
       else {
+        toaster.pop('error', 'Error ', 'No statistics data for given time span!');
+        $('#bar').css('display', 'none');
         $timeout(function() {
             $scope.labels = [];
             $scope.data = [[]];

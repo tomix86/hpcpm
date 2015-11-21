@@ -11,6 +11,9 @@ function newNodeController($scope, $rootScope, $modalInstance, toaster, DataServ
             $scope.response = response;
             toaster.pop('success', 'Success', 'Computation node ' + $scope.node.name + ' added successfully');
             $rootScope.$broadcast('RefreshNodes');
+        },
+        function (error) {
+          toaster.pop('error', 'Error ' + error.status, 'Cannot add noew node: ' + $scope.node.name);
         });
         $modalInstance.close();
     };

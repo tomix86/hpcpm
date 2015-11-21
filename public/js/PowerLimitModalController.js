@@ -14,6 +14,9 @@ function powerLimitModalController($scope, $rootScope, $modalInstance, toaster, 
             $scope.response = response;
             toaster.pop('success', 'Success', 'Power limit on node: ' + $scope.name + ', device: ' + $scope.deviceId + ' set successfully');
             $rootScope.$broadcast('RefreshNodeDetails');
+        },
+        function (error) {
+          toaster.pop('error', 'Error ' + error.status, 'Cannot set power limit for device: ' + $scope.deviceId);
         });
         $modalInstance.close();
     };

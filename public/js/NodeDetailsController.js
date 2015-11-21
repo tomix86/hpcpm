@@ -1,7 +1,7 @@
 angular.module('hpcpm-ui').controller('NodeDetailsController', nodeDetailsController);
-nodeDetailsController.$inject = ['$scope', '$rootScope', 'DataService', '$stateParams', 'NgTableParams', '$filter', '$uibModal'];
+nodeDetailsController.$inject = ['$scope', '$rootScope', 'DataService', '$stateParams', 'NgTableParams', '$filter', '$uibModal', 'toaster'];
 
-function nodeDetailsController($scope, $rootScope, DataService, $stateParams, NgTableParams, $filter, $uibModal) {
+function nodeDetailsController($scope, $rootScope, DataService, $stateParams, NgTableParams, $filter, $uibModal, toaster) {
     $scope.selectedNode = $stateParams.node_name;
 
     $scope.openRawDetailsModal = function(details) {
@@ -69,6 +69,9 @@ function nodeDetailsController($scope, $rootScope, DataService, $stateParams, Ng
                   'Release': $scope.nodeData.backend_info.release,
                 };
 
+            },
+            function (error) {
+              toaster.pop('error', 'Error ' + error.status, 'Cannot get data for node: ' + $stateParams.node_name);
             });
         }
 
@@ -78,6 +81,9 @@ function nodeDetailsController($scope, $rootScope, DataService, $stateParams, Ng
         $scope.nodeData.backend_info.devices.forEach(function(device) {
           DataService.getDevicePowerLimit($scope.nodeData.name, device.id).then(function (response) {
             device.power_limit = response.power_limit;
+          },
+          function (error) {
+            toaster.pop('warning', '', 'No current power limit available for device: ' + device.id);
           });
         });
 
