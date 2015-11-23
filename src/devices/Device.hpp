@@ -29,7 +29,7 @@ public:
 
 	virtual const DeviceInformation& getInfo( void ) const { return m_info; }
 
-	virtual void setPowerLimit( Power milliwatts ) = 0;
+	virtual void setPowerLimit( Power watts ) = 0;
 	virtual void setPowerLimit( Percentage percentage ) = 0;
 
 	virtual Power getCurrentPowerLimit( void ) const = 0;

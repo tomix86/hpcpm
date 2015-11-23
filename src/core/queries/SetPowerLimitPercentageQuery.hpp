@@ -9,7 +9,10 @@ public:
 	public:
 		std::string serialize( void ) const final {
 			auto object = serializeDeviceIdentifierToJsonObject( deviceIdentifier );
-			object[ "Status" ] = web::json::value( status );
+			object[ "Success" ] = web::json::value( success );
+			if ( !success ) {
+				object[ "ErrorMessage" ] = web::json::value( errorMessage );
+			}
 			return object.serialize();
 		}
 
@@ -17,7 +20,8 @@ public:
 		friend class SetPowerLimitPercentageQuery;
 
 		devices::DeviceIdentifier deviceIdentifier;
-		std::string status;
+		bool success;
+		std::string errorMessage;
 	};
 
 	std::string getTypeName( void ) const final { return "SetPowerLimitPercentage"; }
@@ -30,10 +34,11 @@ public:
 		try {
 			float arg = std::stof( getArgument() );
 			dev.setPowerLimit( arg );
-			result->status = "Success";
+			result->success = true;
 		}
 		catch ( const devices::ArgumentOutOfBounds& ex ) {
-			result->status = "Failure: " + ex.message();
+			result->success = false;
+			result->errorMessage = ex.message();
 		}
 
 		return result;

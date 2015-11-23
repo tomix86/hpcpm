@@ -3,43 +3,30 @@
 
 namespace core {
 
-class SetPowerLimitQuery : public Query {
+class RemovePowerLimitQuery : public Query {
 public:
 	class Result : public Query::Result {
 	public:
 		std::string serialize( void ) const final {
 			auto object = serializeDeviceIdentifierToJsonObject( deviceIdentifier );
-			object[ "Success" ] = web::json::value( success );
-			if ( !success ) {
-				object[ "ErrorMessage" ] = web::json::value( errorMessage );
-			}
 			return object.serialize();
 		}
 
 	private:
-		friend class SetPowerLimitQuery;
+		friend class RemovePowerLimitQuery;
 
 		devices::DeviceIdentifier deviceIdentifier;
-		bool success;
-		std::string errorMessage;
 	};
 
-	std::string getTypeName( void ) const final { return "SetPowerLimit"; }
+	std::string getTypeName( void ) const final { return "RemovePowerLimit"; }
 
 	Query::Result::Ptr execute( std::shared_ptr<devices::DevicesManager> devicesManager ) const final {
 		auto& dev = devicesManager->getDeviceByIdentifier( getDeviceIdentifier() );
 		auto result = std::make_shared<Result>();
 		result->deviceIdentifier = dev.getInfo().identifier;
 
-		try {
-			unsigned arg = std::stoi( getArgument() );
-			dev.setPowerLimit( arg );
-			result->success = true;
-		}
-		catch ( const devices::ArgumentOutOfBounds& ex ) {
-			result->success = false;
-			result->errorMessage = ex.message();
-		}
+		auto constraints = dev.getPowerLimitConstraints();
+		dev.setPowerLimit( constraints.upper );
 
 		return result;
 	}

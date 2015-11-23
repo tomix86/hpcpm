@@ -1,4 +1,5 @@
 #pragma once
+#include <initializer_list>
 #include <string>
 #include <vector>
 #include "request_hadlers/Handler.hpp"
@@ -17,8 +18,9 @@ private:
 	std::string listenerBaseURI;
 	std::vector<http_listener> listeners;
 
-	void addListener( std::string resource, handlers::Handler::Ptr GETHandler );
-	void addListener( std::string resource, handlers::Handler::Ptr GETHandler, handlers::Handler::Ptr PUTHandler );
+	void addListener( std::string resource, std::initializer_list<std::pair<web::http::method, handlers::Handler::Ptr>> handlers );
+
+	std::string methodNameToString( web::http::method method );
 };
 
 DEFINE_RUNTIME_ERROR_DERIVATIVE( ListenerLaunchFailedException );

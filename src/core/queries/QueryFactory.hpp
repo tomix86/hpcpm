@@ -4,6 +4,7 @@
 #include "GetPowerLimitConstraintsQuery.hpp"
 #include "GetPowerLimitPercentageQuery.hpp"
 #include "GetPowerLimitQuery.hpp"
+#include "RemovePowerLimitQuery.hpp"
 #include "SetPowerLimitPercentageQuery.hpp"
 #include "SetPowerLimitQuery.hpp"
 
@@ -15,6 +16,7 @@ enum class QueryType {
 	GetPowerLimit,
 	GetPowerLimitConstraints,
 	GetPowerLimitPercentage,
+	RemovePowerLimit,
 	SetPowerLimit,
 	SetPowerLimitPercentage
 };
@@ -33,6 +35,8 @@ public:
 			return std::make_shared<GetPowerLimitConstraintsQuery>();
 		case QueryType::GetPowerLimitPercentage:
 			return std::make_shared<GetPowerLimitPercentageQuery>();
+		case QueryType::RemovePowerLimit:
+			return std::make_shared<RemovePowerLimitQuery>();
 		case QueryType::SetPowerLimit:
 			return std::make_shared<SetPowerLimitQuery>();
 		case QueryType::SetPowerLimitPercentage:

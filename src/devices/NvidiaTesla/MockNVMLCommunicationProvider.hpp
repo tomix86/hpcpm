@@ -58,7 +58,7 @@ public:
 	}
 
 	MockNVMLCommunicationProvider( DeviceIdentifier::idType id ) :
-			powerManagementLimit{ 190 } {
+			powerManagementLimit{ 190000 } {
 		for( int i = 0; i <= 2; ++i ) {
 			if( id == getUUID( reinterpret_cast<nvmlDevice_t>( i ) ) ) {
 				deviceHandle = i;
@@ -72,11 +72,11 @@ public:
 		static std::mt19937 generator{ std::random_device{}() };
 
 		if( std::bernoulli_distribution{ utility::ConfigLoader::getFloatParam( "mocks_invalid_power_probability" ) }( generator ) ) {
-			if ( powerManagementLimit < ( 150 + 225 ) / 2 ) {
-				powerManagementLimit += 10;
+			if ( powerManagementLimit < ( 150000 + 225000 ) / 2 ) {
+				powerManagementLimit += 10000;
 			}
 			else {
-				powerManagementLimit -= 10;
+				powerManagementLimit -= 10000;
 			}
 		}
 
@@ -85,7 +85,7 @@ public:
 
 	std::pair<unsigned, unsigned> getPowerLimitConstraints( void ) const {
 		LOG( DEBUG ) << "MOCK NVML returning power limit constraints for device: " << deviceHandle;
-		return std::make_pair( 150, 225 );
+		return std::make_pair( 150000, 225000 );
 	}
 
 	void setPowerLimit( unsigned watts ) {
@@ -94,7 +94,7 @@ public:
 	}
 
 	unsigned getCurrentPowerUsage( void ) const {
-		return 179;
+		return 179000;
 	}
 
 private:

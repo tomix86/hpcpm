@@ -4,6 +4,8 @@
 namespace network {
 namespace handlers {
 
+//TODO: rename this class because it is also base class for DELETE...
+//maybe something like: XXXDeviceWithoutParamHandler
 class GetInfoFromDeviceHandler : public Handler {
 public:
 	GetInfoFromDeviceHandler( core::QueryExecutor::Ptr queryExecutor, core::QueryType queryType );
@@ -46,6 +48,13 @@ class GetCurrentPowerUsageHandler : public GetInfoFromDeviceHandler {
 public:
 	GetCurrentPowerUsageHandler( core::QueryExecutor::Ptr queryExecutor ) :
 			GetInfoFromDeviceHandler{ queryExecutor, core::QueryType::GetCurrentPowerUsage } {
+	}
+};
+
+class RemovePowerLimitHandler : public GetInfoFromDeviceHandler {
+public:
+	RemovePowerLimitHandler( core::QueryExecutor::Ptr queryExecutor ) :
+			GetInfoFromDeviceHandler{ queryExecutor, core::QueryType::RemovePowerLimit } {
 	}
 };
 
