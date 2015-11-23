@@ -8,7 +8,13 @@ angular.module('hpcpm-ui').factory('EndpointsService', function() {
         'put_power_limit': 'nodes/computation_node',
         'delete_power_limit': 'nodes/computation_node',
         'get_all_computation_nodes': 'nodes/computation_nodes',
-        'get_statistics': 'nodes/computation_node'
+        'get_statistics': 'nodes/computation_node',
+        'get_interval': 'nodes/computation_node',
+        'put_interval': 'nodes/computation_node',
+        'delete_interval': 'nodes/computation_node',
+        'get_rule': 'nodes/computation_node',
+        'set_rule': 'nodes/computation_node',
+        'get_rule_types': 'nodes/computation_node'
     };
     var _baseUrl = 'http://vps.lel.lu:8080/api/hpcpm/';
 
@@ -48,6 +54,30 @@ angular.module('hpcpm-ui').factory('EndpointsService', function() {
 
     o.getStatisticsUrl = function() {
         return _endpoints.get_statistics;
+    };
+
+    o.getStatisticsIntervalUrl = function() {
+            return _endpoints.get_interval;
+    };
+
+    o.putStatisticsIntervalUrl = function() {
+        return _endpoints.put_interval;
+    };
+
+    o.deleteStatisticsIntervalUrl = function() {
+        return _endpoints.delete_interval;
+    };
+
+    o.getRuleUrl = function() {
+        return _endpoints.get_rule;
+    };
+
+    o.putRuleUrl = function() {
+        return _endpoints.put_rule;
+    };
+
+    o.getRuleTypesUrl = function() {
+        return _endpoints.get_rule_types;
     };
 
     o.getEndpoints = function() {

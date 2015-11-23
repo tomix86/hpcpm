@@ -50,6 +50,22 @@ function nodeDetailsController($scope, $rootScope, DataService, $stateParams, Ng
       });
     };
 
+    $scope.openDeviceStatsIntervalModal = function(name, id) {
+     var modalInstance = $uibModal.open({
+         animation: true,
+         templateUrl: 'DeviceStatsIntervalModal.html',
+         controller: 'DeviceStatsIntervalModalController',
+         resolve: {
+             nodeName: function () {
+                 return name;
+             },
+             deviceId: function () {
+                 return id;
+             }
+         }
+     });
+   };
+
     $scope.tableParams = new NgTableParams({count: 10}, {
         counts: [10, 20, 40, 80, 100],
         getData: function ($defer, params) {

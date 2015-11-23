@@ -57,7 +57,13 @@ describe('EndpointsService', function() {
         'put_power_limit',
         'delete_power_limit',
         'get_all_computation_nodes',
-        'get_statistics'
+        'get_statistics',
+        'get_interval',
+        'put_interval',
+        'delete_interval',
+        'get_rule',
+        'set_rule',
+        'get_rule_types'
       ]);
     });
   });
