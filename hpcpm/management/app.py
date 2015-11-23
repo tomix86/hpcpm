@@ -146,5 +146,5 @@ class App:
 
     def run(self):
         sched = BlockingScheduler()
-        sched.add_job(self.do_work, 'interval', seconds=self.interval)
+        sched.add_job(self.do_work, 'interval', minutes=self.interval)
         sched.start()
