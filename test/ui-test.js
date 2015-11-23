@@ -46,6 +46,36 @@ describe('EndpointsService', function() {
       expect(EndpointsService.getStatisticsUrl()).toEqual('nodes/computation_node');
     });
 
+    it('checks if the getStatisticsIntervalUrl result is correct', function() {
+      expect(EndpointsService.getStatisticsIntervalUrl()).not.toBeUndefined();
+      expect(EndpointsService.getStatisticsIntervalUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the putStatisticsIntervalUrl result is correct', function() {
+      expect(EndpointsService.putStatisticsIntervalUrl()).not.toBeUndefined();
+      expect(EndpointsService.putStatisticsIntervalUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the deleteStatisticsIntervalUrl result is correct', function() {
+      expect(EndpointsService.deleteStatisticsIntervalUrl()).not.toBeUndefined();
+      expect(EndpointsService.deleteStatisticsIntervalUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the getRuleUrl result is correct', function() {
+      expect(EndpointsService.getRuleUrl()).not.toBeUndefined();
+      expect(EndpointsService.getRuleUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the putRuleUrl result is correct', function() {
+      expect(EndpointsService.putRuleUrl()).not.toBeUndefined();
+      expect(EndpointsService.putRuleUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the getRuleTypesUrl result is correct', function() {
+      expect(EndpointsService.getRuleTypesUrl()).not.toBeUndefined();
+      expect(EndpointsService.getRuleTypesUrl()).toEqual('nodes/computation_node');
+    });
+
     it('checks if the getEndpoints result is correct', function() {
       expect(EndpointsService.getEndpoints().length).toBeGreaterThan(0);
       expect(EndpointsService.getEndpoints()).toEqual([
@@ -62,7 +92,7 @@ describe('EndpointsService', function() {
         'put_interval',
         'delete_interval',
         'get_rule',
-        'set_rule',
+        'put_rule',
         'get_rule_types'
       ]);
     });
