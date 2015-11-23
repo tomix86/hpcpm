@@ -8,7 +8,7 @@ class BackendRequests:
     def get_power_limit_for_device(self, device_type, device_id):
         return requests.get('http://{0}/power_limit?{1},{2}'.format(self.base_uri, device_type, device_id))
 
-    def set_power_limit_for_device(self, device_id, device_type, power_limit):
+    def set_power_limit_for_device(self, device_type, device_id, power_limit):
         return requests.put('http://{0}/power_limit?{1},{2}={3}'.format(self.base_uri,
                                                                         device_type, device_id, power_limit))
 
