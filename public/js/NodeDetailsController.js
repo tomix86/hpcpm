@@ -97,9 +97,6 @@ function nodeDetailsController($scope, $rootScope, DataService, $stateParams, Ng
         $scope.nodeData.backend_info.devices.forEach(function(device) {
           DataService.getDevicePowerLimit($scope.nodeData.name, device.id).then(function (response) {
             device.power_limit = response.power_limit;
-          },
-          function (error) {
-            toaster.pop('warning', '', 'No current power limit available for device: ' + device.id);
           });
         });
 
