@@ -1,5 +1,5 @@
 angular.module('hpcpm-ui').controller('DeviceStatsIntervalModalController', deviceStatsIntervalModalController);
-powerLimitModalController.$inject = ['$scope', '$rootScope', '$modalInstance', 'toaster', 'DataService', 'nodeName', 'deviceId'];
+deviceStatsIntervalModalController.$inject = ['$scope', '$rootScope', '$modalInstance', 'toaster', 'DataService', 'nodeName', 'deviceId'];
 
 function deviceStatsIntervalModalController($scope, $rootScope, $modalInstance, toaster, DataService, nodeName, deviceId) {
     $scope.name = nodeName;
