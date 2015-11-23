@@ -160,6 +160,11 @@ DEVICE_POWER_LIMIT_SET_RESPONSE = {
     'message': 'Power limit set successfully'
 }
 
+DEVICE_POWER_LIMIT_SET_RESPONSE_FAILURE = {
+    'code': 406,
+    'message': 'Power limit could not be set successfully'
+}
+
 RULE_SET_RESPONSE = {
     'code': 201,
     'message': 'Rule set successfully'

@@ -107,7 +107,7 @@ class ComputationNode(Resource):
 
         for device in result_node_info['backend_info']['devices']:
             try:
-                response = delete_power_limit(address, port, device['id'])
+                response = delete_power_limit(address, port, device['id'], device['Type'])
                 log.info('Device %s deletion info: %s', device['id'], response)
             except requests.exceptions.ConnectionError:
                 log.error('Connection could not be established to %s:%s', address, port)

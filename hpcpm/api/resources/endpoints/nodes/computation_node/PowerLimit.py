@@ -1,3 +1,5 @@
+import json
+
 import requests
 
 from flask_restful import Resource, request, abort
@@ -9,8 +11,8 @@ from hpcpm.api.helpers.utils import abort_when_not_int, abort_when_node_not_foun
 from hpcpm.api.helpers.constants import COMPUTATION_NODE_PARAM_NAME, COMPUTATION_NODE_NOT_FOUND_RESPONSE, \
     COMPUTATION_NODE_FETCHED_RESPONSE, DEVICE_IDENTIFIER_PARAM, DEVICE_POWER_LIMIT_PARAM, \
     DEVICE_POWER_LIMIT_SET_RESPONSE, DEVICE_NOT_FOUND_RESPONSE, POWER_LIMIT_DELETED_FROM_DB_BUT_NOT_FROM_DEVICE, \
-    NODE_AND_DEVICE_PARAMS
-from hpcpm.api.helpers.requests import put_power_limit, delete_power_limit
+    NODE_AND_DEVICE_PARAMS, DEVICE_POWER_LIMIT_SET_RESPONSE_FAILURE
+from hpcpm.api.helpers.requests import put_power_limit, delete_power_limit, get_power_limit
 
 
 class PowerLimit(Resource):
@@ -24,6 +26,7 @@ class PowerLimit(Resource):
         ],
         responseMessages=[
             DEVICE_POWER_LIMIT_SET_RESPONSE,
+            DEVICE_POWER_LIMIT_SET_RESPONSE_FAILURE,
             COMPUTATION_NODE_NOT_FOUND_RESPONSE
         ]
     )
@@ -44,6 +47,12 @@ class PowerLimit(Resource):
 
         [device_type] = [d['Type'] for d in computation_node['backend_info']['devices'] if d['id'] == device_id]
 
+        previous_limit_data = get_power_limit(computation_node['address'], computation_node['port'],
+                                              device_id, device_type)
+
+        previous_limit_info = json.loads(previous_limit_data.content.decode('ascii'))
+        previous_limit = previous_limit_info[0]['PowerLimit']
+
         upsert_result = database.replace_power_limit_for_device(name, device_id, limit_info)
         if upsert_result.modified_count:
             log.info('Power limit for device %s:%s was already set in a database to %s', name, device_id, power_limit)
@@ -55,6 +64,22 @@ class PowerLimit(Resource):
             response = put_power_limit(computation_node['address'], computation_node['port'],
                                        device_id, device_type, power_limit)
             log.info(response.text)
+            response_object = json.loads(response.content.decode('ascii'))
+            if not response_object[0]['Success']:
+                log.info('Could not set power limit on device %s:%s, restoring previous value: %s',
+                         name, device_id, previous_limit)
+                try:
+                    limit_info['power_limit'] = int(previous_limit)
+                    upsert_result = database.replace_power_limit_for_device(name, device_id, limit_info)
+                    if upsert_result.modified_count:
+                        log.info('Power limit for device %s:%s was already set in a database to %s',
+                                 name, device_id, power_limit)
+                        log.info('Restored previous power limit %s', limit_info)
+                    else:
+                        log.info('Restored previous power limit info %s:%s', limit_info, upsert_result.upserted_id)
+                except ValueError:
+                    pass
+                return response_object[0]['ErrorMessage'], 406
         except requests.exceptions.ConnectionError:
             log.error('Connection could not be established to %s:%s', computation_node['address'],
                       computation_node['port'])
@@ -93,14 +118,14 @@ class PowerLimit(Resource):
 
         address = node_info['address']
         port = node_info['port']
-
+        [device_type] = [d['Type'] for d in node_info['backend_info']['devices'] if d['id'] == device_id]
         result = database.delete_power_limit_info(name, device_id)
         if not result:
             log.info('No such device %s:%s', name, device_id)
             abort(404)
 
         try:
-            response = delete_power_limit(address, port, device_id)
+            response = delete_power_limit(address, port, device_id, device_type)
             log.info('Power limit for device %s deletion info: %s', device_id, response)
         except requests.exceptions.ConnectionError:
             log.error('Connection could not be established to %s:%s', address, port)
