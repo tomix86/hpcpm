@@ -6,12 +6,12 @@ function deviceStatsShowController($scope, $rootScope, DataService, $stateParams
   $('#statsStartTime').combodate({
       minYear: 2008,
       minuteStep: 1,
-      value: moment().subtract(1, 'hours').format('DD-MM-YYYY HH:mm')
+      value: moment().utc().subtract(1, 'hours').format('DD-MM-YYYY HH:mm')
   });
   $('#statsEndTime').combodate({
       minYear: 2008,
       minuteStep: 1,
-      value: moment().format('DD-MM-YYYY HH:mm')
+      value: moment().utc().format('DD-MM-YYYY HH:mm')
   });
   $scope.node_name = $stateParams.node_name;
   $scope.device_id = $stateParams.device_id;
@@ -22,10 +22,23 @@ function deviceStatsShowController($scope, $rootScope, DataService, $stateParams
   $scope.getStats = function() {
     $scope.date.start = $('#statsStartTime').combodate('getValue', null);
     $scope.date.end = $('#statsEndTime').combodate('getValue', null);
+    if(+$scope.date.start.toDate() >= +$scope.date.end.toDate()) {
+      toaster.pop('error', 'Error ', 'Selected incorrect time interval!');
+      $('#bar').css('display', 'none');
+      $timeout(function() {
+          $scope.labels = [];
+          $scope.data = [[]];
+      });
+      $scope.error = 'Selected incorrect time interval!';
+      return;
+    }
     $scope.data = [[]];
     $scope.labels = [];
     $scope.series = ['power usage in watts'];
-    DataService.getDeviceStatistics($scope.node_name, $scope.device_id, $scope.date.start.format('YYYY-MM-DDTHH:mm'), $scope.date.end.format('YYYY-MM-DDTHH:mm')).then(function(response) {
+    DataService.getDeviceStatistics($scope.node_name, $scope.device_id,
+      $scope.date.start.format('YYYY-MM-DDTHH:mm'),
+      $scope.date.end.format('YYYY-MM-DDTHH:mm'))
+    .then(function(response) {
       if(response != 404) {
         var values = [[]];
         var labels = [];
