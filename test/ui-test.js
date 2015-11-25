@@ -71,6 +71,11 @@ describe('EndpointsService', function() {
       expect(EndpointsService.putRuleUrl()).toEqual('nodes/computation_node');
     });
 
+    it('checks if the deleteRuleUrl result is correct', function() {
+      expect(EndpointsService.deleteRuleUrl()).not.toBeUndefined();
+      expect(EndpointsService.deleteRuleUrl()).toEqual('nodes/computation_node');
+    });
+
     it('checks if the getRuleTypesUrl result is correct', function() {
       expect(EndpointsService.getRuleTypesUrl()).not.toBeUndefined();
       expect(EndpointsService.getRuleTypesUrl()).toEqual('nodes/computation_node');
@@ -93,6 +98,7 @@ describe('EndpointsService', function() {
         'delete_interval',
         'get_rule',
         'put_rule',
+        'delete_rule',
         'get_rule_types'
       ]);
     });

@@ -4,9 +4,44 @@ powerLimitModalController.$inject = ['$scope', '$rootScope', '$modalInstance', '
 function powerLimitModalController($scope, $rootScope, $modalInstance, toaster, DataService, nodeName, deviceId) {
     $scope.name = nodeName;
     $scope.deviceId = deviceId;
+    $scope.error = '';
+
+    var supportedRules = ['TimeBased'];
 
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
+    };
+
+    DataService.getDevicePowerLimitRule($scope.name, $scope.deviceId).then(function (response) {
+        $scope.ruleData = response.plain();
+        $scope.ruleFormatted = [];
+        if($.inArray($scope.ruleData.rule_type, supportedRules) != -1) {
+            for(var i = 0; i < $scope.ruleData.rule_params.length; i++) {
+                $scope.ruleFormatted.push({});
+                $scope.ruleFormatted[i].start = $scope.ruleData.rule_params[i].start;
+                $scope.ruleFormatted[i].end = $scope.ruleData.rule_params[i].end;
+                $scope.ruleFormatted[i].limit = $scope.ruleData.rule_params[i].limit;
+            }
+        }
+        else {
+            $scope.error = 'Unsupported rule type!';
+            toaster.pop('error', 'Error', 'Unsupported power limit rule: ' + $scope.ruleData.rule_type);
+        }
+      },
+      function (error) {
+          $scope.error = 'No current power limit rule for this device!';
+      }
+    );
+
+    $scope.removeCurrentRule = function() {
+        DataService.removeDevicePowerLimitRule($scope.name, $scope.deviceId).then(function (response) {
+            $scope.error = 'No current power limit rule for this device!';
+            toaster.pop('success', 'Success', 'Removed power limit rule from node: ' + $scope.name + ', device: ' + $scope.deviceId);
+        },
+        function (error) {
+            toaster.pop('error', 'Error ' + error.status, 'Cannot remove power limit rule from device: ' + $scope.deviceId);
+        }
+      );
     };
 
     $scope.setPowerLimit = function () {

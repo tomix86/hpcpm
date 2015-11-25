@@ -102,6 +102,30 @@
         <h3 class="modal-title">Set power limit for {{name}}:{{deviceId}}</h3>
     </div>
     <div class="modal-body">
+        <div ng-if='error === ""'>
+          <label class="control-label">Current rule:</label>
+          <div>
+              Type: <strong>{{ruleData.rule_type}}</strong>
+              <ul style="list-style: none;">
+                <li ng-repeat-start='(key, value) in ruleFormatted'>
+                    <strong>Subrule {{key}}</strong>
+                </li>
+                <li ng-repeat-end>
+                    <dl class="dl-horizontal">
+                        <dt>Start date:</dt><dd>{{value.start}}</dd>
+                        <dt>End date:</dt><dd>{{value.end}}</dd>
+                        <dt>Power limit:</dt><dd>{{value.limit}}</dd>
+                    </dl>
+                </li>
+              </ul>
+          </div>
+          <br />
+          <button class="btn btn-danger" type="button" ng-click="removeCurrentRule()">Remove</button>
+        </div>
+        <div ng-if='error != ""'>
+            <strong>{{error}}</strong>
+        </div>
+        <hr />
         <div>
             <form name="powerLimitForm" novalidate>
                 <div class="form-group" ng-class="{ 'has-error': powerLimitForm.powerLimit.$invalid }">
