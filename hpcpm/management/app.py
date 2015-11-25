@@ -1,6 +1,5 @@
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
-
 from hpcpm.management import log
 from hpcpm.management.api_requests import ApiRequests
 from hpcpm.management.backend_requests import BackendRequests
@@ -17,7 +16,7 @@ class App:
         device_id = device['id']
         device_type = device['Type']  # probably temporary - device_type is necessary for backend queries
         log.debug('started retrieving power limit info for %s:%s', node_name, device_id)
-        power_limit_response = self.api_requests.get_power_limit_info_for_device(node_name, device_id)
+        power_limit_response = self.api_requests.get_power_limit_info(node_name, device_id)
         if power_limit_response.status_code == 404:
             log.info('no power limit info set in database for %s:%s', node_name, device_id)
         else:
@@ -128,23 +127,33 @@ class App:
             log.info('node details for %s received: %s', node_name, node_details)
 
             for device in node_details['backend_info']['devices']:
-                device_id = device['id']
-                rule_info = self.api_requests.get_rule_for_device(node_name, device_id).json()
-                rule_type = rule_info['rule_type']
-                obj, _ = find(lambda t, rt=rule_type: t.__name__ == rt, rule_types)
-                rule = obj(node, device_id)
-                rule.proceed(rule_info['rule_params'])
+                self._run_rule_for_device(node_name, device, rule_types)
 
         finish_time = datetime.utcnow()
         log.info('run_rules job finished, it took %s seconds',
                  (finish_time - start_time).total_seconds())
 
+    def _run_rule_for_device(self, node_name, device, rule_types):
+        device_id = device['id']
+        rule_response = self.api_requests.get_rule_for_device(node_name, device_id)
+        if rule_response.status_code != 200:
+            return
+        rule_info = rule_response.json()
+        rule_type = rule_info['rule_type']
+        obj, _ = find(lambda t, rt=rule_type: t.__name__ == rt, rule_types)
+        rule = obj(self.api_requests, node_name, device_id)
+        rule.proceed(rule_info['rule_params'])
+
     def do_work(self):
-        self.gather_statistics_data()
-        self.check_and_set_nodes_power_limit()
-        self.run_rules()
+        try:
+            self.gather_statistics_data()
+            self.check_and_set_nodes_power_limit()
+            self.run_rules()
+        except Exception as ex:
+            log.exception(ex)
+            raise  # could add some failure recovery logic
 
     def run(self):
         sched = BlockingScheduler()
-        sched.add_job(self.do_work, 'interval', minutes=self.interval)
+        sched.add_job(self.do_work, 'interval', seconds=self.interval)
         sched.start()

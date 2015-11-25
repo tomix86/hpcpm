@@ -11,8 +11,17 @@ class ApiRequests:
     def get_computation_node_details(self, node_name):
         return requests.get('http://{0}/nodes/computation_node/{1}'.format(self.base_uri, node_name))
 
-    def get_power_limit_info_for_device(self, node_name, device_id):
+    def get_power_limit_info(self, node_name, device_id):
         return requests.get(
+            'http://{0}/nodes/computation_node/{1}/{2}/power_limit'.format(self.base_uri, node_name, device_id))
+
+    def put_power_limit_info(self, node_name, device_id, limit):
+        return requests.put(
+            'http://{0}/nodes/computation_node/{1}/{2}/power_limit'.format(self.base_uri, node_name, device_id),
+            params={'power_limit': limit})
+
+    def delete_power_limit_info(self, node_name, device_id):
+        return requests.delete(
             'http://{0}/nodes/computation_node/{1}/{2}/power_limit'.format(self.base_uri, node_name, device_id))
 
     def get_statistics_interval_info(self, node_name, device_id):
