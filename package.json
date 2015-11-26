@@ -41,6 +41,9 @@
     "karma-jasmine": "^0.3.6",
     "karma-phantomjs-launcher": "^0.2.1",
     "karma-spec-reporter": "0.0.22",
-    "load-grunt-tasks": "^3.3.0"
+    "load-grunt-tasks": "^3.3.0",
+    "protractor": "^3.0.0",
+    "jasmine-spec-reporter": "^2.4.0",
+    "protractor-jasmine2-screenshot-reporter": "^0.1.7"
   }
 }
