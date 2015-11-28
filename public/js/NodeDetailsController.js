@@ -73,6 +73,7 @@ function nodeDetailsController($scope, $rootScope, DataService, $stateParams, Ng
                 $scope.nodeData = response;
                 $scope.rawNodeData = angular.copy(response);
                 $scope.getPowerLimitsForDevices();
+                $scope.getPowerUsagesForDevices();
                 $defer.resolve($scope.nodeData);
                 $scope.simpleDetails = {
                   'Nickname': $scope.nodeData.name,
@@ -100,6 +101,18 @@ function nodeDetailsController($scope, $rootScope, DataService, $stateParams, Ng
           });
         });
 
+    };
+
+    $scope.getPowerUsagesForDevices = function() {
+      $scope.nodeData.backend_info.devices.forEach(function(device) {
+        DataService.getDevicePowerUsage($scope.nodeData.name, device.id).then(function (response) {
+          device.power_usage = response.plain()[0].PowerUsage;
+        },
+        function(error) {
+          device.power_usage = '';
+        }
+      );
+      });
     };
 
     $scope.$on('RefreshNodeDetails', function () {

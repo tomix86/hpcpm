@@ -76,9 +76,19 @@ describe('EndpointsService', function() {
       expect(EndpointsService.deleteRuleUrl()).toEqual('nodes/computation_node');
     });
 
+    it('checks if the getPowerUsageUrl result is correct', function() {
+      expect(EndpointsService.getPowerUsageUrl()).not.toBeUndefined();
+      expect(EndpointsService.getPowerUsageUrl()).toEqual('nodes/computation_node');
+    });
+
+    it('checks if the getPowerLimitConstraintsUrl result is correct', function() {
+      expect(EndpointsService.getPowerLimitConstraintsUrl()).not.toBeUndefined();
+      expect(EndpointsService.getPowerLimitConstraintsUrl()).toEqual('nodes/computation_node');
+    });
+
     it('checks if the getRuleTypesUrl result is correct', function() {
       expect(EndpointsService.getRuleTypesUrl()).not.toBeUndefined();
-      expect(EndpointsService.getRuleTypesUrl()).toEqual('nodes/computation_node');
+      expect(EndpointsService.getRuleTypesUrl()).toEqual('rule_types');
     });
 
     it('checks if the getEndpoints result is correct', function() {
@@ -99,6 +109,8 @@ describe('EndpointsService', function() {
         'get_rule',
         'put_rule',
         'delete_rule',
+        'get_power_usage',
+        'get_power_limit_constraints',
         'get_rule_types'
       ]);
     });

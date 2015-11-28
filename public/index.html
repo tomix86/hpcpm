@@ -34,6 +34,7 @@
                 <td data-title="'Type'">{{device.Type}}</td>
                 <td data-title="'ID'">{{device.id}}</td>
                 <td data-title="'Current power limit'">{{device.power_limit}}</td>
+                <td data-title="'Current power usage'">{{device.power_usage}}</td>
                 <td data-title="'Action'">
                     <button class="btn btn-danger btn-xs" type="button"
                         ng-click="openSetPowerLimitModal(selectedNode, device.id)">Set power limit rule</button>
@@ -99,42 +100,66 @@
 
 <script type="text/ng-template" id="PowerLimitModal.html">
     <div class="modal-header">
-        <h3 class="modal-title">Set power limit for {{name}}:{{deviceId}}</h3>
+        <h3 class="modal-title">Set power rule limit for {{name}}:{{deviceId}}</h3>
     </div>
     <div class="modal-body">
-        <div ng-if='error === ""'>
+        <div ng-if="errorConstraints === ''">
+            <p><strong>Power limit range:</strong></p>
+            <dl class="dl-horizontal">
+                <dt>Lower limit:</dt><dd>{{deviceConstraints.lower}}</dd>
+                <dt>Upper limit:</dt><dd>{{deviceConstraints.upper}}</dd>
+            </dl>
+        </div>
+        <div ng-if="errorConstraints != ''">
+            <p><strong>{{errorConstraints}}</strong></p>
+        </div>
+        <div ng-if="error === ''">
           <label class="control-label">Current rule:</label>
-          <div>
-              Type: <strong>{{ruleData.rule_type}}</strong>
-              <ul style="list-style: none;">
-                <li ng-repeat-start="(key, value) in ruleFormatted">
-                    <strong>Subrule {{key}}</strong>
-                </li>
-                <li ng-repeat-end>
-                    <dl class="dl-horizontal">
-                        <dt>Start date:</dt><dd>{{value.start}}</dd>
-                        <dt>End date:</dt><dd>{{value.end}}</dd>
-                        <dt>Power limit:</dt><dd>{{value.limit}}</dd>
-                    </dl>
-                </li>
-              </ul>
+          <div ng-switch on="ruleData.rule_type">
+              <p>Type: <strong>{{ruleData.rule_type}}</strong></p>
+              <div ng-switch-when="TimeBased">
+                <ul style="list-style: none;">
+                  <li ng-repeat-start="(key, value) in ruleFormatted">
+                      <strong>Subrule {{key}}</strong>
+                  </li>
+                  <li ng-repeat-end>
+                      <dl class="dl-horizontal">
+                          <dt>Start date:</dt><dd>{{value.start}}</dd>
+                          <dt>End date:</dt><dd>{{value.end}}</dd>
+                          <dt>Power limit:</dt><dd>{{value.limit}}</dd>
+                      </dl>
+                  </li>
+                </ul>
+              </div>
+              <div ng-switch-when="HardLimit">
+                <ul style="list-style: none;">
+                  <li ng-repeat-start="(key, value) in ruleFormatted">
+                      <strong>Subrule {{key}}</strong>
+                  </li>
+                  <li ng-repeat-end>
+                      <dl class="dl-horizontal">
+                          <dt>Power limit:</dt><dd>{{value.limit}}</dd>
+                      </dl>
+                  </li>
+                </ul>
+              </div>
           </div>
           <br />
           <button class="btn btn-danger" type="button" ng-click="removeCurrentRule()">Remove</button>
         </div>
         <div ng-if='error != ""'>
-            <strong>{{error}}</strong>
+            <p><strong>{{error}}</strong></p>
         </div>
         <hr />
         <div>
           <select class="form-control" ng-model="selectedRule" ng-options="item for item in supportedRules"></select>
           <div class="alert alert-warning">
-            <strong>Note:</strong> Setting new power limit rule will remove previous one!
+            <p><strong>Note:</strong> Setting new power limit rule will remove previous one!</p>
           </div>
         </div>
         <div ng-switch on="selectedRule" style="padding-top:20px;">
           <div ng-switch-default class="alert alert-info">
-            Select rule type
+            <p>Select rule type</p>
           </div>
           <div ng-switch-when="TimeBased">
             <form name="powerLimitForm" novalidate>
@@ -142,25 +167,45 @@
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </button>
                 <div ng-repeat="subrule in subrules" class="form-group" style="padding-top: 20px;"
-                ng-class="{ 'has-error': powerLimitForm.powerLimit.$invalid }" on-last-repeat>
+                     ng-class="{ 'has-error': powerLimitForm.powerLimit.$invalid }" on-last-repeat>
                     <div id="{{subrule.index}}">
                         <label class="control-label">New power limit subrule</label>
                         <button class="btn btn-danger" type="button" ng-click="removeSubrule(subrule.index)" style="float: right;">
                           <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                         </button>
                         <br />
-                        <p>Start:</p><input type="text" id="{{ 'startTime' + subrule.index }}" data-format="DD-MM-YYYY HH:mm" data-template="DD / MM / YYYY  HH : mm" name="ruleStartDatetime" required>
+                        <p>Start:</p><input type="text" id="{{ 'startTime' + subrule.index }}" data-format="DD-MM-YYYY HH:mm"
+                                            data-template="DD / MM / YYYY  HH : mm" name="ruleStartDatetime" required>
                         <br />
-                        <p>End: </p><input type="text" id="{{ 'endTime' + subrule.index }}" data-format="DD-MM-YYYY HH:mm" data-template="DD / MM / YYYY  HH : mm" name="ruleEndDatetime" required>
+                        <p>End:</p><input type="text" id="{{ 'endTime' + subrule.index }}" data-format="DD-MM-YYYY HH:mm"
+                                          data-template="DD / MM / YYYY  HH : mm" name="ruleEndDatetime" required>
                         <br />
-                        Limit: <input type="text" name="powerLimit" class="form-control" ng-model="subrule.powerLimit" required>
+                        <p>Limit:</p><input type="text" name="powerLimit" class="form-control" ng-model="subrule.powerLimit"
+                                            valid-limit="{{deviceConstraints}}" required>
+                        <span ng-show="powerLimitForm.powerLimit.$error.validLimit">Enter correct power limit!</span>
+                        <span ng-show="powerLimitForm.powerLimit.$error.required">Enter value of power limit!</span>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-success" type="button" ng-disabled="_.isEmpty(subrules) || powerLimitForm.$invalid"
+                <div class="modal-footer" style="margin-top: 10px;">
+                    <button class="btn btn-success" type="button" ng-disabled="powerLimitForm.$invalid" ng-hide="emptySubrules"
                             ng-click="setPowerLimitRule()">Set
                     </button>
                 </div>
+            </form>
+          </div>
+          <div ng-switch-when="HardLimit">
+            <form name="powerLimitForm" novalidate>
+              <div class="form-group" style="padding-top: 20px;" ng-class="{ 'has-error': powerLimitForm.powerLimit.$invalid }">
+                <label class="control-label">New power limit subrule</label>
+                <p>Limit:</p><input type="text" name="powerLimit" class="form-control" ng-model="subrules.powerLimit"
+                                    valid-limit="{{deviceConstraints}}" required>
+                <span ng-show="powerLimitForm.powerLimit.$error.validLimit">Enter correct power limit!</span>
+                <span ng-show="powerLimitForm.powerLimit.$error.required">Enter value of power limit!</span>
+              </div>
+              <div class="modal-footer" style="margin-top: 10px;">
+                  <button class="btn btn-success" type="button" ng-disabled="powerLimitForm.$invalid" ng-click="setPowerLimitRule()">Set
+                  </button>
+              </div>
             </form>
           </div>
           <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
@@ -207,7 +252,7 @@
         <div ng-if='error === ""'>
           <label class="control-label">Current rule:</label>
           <div>
-              Type: <strong>{{ruleData.rule_type}}</strong>
+              <p>Type: <strong>{{ruleData.rule_type}}</strong></p>
               <ul style="list-style: none;">
                 <li ng-repeat-start="(key, value) in ruleFormatted">
                     <strong>Subrule {{key}}</strong>
@@ -223,12 +268,12 @@
           </div>
           <br />
           <div class="alert alert-danger">
-              Do you wish to remove power limit for device <strong>{{deviceId}}</strong> on node <strong>{{name}}</strong>?
+              <p>Do you wish to remove power limit for device <strong>{{deviceId}}</strong> on node <strong>{{name}}</strong>?</p>
           </div>
           <button class="btn btn-danger" type="button" ng-click="removePowerLimitRule()">Remove</button>
         </div>
         <div ng-if='error != ""'>
-            <strong>{{error}}</strong>
+            <p><strong>{{error}}</strong></p>
         </div>
         <div>
             <div class="modal-footer">
@@ -302,7 +347,7 @@
     <div class="modal-body">
         <div>
             <div class="alert alert-danger">
-                Do you wish to remove computation node <strong>{{name}}</strong> from database?
+                <p>Do you wish to remove computation node <strong>{{name}}</strong> from database?</p>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-danger" type="button" ng-click="removeNode()">

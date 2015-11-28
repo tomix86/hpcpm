@@ -40,6 +40,26 @@ app.directive('onLastRepeat', function() {
     };
 });
 
+app.directive('validLimit', function() {
+  return {
+    require: 'ngModel',
+    scope: { limits: '@validLimit' },
+    link: function(scope, elm, attrs, ctrl) {
+      ctrl.$validators.validLimit = function(modelValue, viewValue) {
+        var limits = JSON.parse(scope.limits);
+        if (ctrl.$isEmpty(modelValue)) {
+          return true;
+        }
+        if (/^\-?\d+$/.test(viewValue) && viewValue > 0 && limits.lower <= viewValue && limits.upper >= viewValue) {
+          return true;
+        }
+        return false;
+      };
+    }
+  };
+});
+
+
 var BodyController = app.controller('BodyController', bodyController);
 bodyController.$inject = ['$scope', '$state', '$uibModal', '$log'];
 

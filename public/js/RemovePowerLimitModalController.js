@@ -5,14 +5,22 @@ removePowerLimitModalController.$inject = ['$scope', '$rootScope', '$modalInstan
 function removePowerLimitModalController($scope, $rootScope, $modalInstance, toaster, DataService, nodeName, deviceId) {
     $scope.name = nodeName;
     $scope.deviceId = deviceId;
-    $scope.supportedRules = ['TimeBased'];
-    
+
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
 
     $scope.getPowerLimitRule = function() {
       $scope.error = '';
+
+      DataService.getDevicePowerLimitRuleTypes().then(function(response) {
+            $scope.supportedRules = response.plain();
+        },
+        function(error) {
+            $scope.supportedRules = ['TimeBased']; //fallback
+        }
+      );
+
       DataService.getDevicePowerLimitRule($scope.name, $scope.deviceId).then(function (response) {
         $scope.ruleData = response.plain();
         $scope.ruleFormatted = [];
