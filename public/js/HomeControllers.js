@@ -1,16 +1,5 @@
 var app = angular.module('hpcpm-ui', ['restangular', 'ui.router', 'ngTable', 'ui.bootstrap', 'toaster', 'jsonFormatter', 'chart.js', 'angularMoment']);
 
-/*app.run(function(Restangular, toaster) {
-    Restangular.setErrorInterceptor(function(response, deferred, responseHandler) {
-      if (response.status === 404) {
-        toaster.pop('error', 'Error', response.status + ': ' + response.data.message);
-        return false; // error handled
-      }
-      return true; // error not handled
-    });
-
-  });*/
-
 
 app.config([
   '$stateProvider',
@@ -42,6 +31,14 @@ app.config([
 
   }
 ]);
+
+app.directive('onLastRepeat', function() {
+    return function(scope, element, attrs) {
+        if (scope.$last) setTimeout(function(){
+            scope.$emit('onRepeatLast', element, attrs);
+        }, 1);
+    };
+});
 
 var BodyController = app.controller('BodyController', bodyController);
 bodyController.$inject = ['$scope', '$state', '$uibModal', '$log'];

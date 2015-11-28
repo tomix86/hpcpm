@@ -107,7 +107,7 @@
           <div>
               Type: <strong>{{ruleData.rule_type}}</strong>
               <ul style="list-style: none;">
-                <li ng-repeat-start='(key, value) in ruleFormatted'>
+                <li ng-repeat-start="(key, value) in ruleFormatted">
                     <strong>Subrule {{key}}</strong>
                 </li>
                 <li ng-repeat-end>
@@ -127,19 +127,43 @@
         </div>
         <hr />
         <div>
+          <select class="form-control" ng-model="selectedRule" ng-options="item for item in supportedRules"></select>
+          <div class="alert alert-warning">
+            <strong>Note:</strong> Setting new power limit rule will remove previous one!
+          </div>
+        </div>
+        <div ng-switch on="selectedRule" style="padding-top:20px;">
+          <div ng-switch-default class="alert alert-info">
+            Select rule type
+          </div>
+          <div ng-switch-when="TimeBased">
             <form name="powerLimitForm" novalidate>
-                <div class="form-group" ng-class="{ 'has-error': powerLimitForm.powerLimit.$invalid }">
-                    <label class="control-label">New power limit</label>
-                    <input type="text" name="powerLimit" class="form-control" ng-model="powerLimit" required/>
+                <button class="btn btn-success" type="button" ng-click="addSubrule()">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </button>
+                <div ng-repeat="subrule in subrules" class="form-group" style="padding-top: 20px;"
+                ng-class="{ 'has-error': powerLimitForm.powerLimit.$invalid }" on-last-repeat>
+                    <div id="{{subrule.index}}">
+                        <label class="control-label">New power limit subrule</label>
+                        <button class="btn btn-danger" type="button" ng-click="removeSubrule(subrule.index)" style="float: right;">
+                          <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                        </button>
+                        <br />
+                        <p>Start:</p><input type="text" id="{{ 'startTime' + subrule.index }}" data-format="DD-MM-YYYY HH:mm" data-template="DD / MM / YYYY  HH : mm" name="ruleStartDatetime" required>
+                        <br />
+                        <p>End: </p><input type="text" id="{{ 'endTime' + subrule.index }}" data-format="DD-MM-YYYY HH:mm" data-template="DD / MM / YYYY  HH : mm" name="ruleEndDatetime" required>
+                        <br />
+                        Limit: <input type="text" name="powerLimit" class="form-control" ng-model="subrule.powerLimit" required>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success" type="button" ng-disabled="powerLimitForm.$invalid"
-                            ng-click="setPowerLimit()">Set
+                    <button class="btn btn-success" type="button" ng-disabled="_.isEmpty(subrules) || powerLimitForm.$invalid"
+                            ng-click="setPowerLimitRule()">Set
                     </button>
-                    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
                 </div>
             </form>
-
+          </div>
+          <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
         </div>
     </div>
 

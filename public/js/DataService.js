@@ -43,8 +43,8 @@ function dataService(Restangular, EndpointsService) {
         removeDevicePowerLimitRule: function(name, device_id) {
             return Restangular.one(EndpointsService.deleteRuleUrl(), name).one(device_id, 'rule').remove();
         },
-        setDevicePowerLimitRule: function(name, device_id, rule_params, rule_type) {
-            return Restangular.one(EndpointsService.deleteRuleUrl(), name).one(device_id, 'rule').customPUT(rule_params, {rule_type: rule_type});
+        setDevicePowerLimitRule: function(name, device_id, _rule_params, _rule_type) {
+            return Restangular.one(EndpointsService.putRuleUrl(), name).one(device_id, 'rule').customPUT(_rule_params, undefined, {rule_type: _rule_type}, undefined);
         },
         getDevicePowerLimitRuleTypes: function(node) {
             return Restangular.one(EndpointsService.getRuleTypesUrl()).get();
