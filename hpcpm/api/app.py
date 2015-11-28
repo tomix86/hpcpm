@@ -23,7 +23,7 @@ def run(port):
     http_server = HTTPServer(WSGIContainer(flask_app))
     http_server.bind(port, '0.0.0.0')
     log.debug('HTTP server starting')
-    http_server.start(1)
+    http_server.start(5)
     IOLoop.instance().start()
 
 
