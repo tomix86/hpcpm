@@ -36,9 +36,9 @@
                 <td data-title="'Current power limit'">{{device.power_limit}}</td>
                 <td data-title="'Action'">
                     <button class="btn btn-danger btn-xs" type="button"
-                        ng-click="openSetPowerLimitModal(selectedNode, device.id)">Set power limit</button>
+                        ng-click="openSetPowerLimitModal(selectedNode, device.id)">Set power limit rule</button>
                     <button class="btn btn-danger btn-xs" type="button"
-                        ng-click="openRemovePowerLimitModal(selectedNode, device.id)">Remove power limit</button>
+                        ng-click="openRemovePowerLimitModal(selectedNode, device.id)">Remove power limit rule</button>
                     <button class="btn btn-danger btn-xs" type="button"
                         ng-click="openDeviceStatsIntervalModal(selectedNode, device.id)">Stats interval</button>
                     <a class="btn btn-danger btn-xs" ui-sref="device_stats_show({node_name: selectedNode, device_id: device.id})">Stats</a>
@@ -204,14 +204,34 @@
         <h3 class="modal-title">Remove device power limit for {{name}}:{{deviceId}}</h3>
     </div>
     <div class="modal-body">
+        <div ng-if='error === ""'>
+          <label class="control-label">Current rule:</label>
+          <div>
+              Type: <strong>{{ruleData.rule_type}}</strong>
+              <ul style="list-style: none;">
+                <li ng-repeat-start="(key, value) in ruleFormatted">
+                    <strong>Subrule {{key}}</strong>
+                </li>
+                <li ng-repeat-end>
+                    <dl class="dl-horizontal">
+                        <dt>Start date:</dt><dd>{{value.start}}</dd>
+                        <dt>End date:</dt><dd>{{value.end}}</dd>
+                        <dt>Power limit:</dt><dd>{{value.limit}}</dd>
+                    </dl>
+                </li>
+              </ul>
+          </div>
+          <br />
+          <div class="alert alert-danger">
+              Do you wish to remove power limit for device <strong>{{deviceId}}</strong> on node <strong>{{name}}</strong>?
+          </div>
+          <button class="btn btn-danger" type="button" ng-click="removePowerLimitRule()">Remove</button>
+        </div>
+        <div ng-if='error != ""'>
+            <strong>{{error}}</strong>
+        </div>
         <div>
-            <div class="alert alert-danger">
-                Do you wish to remove power limit for device <strong>{{deviceId}}</strong> on node <strong>{{name}}</strong>?
-            </div>
             <div class="modal-footer">
-                <button class="btn btn-danger" type="button" ng-click="removePowerLimit()">
-                    Remove
-                </button>
                 <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
             </div>
         </div>
