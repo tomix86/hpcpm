@@ -1,9 +1,12 @@
 from flask_restful import Resource, request, abort
 from flask_restful_swagger import swagger
 
+import requests
+
 from hpcpm.api import log
 from hpcpm.api.helpers.database import database
 from hpcpm.api.helpers.utils import abort_when_node_not_found
+from hpcpm.api.helpers.requests import delete_power_limit
 from hpcpm.api.helpers.constants import COMPUTATION_NODE_PARAM_NAME, COMPUTATION_NODE_NOT_FOUND_RESPONSE, \
     COMPUTATION_NODE_FETCHED_RESPONSE, DEVICE_IDENTIFIER_PARAM, RULE_TYPE_PARAM, RULE_PARAMS_PARAM, \
     RULE_SET_RESPONSE, DEVICE_NOT_FOUND_RESPONSE, \
@@ -66,8 +69,20 @@ class Rule(Resource):
     )
     def delete(self, name, device_id):
         computation_node = abort_when_node_not_found(name)
+        address = computation_node['address']
+        port = computation_node['port']
+
         if not any(d['id'] == device_id for d in computation_node['backend_info']['devices']):
             log.error('There is no such device: %s', device_id)
             abort(404)
+
+        [device_type] = [d['Type'] for d in computation_node['backend_info']['devices'] if d['id'] == device_id]
         result = database.delete_rule(name, device_id)
+
+        try:
+            resp = delete_power_limit(address, port, device_id, device_type)
+            log.info('Power limit for device %s deletion info: %s', device_id, resp)
+        except requests.exceptions.ConnectionError:
+            log.error('Connection could not be established to node %s:%s', address, port)
+            return 'Warning: power limit was deleted from database but could not be deleted from device!', 406
         return result, 200

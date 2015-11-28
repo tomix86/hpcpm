@@ -201,5 +201,6 @@ DEVICE_NOT_FOUND_AND_COMPUTATION_NODE_FETCHED_RESPONSES = [
 ]
 
 AVAILABLE_RULE_TYPES = [
-    'TimeBased'
+    'TimeBased',
+    'HardLimit'
 ]
