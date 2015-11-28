@@ -25,11 +25,11 @@ class TimeBased(Rule):
             if subrule['start'] <= current_minute < subrule['end']:
                 limit_to_set = subrule['limit']
                 break
-        current_limit_reponse = self.api_requests.get_power_limit_info(self.node_name, self.device_id)
-        if current_limit_reponse.status_code != 200:
+        current_limit_response = self.api_requests.get_power_limit_info(self.node_name, self.device_id)
+        if current_limit_response.status_code != 200:
             current_limit = None
         else:
-            current_limit = int(current_limit_reponse.json()['power_limit'])
+            current_limit = int(current_limit_response.json()['power_limit'])
         if limit_to_set == current_limit:
             return
         if limit_to_set is None:
@@ -54,3 +54,23 @@ class TimeBased(Rule):
             log.exception(ex)
             raise
         self.subrules = subrules
+
+
+class HardLimit(Rule):
+    def __init__(self, api_requests, node_name, device_id):
+        super().__init__(api_requests, node_name, device_id)
+
+    def proceed(self, rule_params):
+        log.debug("proceeding HardLimit rule for %s:%s with params %s", self.node_name, self.device_id, rule_params)
+        limit_to_set = rule_params['limit']
+        current_limit_response = self.api_requests.get_power_limit_info(self.node_name, self.device_id)
+        if current_limit_response.status_code != 200:
+            current_limit = None
+        else:
+            current_limit = int(current_limit_response.json()['power_limit'])
+        if limit_to_set == current_limit:
+            return
+        if limit_to_set is None:
+            self.api_requests.delete_power_limit_info(self.node_name, self.device_id)
+            return
+        self.api_requests.put_power_limit_info(self.node_name, self.device_id, limit_to_set)
