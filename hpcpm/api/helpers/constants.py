@@ -40,6 +40,16 @@ COMPUTATION_NODE_FETCHED_RESPONSE = {
     'message': 'Node info fetched successfully'
 }
 
+CONSTRAINTS_FETCHED_RESPONSE = {
+    'code': 200,
+    'message': 'Constraints fetched successfully'
+}
+
+POWER_USAGE_FETCHED_RESPONSE = {
+    'code': 200,
+    'message': 'Power usage fetched successfully'
+}
+
 COMPUTATION_NODE_ADDED_RESPONSE = {
     'code': 201,
     'message': 'Node added successfully'

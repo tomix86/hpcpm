@@ -20,3 +20,13 @@ def put_power_limit(address, port, device_id, device_type, power_limit):
 def get_power_limit(address, port, device_id, device_type):
     power_limit_query = str.format('http://{}:{}/power_limit?{},{}', address, port, device_type, device_id)
     return requests.get(power_limit_query)
+
+
+def get_power_usage(address, port, device_id, device_type):
+    power_usage_query = str.format('http://{}:{}/power_usage?{},{}', address, port, device_type, device_id)
+    return requests.get(power_usage_query)
+
+
+def get_constraints(address, port, device_id, device_type):
+    constraints_query = str.format('http://{}:{}/power_limit_constraints?{},{}', address, port, device_type, device_id)
+    return requests.get(constraints_query)

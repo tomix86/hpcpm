@@ -36,3 +36,9 @@ def abort_when_device_not_found(device_id, computation_node):
     if not any(d['id'] == device_id for d in computation_node['backend_info']['devices']):
         log.error('There is no such device: %s', device_id)
         abort(404)
+
+
+def get_com_node_and_dev_type(name, device_id):
+    computation_node = abort_when_node_not_found(name)
+    [device_type] = [d['Type'] for d in computation_node['backend_info']['devices'] if d['id'] == device_id]
+    return computation_node, device_type
