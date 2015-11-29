@@ -157,7 +157,7 @@
             <p><strong>Note:</strong> Setting new power limit rule will remove previous one!</p>
           </div>
         </div>
-        <div ng-switch on="selectedRule" style="padding-top:20px;">
+        <div ng-switch on="selectedRule" ng-show="errorConstraints ===''" style="padding-top:20px;">
           <div ng-switch-default class="alert alert-info">
             <p>Select rule type</p>
           </div>
@@ -174,16 +174,17 @@
                           <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                         </button>
                         <br />
-                        <p>Start:</p><input type="text" id="{{ 'startTime' + subrule.index }}" data-format="DD-MM-YYYY HH:mm"
-                                            data-template="DD / MM / YYYY  HH : mm" name="ruleStartDatetime" required>
+                        <p>Start:</p><input type="text" id="{{ 'startTime' + $index }}" data-format="DD-MM-YYYY HH:mm"
+                                            data-template="DD / MM / YYYY  HH : mm" name="ruleStartDatetime_{{$index}}" required>
                         <br />
-                        <p>End:</p><input type="text" id="{{ 'endTime' + subrule.index }}" data-format="DD-MM-YYYY HH:mm"
-                                          data-template="DD / MM / YYYY  HH : mm" name="ruleEndDatetime" required>
+                        <p>End:</p><input type="text" id="{{ 'endTime' + $index }}" data-format="DD-MM-YYYY HH:mm"
+                                          data-template="DD / MM / YYYY  HH : mm" name="ruleEndDatetime_{{$index}}" required>
                         <br />
-                        <p>Limit:</p><input type="text" name="powerLimit" class="form-control" ng-model="subrule.powerLimit"
+                        <p>Limit:</p><input type="text" name="powerLimit_{{$index}}" class="form-control" ng-model="subrule.powerLimit"
                                             valid-limit="deviceConstraints" required>
-                        <span ng-show="powerLimitForm.powerLimit.$error.validLimit">Enter correct power limit!</span>
-                        <span ng-show="powerLimitForm.powerLimit.$error.required">Enter value of power limit!</span>
+
+                        <span ng-show="powerLimitForm.powerLimit_{{$index}}.$error.validLimit">Enter correct power limit!</span>
+                        <span ng-show="powerLimitForm.powerLimit_{{$index}}.$error.required">Enter value of power limit!</span>
                     </div>
                 </div>
                 <div class="modal-footer" style="margin-top: 10px;">
@@ -208,8 +209,8 @@
               </div>
             </form>
           </div>
-          <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
         </div>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
     </div>
 
 </script>
@@ -250,9 +251,10 @@
     </div>
     <div class="modal-body">
         <div ng-if='error === ""'>
-          <label class="control-label">Current rule:</label>
-          <div>
-              <p>Type: <strong>{{ruleData.rule_type}}</strong></p>
+        <label class="control-label">Current rule:</label>
+        <div ng-switch on="ruleData.rule_type">
+            <p>Type: <strong>{{ruleData.rule_type}}</strong></p>
+            <div ng-switch-when="TimeBased">
               <ul style="list-style: none;">
                 <li ng-repeat-start="(key, value) in ruleFormatted">
                     <strong>Subrule {{key}}</strong>
@@ -265,6 +267,19 @@
                     </dl>
                 </li>
               </ul>
+            </div>
+            <div ng-switch-when="HardLimit">
+              <ul style="list-style: none;">
+                <li ng-repeat-start="(key, value) in ruleFormatted">
+                    <strong>Subrule {{key}}</strong>
+                </li>
+                <li ng-repeat-end>
+                    <dl class="dl-horizontal">
+                        <dt>Power limit:</dt><dd>{{value.limit}}</dd>
+                    </dl>
+                </li>
+              </ul>
+            </div>
           </div>
           <br />
           <div class="alert alert-danger">
