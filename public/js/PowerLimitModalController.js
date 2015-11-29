@@ -7,7 +7,7 @@ function powerLimitModalController($scope, $rootScope, $modalInstance, toaster, 
     $scope.error = '';
     $scope.errorConstraints = '';
     $scope.subrules = {};
-    $scope.powerLimit = undefined;
+    $scope.powerLimit = {value: ''};
     $scope.emptySubrules = true;
 
     $scope.cancel = function () {
@@ -100,7 +100,7 @@ function powerLimitModalController($scope, $rootScope, $modalInstance, toaster, 
       }
       else if(type === 'HardLimit') {
         var o = {};
-        o.limit = $scope.powerLimit;
+        o.limit = $scope.powerLimit.value;
         params = o;
       }
 
