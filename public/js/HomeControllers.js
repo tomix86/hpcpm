@@ -43,10 +43,10 @@ app.directive('onLastRepeat', function() {
 app.directive('validLimit', function() {
   return {
     require: 'ngModel',
-    scope: { limits: '@validLimit' },
+    scope: { limits: '=validLimit' },
     link: function(scope, elm, attrs, ctrl) {
       ctrl.$validators.validLimit = function(modelValue, viewValue) {
-        var limits = JSON.parse(scope.limits);
+        var limits = scope.limits;
         if (ctrl.$isEmpty(modelValue)) {
           return true;
         }
