@@ -1,7 +1,7 @@
 angular.module('hpcpm-ui').controller('PowerLimitModalController', powerLimitModalController);
-powerLimitModalController.$inject = ['$scope', '$rootScope', '$uibModalInstance', 'toaster', 'DataService', 'nodeName', 'deviceId', 'amMoment'];
+powerLimitModalController.$inject = ['$scope', '$rootScope', '$modalInstance', 'toaster', 'DataService', 'nodeName', 'deviceId', 'amMoment'];
 
-function powerLimitModalController($scope, $rootScope, $uibModalInstance, toaster, DataService, nodeName, deviceId, amMoment) {
+function powerLimitModalController($scope, $rootScope, $modalInstance, toaster, DataService, nodeName, deviceId, amMoment) {
     $scope.name = nodeName;
     $scope.deviceId = deviceId;
     $scope.error = '';
@@ -10,7 +10,7 @@ function powerLimitModalController($scope, $rootScope, $uibModalInstance, toaste
     $scope.emptySubrules = true;
 
     $scope.cancel = function () {
-        $uibModalInstance.dismiss('cancel');
+        $modalInstance.dismiss('cancel');
     };
 
     $scope.getDevicePowerLimitConstraints = function() {
