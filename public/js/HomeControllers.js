@@ -85,7 +85,8 @@ nodesController.$inject = ['$scope', '$filter', 'NgTableParams', 'DataService', 
 function nodesController($scope, $filter, NgTableParams, DataService, $uibModal, $timeout) {
   $scope.tableParams = new NgTableParams({
     count: 10
-  }, {
+  },
+  {
     counts: [10, 20, 40, 80, 100],
     getData: function($defer, params) {
       DataService.getAllComputationNodes(params.sorting(), params.filter()).then(function(response) {

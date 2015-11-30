@@ -180,9 +180,8 @@
                         <p>End:</p><input type="text" id="{{ 'endTime' + $index }}" data-format="DD-MM-YYYY HH:mm"
                                           data-template="DD / MM / YYYY  HH : mm" name="ruleEndDatetime_{{$index}}" required>
                         <br />
-                        <p>Limit:</p><input type="text" name="powerLimit_{{$index}}" class="form-control" ng-model="subrule.powerLimit"
+                        <p>Limit (watts):</p><input type="text" name="powerLimit_{{$index}}" class="form-control" ng-model="subrule.powerLimit"
                                             valid-limit="deviceConstraints" required>
-
                         <span ng-show="powerLimitForm.powerLimit_{{$index}}.$error.validLimit">Enter correct power limit!</span>
                         <span ng-show="powerLimitForm.powerLimit_{{$index}}.$error.required">Enter value of power limit!</span>
                     </div>
@@ -198,7 +197,7 @@
             <form name="powerLimitForm" novalidate>
               <div class="form-group" style="padding-top: 20px;" ng-class="{ 'has-error': powerLimitForm.powerLimit.$invalid }">
                 <label class="control-label">New power limit subrule</label>
-                <p>Limit:</p><input type="text" name="powerLimit" class="form-control" ng-model="powerLimit.value"
+                <p>Limit (watts):</p><input type="text" name="powerLimit" class="form-control" ng-model="powerLimit.value"
                                     valid-limit="deviceConstraints" required>
                 <span ng-show="powerLimitForm.powerLimit.$error.validLimit">Enter correct power limit!</span>
                 <span ng-show="powerLimitForm.powerLimit.$error.required">Enter value of power limit!</span>
