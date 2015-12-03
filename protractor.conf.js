@@ -6,7 +6,7 @@ exports.config = {
     rootElement: 'body',
     framework: 'jasmine2',
     capabilities: {
-        browserName: 'chrome'
+        browserName: 'phantomjs'
     },
     onPrepare: function () {
         browser.driver.manage().window().setSize(1920, 1080);

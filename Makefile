@@ -18,10 +18,11 @@ run-server:
 deps:
 	$(APTGI) nodejs nodejs-legacy npm openjdk-7-jdk
 	sudo npm install bower jshint nodemon grunt-cli karma -g
+deps-local:
 	npm install
 	bower install --allow-root
 
-dist: deps
+dist: deps-local
 	grunt build
 
 test:
