@@ -25,6 +25,9 @@ describe('DataService', function () {
                 },
                 remove: function () {
                     return 'remove';
+                },
+                get: function() {
+                  return 'get';
                 }
             };
         });
@@ -54,5 +57,11 @@ describe('DataService', function () {
         expect(Restangular.one).toHaveBeenCalledWith('param', 'name');
     });
 
+    it('should get node', function () {
+        spyOn(EndpointsService, 'getComputationNodeUrl').and.callFake(function () {
+            return 'param';
+        });
+        expect(DataService.getComputationNode('name')).toEqual('get');
+        expect(Restangular.one).toHaveBeenCalledWith('param', 'name');
+    });
 });
-

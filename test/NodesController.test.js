@@ -3,7 +3,6 @@ describe('NodesController', function() {
   var $controller, $rootScope, $state, $uibModal, $filter, $timeout, NgTableParams, DataService;
 
   beforeEach(inject(function(_$controller_, _$rootScope_, _$state_, _$uibModal_, _$filter_, _$timeout_, _NgTableParams_, _DataService_){
-    // The injector unwraps the underscores (_) from around the parameter names when matching
     $controller = _$controller_;
     $rootScope = _$rootScope_;
     $state = _$state_;
@@ -27,4 +26,3 @@ describe('NodesController', function() {
     });
   });
 });
-
