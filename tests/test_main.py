@@ -1,6 +1,6 @@
 import unittest
-import mock
 import configparser
+import mock
 
 from hpcpm.management.main import main, prepare_app_configuration, parse_args, create_parser, add_arguments_to_parser, \
     try_to_configure_logging, configure_logging, try_to_parse_config_file, parse_config_file, handle_parsing_error, \
@@ -105,7 +105,7 @@ class TestMain(unittest.TestCase):
 
         val = try_to_parse_config_file('conf.conf')
 
-        self.assertEquals(val, 'config')
+        self.assertEqual(val, 'config')
         m_parse_config_file.assert_called_once_with('conf.conf')
 
     @mock.patch('hpcpm.management.main.parse_config_file')
