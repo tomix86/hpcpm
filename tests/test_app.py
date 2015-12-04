@@ -1,5 +1,5 @@
-import mock
 import unittest
+import mock
 from flask import request
 
 from hpcpm.api.app import flask_app
@@ -20,6 +20,6 @@ class TestApp(unittest.TestCase):
     def test_start_end_request(self):
         with self.app.test_client() as client:
             client.get('/api/hpcpm/')
-            self.assertEquals(request.method, 'GET')
-            self.assertEquals(request.start_time, 1234)
-            self.assertEquals(request.end_time, 1234)
+            self.assertEqual(request.method, 'GET')
+            self.assertEqual(request.start_time, 1234)
+            self.assertEqual(request.end_time, 1234)

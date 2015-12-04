@@ -1,5 +1,5 @@
-import requests
 import json
+import requests
 
 from flask_restful import Resource, request, abort
 from flask_restful_swagger import swagger

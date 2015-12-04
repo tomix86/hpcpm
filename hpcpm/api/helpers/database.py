@@ -1,6 +1,6 @@
+import re
 from pymongo import MongoClient, ASCENDING, DESCENDING
 from bson.regex import Regex
-import re
 
 
 class Database:  # pylint: disable=too-many-public-methods
@@ -110,5 +110,6 @@ class Database:  # pylint: disable=too-many-public-methods
 
     def delete_rule(self, name, device_id):
         return self.rules_collection.find_one_and_delete({'name': name, 'device_id': device_id}, {'_id': False})
+
 
 database = Database()  # pylint: disable=invalid-name
