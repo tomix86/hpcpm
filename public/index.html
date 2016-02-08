@@ -57,13 +57,33 @@
         <h1>Statistics chart for: {{node_name}}:{{device_id}}</h1>
     </div>
     <div>
-      <div class="col-md-6">
+      <div class="col-md-8">
         <span title="Format: DD / MM / YY   HH:mm">Begin date (UTC):</span>
-        <input type="text" id="statsStartTime" data-format="DD-MM-YYYY HH:mm" data-template="DD / MM / YYYY     HH : mm" name="startdatetime">
+        <br />
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="input-group date" id="statsStartTime">
+                    <input type="text" class="form-control" name="startdatetime" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-8">
         <span title="Format: DD / MM / YY   HH:mm">End date (UTC):</span>
-        <input type="text" id="statsEndTime" data-format="DD-MM-YYYY HH:mm" data-template="DD / MM / YYYY     HH : mm" name="enddatetime">
+        <br />
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="input-group date" id="statsEndTime">
+                    <input type="text" class="form-control" name="enddatetime" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
       </div>
       <div class="col-md-1">
         <button class="btn btn-danger btn-xs" type="button" ng-click="getStats()">Get stats</button>
@@ -174,12 +194,28 @@
                           <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                         </button>
                         <br />
-                        <p>Start:</p><input type="text" id="{{ 'startTime' + $index }}" data-format="DD-MM-YYYY HH:mm"
-                                            data-template="DD / MM / YYYY  HH : mm" name="ruleStartDatetime_{{$index}}" required>
-                        <br />
-                        <p>End:</p><input type="text" id="{{ 'endTime' + $index }}" data-format="DD-MM-YYYY HH:mm"
-                                          data-template="DD / MM / YYYY  HH : mm" name="ruleEndDatetime_{{$index}}" required>
-                        <br />
+                        <p>Start:</p>
+                            <div class="container-fluid">
+                                <div class="form-group">
+                                    <div class="input-group date" id="{{ 'startTime' + $index }}">
+                                        <input type="text" class="form-control" name="ruleStartDatetime_{{$index}}" />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        <p>End:</p>
+                            <div class="container-fluid">
+                                <div class="form-group">
+                                    <div class="input-group date" id="{{ 'endTime' + $index }}">
+                                        <input type="text" class="form-control" name="ruleEndDatetime_{{$index}}" />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         <p>Limit (watts):</p><input type="text" name="powerLimit_{{$index}}" class="form-control" ng-model="subrule.powerLimit"
                                             valid-limit="deviceConstraints" required>
                         <span ng-show="powerLimitForm.powerLimit_{{$index}}.$error.validLimit">Enter correct power limit!</span>
@@ -422,9 +458,9 @@
 <script src="bower_components/Chart.js/Chart.min.js"></script>
 <script src="bower_components/angular-chart.js/dist/angular-chart.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="bower_components/moment/min/moment.min.js"></script>
+<script src="bower_components/moment/min/moment-with-locales.min.js"></script>
 <script src="bower_components/angular-moment/angular-moment.min.js"></script>
-<script src="bower_components/combodate/src/combodate.js"></script>
+<script src="bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
 <!-- endbuild -->
 
 <!-- build:js public/js/HPCPM.min.js -->
@@ -447,6 +483,7 @@
 <link rel="stylesheet" type="text/css" href="bower_components/angularjs-toaster/toaster.min.css">
 <link rel="stylesheet" type="text/css" href="bower_components/json-formatter/dist/json-formatter.css">
 <link rel="stylesheet" type="text/css" href="bower_components/angular-chart.js/dist/angular-chart.min.css">
+<link rel="stylesheet" type="text/css" href="bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
 <!-- endbuild -->
 
 </body>

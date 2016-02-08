@@ -67,7 +67,7 @@ module.exports = function(config) {
       'bower_components/bootstrap/dist/js/bootstrap.min.js',
       'bower_components/moment/min/moment.min.js',
       'bower_components/angular-moment/angular-moment.min.js',
-      'bower_components/combodate/src/combodate.js',
+      'bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.js',
 
       'public/js/HomeControllers.js',
       'public/js/EndpointsService.js',

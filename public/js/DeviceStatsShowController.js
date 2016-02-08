@@ -3,16 +3,8 @@ deviceStatsShowController.$inject = ['$scope', '$rootScope', 'DataService', '$st
 
 function deviceStatsShowController($scope, $rootScope, DataService, $stateParams, $filter, $timeout, amMoment, toaster) {
   $scope.chartOptions = {showTooltips: false};
-  $('#statsStartTime').combodate({
-      minYear: 2008,
-      minuteStep: 1,
-      value: moment().utc().subtract(1, 'hours').format('DD-MM-YYYY HH:mm')
-  });
-  $('#statsEndTime').combodate({
-      minYear: 2008,
-      minuteStep: 1,
-      value: moment().utc().format('DD-MM-YYYY HH:mm')
-  });
+  $('#statsStartTime').datetimepicker({sideBySide: true, locale: 'en-GB', defaultDate: moment().utc().subtract(1, 'hours')});
+  $('#statsEndTime').datetimepicker({sideBySide: true, locale: 'en-GB', defaultDate: moment().utc()});
   $scope.node_name = $stateParams.node_name;
   $scope.device_id = $stateParams.device_id;
   $scope.date = {};
@@ -20,8 +12,8 @@ function deviceStatsShowController($scope, $rootScope, DataService, $stateParams
   $scope.data = [[]];
 
   $scope.getStats = function() {
-    $scope.date.start = $('#statsStartTime').combodate('getValue', null);
-    $scope.date.end = $('#statsEndTime').combodate('getValue', null);
+    $scope.date.start = $('#statsStartTime').data('DateTimePicker').date();
+    $scope.date.end = $('#statsEndTime').data('DateTimePicker').date();
     if(+$scope.date.start.toDate() >= +$scope.date.end.toDate()) {
       toaster.pop('error', 'Error ', 'Selected incorrect time interval!');
       $('#bar').css('display', 'none');

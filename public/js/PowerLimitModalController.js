@@ -29,7 +29,7 @@ function powerLimitModalController($scope, $rootScope, $modalInstance, toaster, 
       $scope.error = '';
 
       DataService.getDevicePowerLimitRuleTypes().then(function(response) {
-            $scope.supportedRules = response.plain();            
+            $scope.supportedRules = response.plain();
             return $scope.supportedRules;
         },
         function(error) {
@@ -89,10 +89,10 @@ function powerLimitModalController($scope, $rootScope, $modalInstance, toaster, 
         params = [];
         for(var key in $scope.subrules) {
             var param = {};
-            param.start = $('#startTime'+key).combodate('getValue', null);
-            param.end = $('#endTime'+key).combodate('getValue', null);
+            param.start = $('#startTime'+key).data('DateTimePicker').date();
+            param.end = $('#endTime'+key).data('DateTimePicker').date();
             if(+param.start.toDate() >= +param.end.toDate()) {
-              toaster.pop('error', 'Error ', 'Selected incorrect time time range!');
+              toaster.pop('error', 'Error ', 'Selected incorrect time range!');
               return;
             }
             param.start = param.start.format('YYYY-MM-DDTHH:mm');
@@ -141,16 +141,8 @@ function powerLimitModalController($scope, $rootScope, $modalInstance, toaster, 
 
     $scope.activateDatePickers = function(key) {
       var time = moment().utc().format('DD-MM-YYYY HH:mm');
-      $('#startTime'+key).combodate({
-          minYear: 2008,
-          minuteStep: 1,
-          value: angular.copy(time)
-      });
-      $('#endTime'+key).combodate({
-          minYear: 2008,
-          minuteStep: 1,
-          value: angular.copy(time)
-      });
+      $('#startTime'+key).datetimepicker({sideBySide: true, locale: 'en-GB', defaultDate: moment().utc()});
+      $('#endTime'+key).datetimepicker({sideBySide: true, locale: 'en-GB', defaultDate: moment().utc().add(1, 'minutes')});
     };
 
     $scope.removeSubrule = function(index) {
