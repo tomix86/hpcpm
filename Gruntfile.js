@@ -45,6 +45,9 @@ module.exports = function(grunt) {
 	    html: {
 	    	src: 'public/index.html', dest: 'dist/public/index.html'
 	    },
+      fonts: {
+	src: 'public/fonts/*', dest: 'dist/'
+      },
       favicon: {
         src: 'public/favicon.ico', dest: 'dist/public/favicon.ico'
       },
