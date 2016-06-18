@@ -1,6 +1,6 @@
 cmake_minimum_required ( VERSION 2.8 FATAL_ERROR )
 
-project ( "HPCPM-backend" )
+project ( "HPCPM-agent" )
 
 macro ( Find_lib var name )
 	message ( STATUS "Searching for ${var}..." )
@@ -117,7 +117,7 @@ if ( CMAKE_BUILD_TYPE STREQUAL "test" )
 	list ( APPEND STATIC_LIBS gmock )
 	set ( EXECUTABLE "runUnitTests" )
 else ()
-	set ( EXECUTABLE "HPCPM-backend-daemon" )
+	set ( EXECUTABLE "HPCPM-agent" )
 endif ()
 
 

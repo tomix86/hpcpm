@@ -6,6 +6,7 @@
 #include "IntelXeonPhi/MockMPSSCommunicationProvider.hpp"
 #include "NvidiaTesla/NvidiaTeslaDevice.hpp"
 #include "NvidiaTesla/MockNVMLCommunicationProvider.hpp"
+#include "OpenCL/OpenCLCommunicationProvider.hpp"
 #include "utility/Logging.hpp"
 
 #ifdef USE_COMM_PROVIDERS_MOCKS
@@ -22,7 +23,7 @@ namespace devices {
 
 DevicesManager::DevicesManager( SupportedLibraries supportedLibraries ) :
 		supportedLibraries( supportedLibraries ) {
-	LOG( INFO ) << "Application is launching with following power management libraries enabled:";
+	LOG( INFO ) << "Application is launching with following libraries enabled:";
 	if ( supportedLibraries.NVML ) {
 		LOG( INFO ) << "...NVML(for Nvidia Tesla)";
 	}
@@ -32,8 +33,11 @@ DevicesManager::DevicesManager( SupportedLibraries supportedLibraries ) :
 	if ( supportedLibraries.MPSS ) {
 		LOG( INFO ) << "...MPSS(for Intel XeonPhi)";
 	}
+	if ( supportedLibraries.OpenCL ) {
+		LOG( INFO ) << "...OpenCL( for communication with KernelHive)";
+	}
 	if ( !supportedLibraries.NVML && !supportedLibraries.NMPRK && !supportedLibraries.MPSS ) {
-		LOG( WARNING ) << "...NONE, are you sure everything is working properly?";
+		LOG( WARNING ) << "...No libraries for power management were enabled, are you sure everything is working properly?";
 	}
 }
 
@@ -58,6 +62,10 @@ DevicesManager::~DevicesManager( void ) {
 		 LOG( ERROR ) << "NMPRK shutdown failed";
 	}
 
+	if ( supportedLibraries.OpenCL && !OpenCLCommunicationProvider::shutdown()) {
+		LOG( ERROR ) << "OpenCL shutdown failed";
+	}
+
 	LOG ( INFO ) << "DevicesManager successfully destroyed";
 }
 
@@ -77,6 +85,11 @@ void DevicesManager::init( void ) {
 	if ( supportedLibraries.NMPRK && !NMPRKCommProvider::init() ) {
 		supportedLibraries.NMPRK = false;
 		LOG( ERROR ) << "NMPRK init failed";
+	}
+
+	if ( supportedLibraries.OpenCL && !OpenCLCommunicationProvider::init()) {
+		supportedLibraries.OpenCL = false;
+		LOG( ERROR ) << "OpenCL init failed";
 	}
 
 	LOG ( INFO ) << "DevicesManager initialized";

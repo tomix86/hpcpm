@@ -14,20 +14,20 @@ bool NVMLProxy::loadSymbols( void ) {
 	SYM_LOAD( nvmlSystemGetDriverVersion );
 	SYM_LOAD( nvmlDeviceGetCount );
 	SYM_LOAD( nvmlDeviceGetHandleByIndex );
-	SYM_LOAD( nvmlDeviceGetHandleBySerial );
-	SYM_LOAD( nvmlDeviceGetHandleByPciBusId );
+//	SYM_LOAD( nvmlDeviceGetHandleBySerial );
+//	SYM_LOAD( nvmlDeviceGetHandleByPciBusId );
 	SYM_LOAD( nvmlDeviceGetName );
 	SYM_LOAD( nvmlDeviceGetUUID );
 	SYM_LOAD( nvmlDeviceGetSerial );
 	SYM_LOAD( nvmlDeviceGetIndex );
 	SYM_LOAD( nvmlDeviceGetPciInfo );
 	SYM_LOAD( nvmlDeviceGetComputeMode );
-	SYM_LOAD( nvmlDeviceGetCurrPcieLinkGeneration );
+/*	SYM_LOAD( nvmlDeviceGetCurrPcieLinkGeneration );
 	SYM_LOAD( nvmlDeviceGetCurrPcieLinkWidth );
 	SYM_LOAD( nvmlDeviceGetEccMode );
 	SYM_LOAD( nvmlDeviceGetGpuOperationMode );
 	SYM_LOAD( nvmlDeviceGetInforomImageVersion );
-	SYM_LOAD( nvmlDeviceGetMaxClockInfo );
+	SYM_LOAD( nvmlDeviceGetMaxClockInfo ); */
 	SYM_LOAD( nvmlDeviceGetPersistenceMode );
 	SYM_LOAD( nvmlDeviceGetPowerManagementDefaultLimit );
 	SYM_LOAD( nvmlDeviceGetVbiosVersion );

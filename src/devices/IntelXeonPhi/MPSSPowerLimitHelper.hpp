@@ -3,10 +3,9 @@
 #include <chrono>
 #include <memory>
 #include <mutex>
-#include <numeric>
 #include <thread>
-#include <vector>
 #include "MPSSProxy.hpp"
+#include "utility/CircuralBuffer.hpp"
 #include "utility/Exceptions.hpp"
 #include "utility/Functional.hpp"
 
@@ -72,14 +71,13 @@ private:
 
 	using Lock = std::lock_guard<std::mutex>;
 
-	static MPSSProxy*   proxy;
+	static MPSSProxy* proxy;
 	MicDevicePtr deviceHandle;
 
-	const std::vector<unsigned> powerReadings;
-	size_t pos;
+	utility::CircuralBuffer powerReadings;
 
-	std::thread watcher;
 	std::atomic<bool> running;
+	std::thread watcher;
 	const std::chrono::milliseconds timeBetweenReads;
 	const unsigned gracePeriodDuration; //in cycles
 	int gracePeriodCounter;
@@ -94,8 +92,6 @@ private:
 	void watcherFunction( void );
 	unsigned _getCurrentPowerUsage( void ) const;
 	void checkPowerRunningAverage( void );
-	unsigned getPowerRunningAverage( void ) const;
-	void addSample( unsigned powerReading );
 
 	// Check if TW0, TW1, PL0 or PL1 was changed by external process
 	void checkForExternalModifications( void ) const;

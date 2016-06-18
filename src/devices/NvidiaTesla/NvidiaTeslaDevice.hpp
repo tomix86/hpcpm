@@ -1,7 +1,11 @@
 #pragma once
+#include <atomic>
+#include <cstdlib>
 #include <vector>
 #include "devices/Device.hpp"
 #include "NVMLCommunicationProvider.hpp"
+#include "utility/CircuralBuffer.hpp"
+#include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
 namespace devices { //TODO: dostosowac do wattow, a nie milliwattow
@@ -32,6 +36,11 @@ public:
 		return list;
 	}
 
+	~NvidiaTeslaDevice( void ) {
+		running = false;
+		powerLimitReader.join();
+	}
+
 	void setPowerLimit( Power watts ) final {
 		watts *= 1000; // convert to milliwatts
 		auto constraints = communicationProvider.getPowerLimitConstraints();
@@ -39,7 +48,10 @@ public:
 			throw ArgumentOutOfBounds( "NvidiaTeslaDevice::setPowerLimit(Power)", "power limit value out of bounds" );
 		}
 
-		communicationProvider.setPowerLimit( watts );
+		watts /= 1000;
+		auto id = getInfo().entries.at( "Index" );
+		system( ( "sudo nvidia-smi -i " + id + " -pl " + std::to_string( watts ) ).c_str() );
+	//	communicationProvider.setPowerLimit( watts );
 	}
 
 	void setPowerLimit( Percentage percentage ) final {
@@ -62,7 +74,7 @@ public:
 	}
 
 	Power getCurrentPowerUsage( void ) const final {
-		return communicationProvider.getCurrentPowerUsage() / 1000;
+		return powerReadings.getAverage();
 	}
 
 protected:
@@ -70,7 +82,34 @@ protected:
 
 	NvidiaTeslaDevice( DeviceIdentifier::idType id, DeviceInformation::InfoContainer&& detailedInfo ) :
 			Device{ DeviceInformation{ { DeviceType::NvidiaTesla, id }, std::move( detailedInfo ) } },
-			communicationProvider{ id } {
+			communicationProvider{ id },
+			powerReadings{ utility::ConfigLoader::getUnsignedParam( "NVML_history_size" ) },
+			timeBetweenReads{ utility::ConfigLoader::getUnsignedParam( "NVML_interval" ) },
+			running{ true },
+			powerLimitReader{ &NvidiaTeslaDevice::readerFunction, this } {
+	}
+
+private:
+	utility::CircuralBuffer powerReadings;
+	const std::chrono::milliseconds timeBetweenReads;
+	std::atomic<bool> running;
+	std::thread powerLimitReader;
+
+	void readerFunction( void ) {
+		if( utility::toBool( getInfo().entries.at( "PowerManagementCapable" ) ) ) {
+			while( running ) {
+				try {
+					auto reading = communicationProvider.getCurrentPowerUsage() / 1000;
+					powerReadings.addSample( reading );
+				}
+				catch ( const NVMLError& err ) {
+					LOG( ERROR ) << err.info();
+				}
+
+				std::this_thread::sleep_for( timeBetweenReads );
+			}
+		}
 	}
 };
+
 } // namespace devices

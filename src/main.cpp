@@ -1,4 +1,5 @@
 #include "core/Core.hpp"
+#include "devices/OpenCL/OpenCLProxy.hpp" //TODO: brzydki wytrych, zmienic
 #include "utility/ArgsParser.hpp"
 #include "utility/ConfigLoader.hpp"
 #include "utility/Exceptions.hpp"
@@ -31,6 +32,16 @@ int main ( int argc, const char** argv ) {
 			.setRequired( true )
 			.setValidator( utility::validators::isBool )
 			.setCallback( [&]( std::string value ){ supportedLibraries.MPSS = utility::toBool( value ); } );
+
+	argsParser.addOption( "withOpenCL", "specifies whether the OpenCL should be loaded - this is required in order to support KernelHive")
+			.setRequired( true )
+			.setValidator( utility::validators::isBool )
+			.setCallback( [&]( std::string value ){ supportedLibraries.OpenCL = utility::toBool( value ); });
+
+	argsParser.addOption( "OpenCLlib", "specifies the name of OpenCL library, defaults to: libopencl.so")
+			.setRequired( false )
+			//TODO: add validator?
+			.setCallback( devices::OpenCLProxy::setLibName);
 
     try {
 		argsParser.parse( argc, argv );

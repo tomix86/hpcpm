@@ -21,6 +21,7 @@ public:
 			mainObject[ "supportsNVML" ] = web::json::value( supportedLibraries.NVML );
 			mainObject[ "supportsNMPRK" ] = web::json::value( supportedLibraries.NMPRK );
 			mainObject[ "supportsMPSS" ] = web::json::value( supportedLibraries.MPSS );
+			mainObject[ "supportsOpenCL (KernelHive)" ] = web::json::value( supportedLibraries.OpenCL ); //TODO: przy wsparciu dla opencl nalezy uwzglednic sprawdzenie rozszerzen platformy CL czy wspiera to specyficzne query, jezeli nie wspeira to nie uda sie zmatchowac i wtedy nie wspieramy niestety, mozna dodac fallback, ze po samej nazwie urzadzenia ale bedzie on zawody
 
 			web::json::value devicesArray;
 			for ( auto device : devices ) {

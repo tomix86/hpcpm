@@ -9,7 +9,7 @@ extern "C" VoidFuncPtr dlsym( void *handle, const char *symbol );
 static_assert( sizeof( void* ) == sizeof( VoidFuncPtr ),
 	"Sizes of pointer-to-function and pointer-to-object doesn't match, proxy code will fail due to casts between those pointer being performed" );
 
-RLLProxy::RLLProxy( const char* libraryName ) :
+RLLProxy::RLLProxy( std::string libraryName ) :
 		libHandle{ nullptr },
 		libraryName{ libraryName }{
 }
@@ -24,7 +24,7 @@ RLLProxy::~RLLProxy( void ) {
 bool RLLProxy::init( void ) {
 	LOG( INFO ) << "Loading " << libraryName << "...";
 
-	libHandle = dlopen( libraryName, RTLD_LAZY );
+	libHandle = dlopen( libraryName.c_str(), RTLD_LAZY );
 	if ( libHandle == nullptr ) {
 		LOG( ERROR ) << "Failure: " << dlerror();
 		return false;
@@ -62,6 +62,10 @@ bool RLLProxy::loadSymbol( VoidFuncPtr& symbol, const char* name ) const {
 		LOG( ERROR ) << "Loading of symbol \"" << name << "\" failed: " << dlerror();
 		return false;
 	}
+}
+
+void RLLProxy::setLibraryName(std::string name) {
+	libraryName = name;
 }
 
 } // namespace utility

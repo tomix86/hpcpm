@@ -12,6 +12,7 @@ struct SupportedLibraries {
 	bool NVML;
 	bool NMPRK;
 	bool MPSS;
+	bool OpenCL;
 };
 
 class DevicesManager : public boost::noncopyable {

@@ -35,6 +35,7 @@ public:
 private:
 	nvmlDevice_t deviceHandle;
 	static NVMLProxy proxy;
+	static std::map<DeviceIdentifier::idType, nvmlDevice_t> IdToHandleMap;
 
 	// throws NVMLError if an error is detected (i.e. status != NVML_SUCCESS)
 	static void checkNVMLErrors(  const char* source, nvmlReturn_t status );

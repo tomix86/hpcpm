@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace utility {
 
@@ -8,19 +9,20 @@ typedef void( *VoidFuncPtr )( void );
 
 class RLLProxy {
 public:
-	RLLProxy( const char* libraryName );
+	RLLProxy( std::string libraryName );
 	virtual ~RLLProxy( void );
 
-	bool init( void );
-	bool shutdown( void );
+	virtual bool init( void );
+	virtual bool shutdown( void );
 
 protected:
 	virtual bool loadSymbols( void ) = 0;
 	bool loadSymbol( VoidFuncPtr& symbol, const char* name ) const;
+	void setLibraryName(std::string name); //TODO: adnotacja ze to ma sens jedynie przed initem? moze wpis do logu w przypadku wywolania po inicie lub rzucenie logic_error?
 
 private:
 	void* libHandle;
-	const char* libraryName;
+	std::string libraryName;
 
 	static const int DL_SUCCESS = 0;
 };

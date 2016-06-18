@@ -1,4 +1,5 @@
 #include "NVMLCommunicationProvider.hpp"
+#include "../OpenCL/OpenCLCommunicationProvider.hpp"
 #include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
@@ -8,9 +9,14 @@
 namespace devices {
 
 NVMLProxy NVMLCommunicationProvider::proxy;
+std::map<DeviceIdentifier::idType, nvmlDevice_t> NVMLCommunicationProvider::IdToHandleMap;
 
 NVMLCommunicationProvider::NVMLCommunicationProvider( DeviceIdentifier::idType deviceId ) {
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetHandleByUUID( deviceId.c_str(), &deviceHandle ) );
+	if( IdToHandleMap.find( deviceId ) == IdToHandleMap.end() ) {
+		throw utility::RuntimeError("NVMLCommunicationProvider::NVMLCommunicationProvider", "Failed to find mapped device handle for id: " + deviceId);
+	}
+
+	deviceHandle = IdToHandleMap.at(deviceId);
 }
 
 bool NVMLCommunicationProvider::init( void ) {
@@ -65,7 +71,15 @@ std::vector<nvmlDevice_t> NVMLCommunicationProvider::listDevices( void ) {
 		nvmlDevice_t devtmp;
 		try {
 			NVML_ERROR_CHECK( proxy.nvmlDeviceGetHandleByIndex( i, &devtmp ) );
-			devices.push_back( devtmp );
+			auto devId = getPrimaryId( devtmp );
+
+			if( IdToHandleMap.find(devId) != IdToHandleMap.end() ) {
+				LOG( ERROR ) << "Duplicated device identifier detected for id: " << devId << ", this device will not be listed";
+			}
+			else {
+				devices.push_back( devtmp );
+				IdToHandleMap[devId] = devtmp;
+			}
 		}
 		catch ( const NVMLError& err ) {
 			LOG( ERROR ) << "Failed to acquire device handle for device with index " << i << ": " << err.message();
@@ -77,11 +91,19 @@ std::vector<nvmlDevice_t> NVMLCommunicationProvider::listDevices( void ) {
 	return devices;
 }
 
+//TODO: pobieranie info nieoptymalne, zoptymalizowac
 devices::DeviceIdentifier::idType NVMLCommunicationProvider::getPrimaryId( nvmlDevice_t deviceHandle ) {
-	char UUID[ NVML_DEVICE_UUID_BUFFER_SIZE ];
-	NVML_ERROR_CHECK( proxy.nvmlDeviceGetUUID( deviceHandle, UUID, NVML_DEVICE_UUID_BUFFER_SIZE ) );
+	auto info = getInfo(deviceHandle);
 
-	return UUID;
+	if(info.find("KernelHive ID") != info.end()) {
+		return info.at("KernelHive ID");
+	}
+	else {
+		char UUID[ NVML_DEVICE_UUID_BUFFER_SIZE ];
+		NVML_ERROR_CHECK( proxy.nvmlDeviceGetUUID( deviceHandle, UUID, NVML_DEVICE_UUID_BUFFER_SIZE ) );
+
+		return UUID;
+	}
 }
 
 DeviceInformation::InfoContainer NVMLCommunicationProvider::getInfo( nvmlDevice_t deviceHandle ) {
@@ -102,13 +124,15 @@ DeviceInformation::InfoContainer NVMLCommunicationProvider::getInfo( nvmlDevice_
 	nvmlPciInfo_t pciInfo;
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetPciInfo( deviceHandle, &pciInfo ) );
 	info[ "PciBusId" ] = pciInfo.busId;
+	info[ "PciBus" ] = std::to_string( pciInfo.bus );
+	info[ "PciDeviceId" ] = std::to_string( pciInfo.device );
 
 	info[ "PowerManagementCapable" ] = utility::toString( isDevicePowerManagementCapable( deviceHandle ) );
 
 	nvmlComputeMode_t computeMode;
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetComputeMode( deviceHandle, &computeMode ) );
 	info[ "ComputeMode" ] = computeModeToString( computeMode );
-
+/*
 	unsigned pcieLinkGeneration;
 	ret = proxy.nvmlDeviceGetCurrPcieLinkGeneration( deviceHandle, &pcieLinkGeneration );
 	setIfSupported( ret, info[ "PcieLinkGeneration" ], std::to_string( pcieLinkGeneration ) );
@@ -138,7 +162,7 @@ DeviceInformation::InfoContainer NVMLCommunicationProvider::getInfo( nvmlDevice_
 	setIfSupported( ret, info[ "MaxSMClock" ], std::to_string( clock ) );
 	ret = proxy.nvmlDeviceGetMaxClockInfo( deviceHandle, NVML_CLOCK_MEM, &clock );
 	setIfSupported( ret, info[ "MaxMemoryClock" ], std::to_string( clock ) );
-
+*/
 	char name[ NVML_DEVICE_NAME_BUFFER_SIZE ];
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetName( deviceHandle, name, NVML_DEVICE_NAME_BUFFER_SIZE ) );
 	info[ "Name" ] = name;
@@ -153,6 +177,27 @@ DeviceInformation::InfoContainer NVMLCommunicationProvider::getInfo( nvmlDevice_
 	char vbiosVersion[ NVML_DEVICE_VBIOS_VERSION_BUFFER_SIZE ];
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetVbiosVersion( deviceHandle, vbiosVersion, NVML_DEVICE_VBIOS_VERSION_BUFFER_SIZE ) );
 	info[ "VBiosVersion" ] = vbiosVersion;
+
+	//TODO: do funkcji
+	if(OpenCLCommunicationProvider::isEnabled()) {
+		auto openClResult = OpenCLCommunicationProvider::matchNvidiaDeviceByPCISlot(pciInfo.bus, pciInfo.device);
+		if ( openClResult.first ) {
+			LOG ( INFO ) << "Successfully matched device with UUID " << info[ "UUID" ] << " to its OpenCL id " << openClResult.second.second;
+
+			auto KHID = OpenCLCommunicationProvider::getPrimaryId(openClResult.second);
+			info["KernelHive ID"] = KHID;
+
+			auto openCLInfo = OpenCLCommunicationProvider::getInfo(openClResult.second);
+			info["OpenCL PCI Bus ID"] = std::to_string(openCLInfo.busId);
+			info["OpenCL PCI Slot ID"] = std::to_string(openCLInfo.busSlot);
+		}
+		else {
+			LOG ( WARNING ) << "Failed to match device with UUID " << info[ "UUID" ] << " to its OpenCL id";
+		}
+	}
+	else {
+		LOG ( INFO ) << "OpenCL was not enabled, will not try to match device id";
+	}
 
 	return info;
 }
@@ -176,7 +221,7 @@ unsigned NVMLCommunicationProvider::getCurrentPowerLimit( void ) const {
 unsigned NVMLCommunicationProvider::getCurrentPowerUsage( void ) const {
 	unsigned power;
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetPowerUsage( deviceHandle, &power ) );
-	return power / 1000;
+	return power;
 }
 
 void NVMLCommunicationProvider::setPowerLimit( unsigned milliwatts ) {
