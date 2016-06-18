@@ -11,7 +11,7 @@ public:
 	using GetInfoFromDeviceHandler::isQueryStringWellFormed;
 };
 
-TEST_F( RequestHandlersTestSuite, GetInfoFromDeviceHandler_WellFormedQueryTest ) {
+TEST_F( RequestHandlersTestSuite, DISABLED_GetInfoFromDeviceHandler_WellFormedQueryTest ) {
 	GetInfoFromDeviceHandlerAccessor handler;
 	ASSERT_TRUE( handler.isQueryStringWellFormed( "" ) );
 	ASSERT_TRUE( handler.isQueryStringWellFormed( "NvidiaTesla,GPU-7cf39d4a-359b-5922-79a9-049ebd8a7ca5" ) );
@@ -30,7 +30,7 @@ TEST_F( RequestHandlersTestSuite, GetInfoFromDeviceHandler_MalformedQueryTest ) 
 	ASSERT_FALSE( handler.isQueryStringWellFormed( "Sasza=2" ) );
 }
 
-TEST_F( RequestHandlersTestSuite, GetInfoFromDeviceHandler_SplittingTest ) {
+TEST_F( RequestHandlersTestSuite, DISABLED_GetInfoFromDeviceHandler_SplittingTest ) {
 	GetInfoFromDeviceHandlerAccessor handler;
 
 	http_request req;

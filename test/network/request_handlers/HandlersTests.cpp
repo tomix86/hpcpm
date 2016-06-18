@@ -6,7 +6,7 @@ std::ostringstream RequestHandlersTestSuite::sink;
 class MockDevicesManager : public devices::DevicesManager {
 public:
 	MockDevicesManager( void ) :
-	devices::DevicesManager{ { false, false, false } } {
+	devices::DevicesManager{ { false, false, false, false } } {
 	}
 
 	MOCK_CONST_METHOD0( getDevicesList, const std::vector<devices::Device::Ptr>& ( void ) );

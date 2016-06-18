@@ -15,7 +15,7 @@ using namespace core;
 class MockDevicesManager : public devices::DevicesManager {
 public:
 	MockDevicesManager( void ) :
-	devices::DevicesManager{ { false, false, false } } {
+	devices::DevicesManager{ { false, false, false, false } } {
 	}
 
 	MOCK_CONST_METHOD0( getDevicesList, const std::vector<devices::Device::Ptr>& ( void ) );
@@ -46,7 +46,7 @@ public:
 class MockDevicesManager2 : public devices::DevicesManager {
 public:
 	MockDevicesManager2( void ) :
-	devices::DevicesManager{ { false, false, false } } {
+	devices::DevicesManager{ { false, false, false, false } } {
 	}
 
 	devices::Device& getDeviceByIdentifier( devices::DeviceIdentifier deviceIdentifier ) {

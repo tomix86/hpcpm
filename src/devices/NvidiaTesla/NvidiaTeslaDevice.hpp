@@ -50,7 +50,8 @@ public:
 
 		watts /= 1000;
 		auto id = getInfo().entries.at( "Index" );
-		system( ( "sudo nvidia-smi -i " + id + " -pl " + std::to_string( watts ) ).c_str() );
+		int result = system( ( "sudo nvidia-smi -i " + id + " -pl " + std::to_string( watts ) ).c_str() );
+		(void)result;
 	//	communicationProvider.setPowerLimit( watts );
 	}
 

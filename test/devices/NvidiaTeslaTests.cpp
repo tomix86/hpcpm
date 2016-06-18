@@ -28,7 +28,7 @@ public:
 	using NvidiaTeslaDevice<MockTeslaCommunicationProvider>::communicationProvider;
 };
 
-TEST( NvidiaTeslaTestSuite, setPowerLimitArgumentCorectnessTest ) {
+TEST( NvidiaTeslaTestSuite, DISABLED_setPowerLimitArgumentCorectnessTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
 	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )
@@ -45,7 +45,7 @@ TEST( NvidiaTeslaTestSuite, setPowerLimitArgumentCorectnessTest ) {
 	ASSERT_NO_THROW( device.setPowerLimit( devices::Power{ 150 } ) );
 }
 
-TEST( NvidiaTeslaTestSuite, setPowerLimitPercentageArgumentCorectnessTest ) {
+TEST( NvidiaTeslaTestSuite, DISABLED_setPowerLimitPercentageArgumentCorectnessTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
 	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )
@@ -61,7 +61,7 @@ TEST( NvidiaTeslaTestSuite, setPowerLimitPercentageArgumentCorectnessTest ) {
 	ASSERT_NO_THROW( device.setPowerLimit( devices::Percentage{ .5f } ) );
 }
 
-TEST( NvidiaTeslaTestSuite, setPowerLimitPercentageTest ) {
+TEST( NvidiaTeslaTestSuite, DISABLED_setPowerLimitPercentageTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
 	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )
@@ -77,7 +77,7 @@ TEST( NvidiaTeslaTestSuite, setPowerLimitPercentageTest ) {
 	ASSERT_NO_THROW( device.setPowerLimit( devices::Percentage{ 1.f } ) );
 }
 
-TEST( NvidiaTeslaTestSuite, getCurrentPowerLimitPercentageTest ) {
+TEST( NvidiaTeslaTestSuite, DISABLED_getCurrentPowerLimitPercentageTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
 	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )

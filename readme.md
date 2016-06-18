@@ -8,6 +8,7 @@
 * [Google Test](https://github.com/google/googletest)
 * [Boost](http://www.boost.org/)
 * [OpenSSL](https://www.openssl.org/)
+* [OpenCL] - Provided by Nvidia
 
 ## Libraries version used to compile and run test builds:
 * Easylogging++ - 9.80
@@ -18,6 +19,7 @@
 * Google Test - 1.7.0
 * Boost - 1.54.0
 * OpenSSL - 1.0.1f
+* OpenCL - OpenCL 1.2 CUDA 7.5.26
 
 ## Additional information
 * C++11 compatible compiler is **required**
@@ -42,8 +44,8 @@
 
 # Application configuration
 You can configure application launch parameters using two following files:
-* res/backend.cfg - overall configuration
+* res/backend.cfg - general configuration
 * res/logging.cfg - logging configuration, which is passed to easylogging++
 
 # Launching the application
-./HPCPM-backend-daemon -c="path/to/backend.cfg" --withNVML=[true|false] --withMPSS=[true|false] --withNMPRK=[true|false]
+./HPCPM-backend-daemon -c="path/to/backend.cfg" --withNVML=[true|false] --withMPSS=[true|false] --withNMPRK=[true|false] --withOpenCL=[true|false]
