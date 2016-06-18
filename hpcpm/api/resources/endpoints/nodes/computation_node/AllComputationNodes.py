@@ -39,7 +39,7 @@ class AllComputationNodes(Resource):
         if pagination_param:
             pagination = json.loads(pagination_param)
         if address_param:
-            address = json.loads(address_param)
+            address = address_param
         result = database.get_list_of_nodes(sorting_order, name_filter, pagination, address)
         log.info('Got all nodes fetched: %s', result)
         return result, 200
