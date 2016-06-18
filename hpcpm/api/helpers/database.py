@@ -32,7 +32,7 @@ class Database:  # pylint: disable=too-many-public-methods
     def get_power_limit_for_device(self, name, device_id):
         return self.power_limit_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False})
 
-    def get_list_of_nodes(self, sorting_order=None, name_filter=None, pagination=None):
+    def get_list_of_nodes(self, sorting_order=None, name_filter=None, pagination=None, address=None):
         sort_direction = ASCENDING
         filter_object = {}
         skip_count = 0
@@ -49,6 +49,8 @@ class Database:  # pylint: disable=too-many-public-methods
         if pagination:
             skip_count = int(pagination['skip'])
             skip_limit = int(pagination['limit'])
+        if address:
+            filter_object['address'] = address
 
         return list(
             self.computation_nodes_collection.find(filter_object,

@@ -82,6 +82,16 @@ ALL_COMPUTATION_NODES_PAGINATION_PARAM = {
     'paramType': 'query'
 }
 
+ALL_COMPUTATION_NODES_NODE_ADDRESS_PARAM = {
+    'name': 'address',
+    'description': 'Address (domain, ip) of computation node',
+    'required': False,
+    'allowMultiple': False,
+    'dataType': 'string',
+    'paramType': 'query'
+}
+
+
 DEVICE_IDENTIFIER_PARAM = {
     'name': 'device_id',
     'description': 'Device identifier',
