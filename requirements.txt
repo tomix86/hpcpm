@@ -4,3 +4,5 @@ flask_restful_swagger
 tornado
 pymongo
 requests
+matplotlib
+numpy
