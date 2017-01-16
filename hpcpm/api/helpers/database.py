@@ -113,5 +113,8 @@ class Database:  # pylint: disable=too-many-public-methods
     def delete_rule(self, name, device_id):
         return self.rules_collection.find_one_and_delete({'name': name, 'device_id': device_id}, {'_id': False})
 
+    def get_last_power_usage(self, name, device_id):
+        return self.statistics_data_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False},
+                                                        sort=[('_id', ASCENDING)])
 
 database = Database()  # pylint: disable=invalid-name
