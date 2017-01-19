@@ -33,32 +33,7 @@ class StatisticsInterval(Resource):
             log.error('There is no such device: %s', device_id)
             abort(404)
 
-        current_interval_info = database.get_stats_interval_info(name, device_id)
-        if current_interval_info:
-            old_interval = datetime.timedelta(minutes=current_interval_info['interval'])
-            old_next_measurement = datetime.datetime.strptime(current_interval_info['next_measurement'],
-                                                              '%Y-%m-%dT%H:%M')
-            new_interval = datetime.timedelta(minutes=statistics_interval)
-            new_next_measurement = (old_next_measurement - old_interval + new_interval)
-            interval_info = current_interval_info
-            interval_info['interval'] = statistics_interval
-            new_next_measurement_str = new_next_measurement.strftime('%Y-%m-%dT%H:%M')  # pylint: disable=no-member
-            interval_info['next_measurement'] = new_next_measurement_str
-        else:
-            interval_info = {
-                'name': name,
-                'device_id': device_id,
-                'interval': statistics_interval,
-                'next_measurement': (datetime.datetime.utcnow() + datetime.timedelta(
-                    minutes=statistics_interval)).strftime('%Y-%m-%dT%H:%M')  # pylint: disable=no-member
-            }
-
-        upsert_result = database.replace_stats_interval_info(name, device_id, interval_info)
-        if upsert_result.modified_count:
-            log.info('Statistics gathering interval for device %s:%s was already set in a database', name, device_id)
-            log.info('Stored statistics gathering interval info %s', interval_info)
-        else:
-            log.info('Stored statistics gathering interval info %s on id %s', interval_info, upsert_result.upserted_id)
+        set_statistics_interval(name, device_id, statistics_interval)
 
         return 'Statistics gathering interval successfully set', 201
 
@@ -99,3 +74,32 @@ class StatisticsInterval(Resource):
         log.info('Successfully removed statistics gathering interval \
         for device %s:%s statistics gathering interval info: %s', name, device_id, result)
         return result, 200
+
+
+def set_statistics_interval(node_name, device_id, statistics_interval):
+    current_interval_info = database.get_stats_interval_info(node_name, device_id)
+    if current_interval_info:
+        old_interval = datetime.timedelta(minutes=current_interval_info['interval'])
+        old_next_measurement = datetime.datetime.strptime(current_interval_info['next_measurement'],
+                                                          '%Y-%m-%dT%H:%M')
+        new_interval = datetime.timedelta(minutes=statistics_interval)
+        new_next_measurement = (old_next_measurement - old_interval + new_interval)
+        interval_info = current_interval_info
+        interval_info['interval'] = statistics_interval
+        new_next_measurement_str = new_next_measurement.strftime('%Y-%m-%dT%H:%M')  # pylint: disable=no-member
+        interval_info['next_measurement'] = new_next_measurement_str
+    else:
+        interval_info = {
+            'name': node_name,
+            'device_id': device_id,
+            'interval': statistics_interval,
+            'next_measurement': (datetime.datetime.utcnow() + datetime.timedelta(
+                minutes=statistics_interval)).strftime('%Y-%m-%dT%H:%M')  # pylint: disable=no-member
+        }
+
+    upsert_result = database.replace_stats_interval_info(node_name, device_id, interval_info)
+    if upsert_result.modified_count:
+        log.info('Statistics gathering interval for device %s:%s was already set in a database', node_name, device_id)
+        log.info('Stored statistics gathering interval info %s', interval_info)
+    else:
+        log.info('Stored statistics gathering interval info %s on id %s', interval_info, upsert_result.upserted_id)

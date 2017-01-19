@@ -11,6 +11,7 @@ from hpcpm.api.helpers.constants import COMPUTATION_NODE_PARAM_NAME, COMPUTATION
     COMPUTATION_NODE_PARAM_PORT, COMPUTATION_NODE_ADDED_RESPONSE, COMPUTATION_NODE_NOT_FOUND_RESPONSE, \
     COMPUTATION_NODE_FETCHED_RESPONSE, COMPUTATION_NODE_PUT_NOT_FOUND_RESPONSE
 from hpcpm.api.helpers.requests import get_node_information, delete_power_limit
+from hpcpm.api.resources.endpoints.nodes.computation_node.StatisticsInterval import set_statistics_interval
 
 
 class ComputationNode(Resource):
@@ -58,6 +59,10 @@ class ComputationNode(Resource):
             log.info('Stored Node info %s', node_info)
         else:
             log.info('Stored Node info %s on id %s', node_info, upsert_result.upserted_id)
+
+        for device in backend_info['devices']:
+            set_statistics_interval(name, device['id'], 1)
+
         return name, 201
 
     @swagger.operation(
