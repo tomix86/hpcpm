@@ -17,7 +17,6 @@ public:
 	static float getFloatParam( const std::string& key );
 	static double getDoubleParam( const std::string& key );
 
-	// must be used before the first call to config manager
 	static void initialize( std::string cfgFilePath );
 
 protected:

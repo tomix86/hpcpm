@@ -91,7 +91,7 @@ std::vector<nvmlDevice_t> NVMLCommunicationProvider::listDevices( void ) {
 	return devices;
 }
 
-//TODO: pobieranie info nieoptymalne, zoptymalizowac
+//TODO: should be optimized (we don't have to read whole device info here)
 devices::DeviceIdentifier::idType NVMLCommunicationProvider::getPrimaryId( nvmlDevice_t deviceHandle ) {
 	auto info = getInfo(deviceHandle);
 
@@ -178,7 +178,7 @@ DeviceInformation::InfoContainer NVMLCommunicationProvider::getInfo( nvmlDevice_
 	NVML_ERROR_CHECK( proxy.nvmlDeviceGetVbiosVersion( deviceHandle, vbiosVersion, NVML_DEVICE_VBIOS_VERSION_BUFFER_SIZE ) );
 	info[ "VBiosVersion" ] = vbiosVersion;
 
-	//TODO: do funkcji
+	//TODO: extract this to function
 	if(OpenCLCommunicationProvider::isEnabled()) {
 		auto openClResult = OpenCLCommunicationProvider::matchNvidiaDeviceByPCISlot(pciInfo.bus, pciInfo.device);
 		if ( openClResult.first ) {

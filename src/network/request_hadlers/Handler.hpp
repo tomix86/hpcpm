@@ -35,8 +35,11 @@ protected:
 
 	virtual http_response serializeQueriesResults( std::vector<core::Query::Result::Ptr> result );
 
+	// This is the expected format of the identifier, eg. GPU-7cf39d4a-359b-5922-79a9-049ebd8a7ca5
 //	constexpr static const char* NvidiaTeslaIdRegex = "GPU-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
-	constexpr static const char* NvidiaTeslaIdRegex = "[a-zA-Z0-9]+";
+
+	// This is a less restrict format for the purpose of handling KernelHive compatible identifiers, eg. NvidiaTeslaK20
+	constexpr static const char* NvidiaTeslaIdRegex = "[a-zA-Z0-9\\-]+";
 	constexpr static const char* IntelXeonIdRegex = "[0-9]";
 	constexpr static const char* IntelXeonPhiIdRegex = "[a-f0-9]{32}";
 

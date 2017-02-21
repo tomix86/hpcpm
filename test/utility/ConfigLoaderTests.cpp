@@ -1,22 +1,8 @@
 #include <gtest/gtest.h>
-#include "utility/ConfigLoader.hpp"
+#include "ConfigLoaderAccessor.hpp"
 
 using utility::ConfigLoader;
 
-class ConfigLoaderAccessor : public ConfigLoader {
-public:
-	static void setInitialized( bool val ) {
-		ConfigLoader::configFileLoaded = val;
-	}
-
-	static void clearConfig( void ) {
-		ConfigLoader::config.clear();
-	}
-
-	static std::map<std::string, std::string> getConfig( void ) {
-		return config;
-	}
-};
 
 class ConfigLoaderTestSuite : public ::testing::Test {
 protected:

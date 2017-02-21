@@ -11,7 +11,7 @@ public:
 	using SetDeviceParamHandler::isQueryStringWellFormed;
 };
 
-TEST_F( RequestHandlersTestSuite, DISABLED_SetDeviceParamHandler_WellFormedQueryTest ) {
+TEST_F( RequestHandlersTestSuite, SetDeviceParamHandler_WellFormedQueryTest ) {
 	SetDeviceParamHandlerAccessor handler{ "[0-9]+" };
 	ASSERT_TRUE( handler.isQueryStringWellFormed( "" ) );
 	ASSERT_TRUE( handler.isQueryStringWellFormed( "NvidiaTesla,GPU-7cf39d4a-359b-5922-79a9-049ebd8a7ca5=10000" ) );
@@ -31,7 +31,7 @@ TEST_F( RequestHandlersTestSuite, SetDeviceParamHandler_MalformedQueryTest ) {
 	ASSERT_FALSE( handler.isQueryStringWellFormed( "Sasza,2=1" ) );
 }
 
-TEST_F( RequestHandlersTestSuite, DISABLED_SetDeviceParamHandler_SplittingTest ) {
+TEST_F( RequestHandlersTestSuite, SetDeviceParamHandler_SplittingTest ) {
 	SetDeviceParamHandlerAccessor handler{ "[0-9]+" };
 
 	http_request req;

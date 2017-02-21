@@ -1,5 +1,5 @@
 #include "core/Core.hpp"
-#include "devices/OpenCL/OpenCLProxy.hpp" //TODO: brzydki wytrych, zmienic
+#include "devices/OpenCL/OpenCLProxy.hpp" //TODO: ugly trick, get rid of it
 #include "utility/ArgsParser.hpp"
 #include "utility/ConfigLoader.hpp"
 #include "utility/Exceptions.hpp"

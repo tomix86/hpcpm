@@ -8,7 +8,7 @@
 #include "utility/Functional.hpp"
 #include "utility/Logging.hpp"
 
-namespace devices { //TODO: dostosowac do wattow, a nie milliwattow
+namespace devices {
 
 template <typename CommunicationProvider>
 class NvidiaTeslaDevice : public Device {
@@ -48,11 +48,12 @@ public:
 			throw ArgumentOutOfBounds( "NvidiaTeslaDevice::setPowerLimit(Power)", "power limit value out of bounds" );
 		}
 
-		watts /= 1000;
-		auto id = getInfo().entries.at( "Index" );
-		int result = system( ( "sudo nvidia-smi -i " + id + " -pl " + std::to_string( watts ) ).c_str() );
-		(void)result;
-	//	communicationProvider.setPowerLimit( watts );
+	// NOTE: code using nvidia-smi was necessary for the purpose of running the agent without admin privileges on ETI KASK machines
+	//	watts /= 1000;
+	//	auto id = getInfo().entries.at( "Index" );
+	//	int result = system( ( "sudo nvidia-smi -i " + id + " -pl " + std::to_string( watts ) ).c_str() );
+	//	(void)result;
+		communicationProvider.setPowerLimit( watts );
 	}
 
 	void setPowerLimit( Percentage percentage ) final {
@@ -97,18 +98,20 @@ private:
 	std::thread powerLimitReader;
 
 	void readerFunction( void ) {
-		if( utility::toBool( getInfo().entries.at( "PowerManagementCapable" ) ) ) {
-			while( running ) {
-				try {
-					auto reading = communicationProvider.getCurrentPowerUsage() / 1000;
-					powerReadings.addSample( reading );
-				}
-				catch ( const NVMLError& err ) {
-					LOG( ERROR ) << err.info();
-				}
+		if( !utility::toBool( getInfo().entries.at( "PowerManagementCapable" ) ) ) {
+			return;
+		}
 
-				std::this_thread::sleep_for( timeBetweenReads );
+		while( running ) {
+			try {
+				auto reading = communicationProvider.getCurrentPowerUsage() / 1000;
+				powerReadings.addSample( reading );
 			}
+			catch ( const NVMLError& err ) {
+				LOG( ERROR ) << err.info();
+			}
+
+			std::this_thread::sleep_for( timeBetweenReads );
 		}
 	}
 };

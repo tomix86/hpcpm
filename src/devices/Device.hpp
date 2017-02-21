@@ -39,7 +39,7 @@ public:
 
 	virtual Power getCurrentPowerUsage( void ) const = 0;
 
-protected: //TODO: zrobic unit test dla tego
+protected: //TODO: introduce unit test for this function
 	Power getLimitFromPercentageAndConstraints( Percentage percentage, PowerLimitConstraints constraints ) const {
 		if ( percentage < 0.f || percentage > 1.f ) {
 			throw ArgumentOutOfBounds( "Device::getLimitFromPercentageAndConstraints", "power limit value out of bounds" );

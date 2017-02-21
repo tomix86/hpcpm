@@ -17,10 +17,7 @@
 // Nevertheless it's better to check the return value just to make sure.
 #define NMPRK_CHECK_RETURN_VAL( x ) if( !x ) { throw NMPRKError{ UTILITY_STRINGIFY( x ), "Return value check failed at line:" UTILITY_STRINGIFY( __LINE__ ) };  }
 
-// IMPORTANT NOTE: nmprkException MUST BE caught by pointer, not by reference
-// I don't know why it's the case but it doesn't seem to work when we catch it by reference
-
-//TODO: czy przy wyjsciu z aplikacji uzywac delPolicy() ?
+//TODO: should delPolicy() be called when the application exits?
 
 namespace devices {
 

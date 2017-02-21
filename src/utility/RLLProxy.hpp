@@ -18,7 +18,9 @@ public:
 protected:
 	virtual bool loadSymbols( void ) = 0;
 	bool loadSymbol( VoidFuncPtr& symbol, const char* name ) const;
-	void setLibraryName(std::string name); //TODO: adnotacja ze to ma sens jedynie przed initem? moze wpis do logu w przypadku wywolania po inicie lub rzucenie logic_error?
+
+	// must be called before init()
+	void setLibraryName(std::string name);
 
 private:
 	void* libHandle;

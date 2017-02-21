@@ -112,8 +112,8 @@ std::vector<cl_device_id> OpenCLCommunicationProvider::getDevicesForPlatform(cl_
 	return devices;
 }
 
-//TODO: sprawdzanie czy wymagane extension jest wspeirane przez parsowanie outputu z EXTENSIONS w poszukiwaniu cl_nv_device_attribute_query
-//TODO: dodac tutaj generyczny wrapper podobnie przy zapytaniach dotyczacych device
+//TODO: we should first check if the required extension is supported, this can be done by parsing the EXTENSIONS output in search of cl_nv_device_attribute_query
+//TODO: add a generic wrapper here, the same was as it is done for device queries
 void OpenCLCommunicationProvider::printPlatformInfo(cl_platform_id platformId) {
 	char buffer[QUERY_BUFFER_SIZE];
 
@@ -208,9 +208,7 @@ OpenCLCommunicationProvider::PCIBusInfo  OpenCLCommunicationProvider::getInfo( O
 	return info;
 }
 
-//TODO: "OpenCL PCI Bus ID" zmienic na jakis constant
-//TODO: moze to "info" prerobic zeby to po prostu byla struktura z unsignedami, a nie mapa stringow jak teraz
-
+//TODO: maybe convert "OpenCL PCI Bus ID" to a constant
 std::pair<bool, OpenCLCommunicationProvider::HandleType> OpenCLCommunicationProvider::matchNvidiaDeviceByPCISlot(unsigned nvmlBusId, unsigned nvmlSlotId) {
 	for(const auto& device : devicesList) {
 		auto info = getInfo(device);

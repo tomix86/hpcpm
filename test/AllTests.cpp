@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-/*
+
 class TestEnvironment : public ::testing::Environment {
 public:
 	virtual ~TestEnvironment() {}
@@ -15,10 +15,9 @@ void TestEnvironment::SetUp() {
 void TestEnvironment::TearDown() {
 }
 
-*/
 
 int main(int argc, char** argv) {
 	::testing::InitGoogleTest(&argc, argv);
-//	::testing::AddGlobalTestEnvironment(new TestEnvironment());
+	::testing::AddGlobalTestEnvironment(new TestEnvironment());
 	return RUN_ALL_TESTS();
 }

@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <devices/NvidiaTesla/NvidiaTeslaDevice.hpp>
+#include "devices/NvidiaTesla/NvidiaTeslaDevice.hpp"
+#include "../utility/ConfigLoaderAccessor.hpp"
 
 using namespace devices;
 
@@ -22,13 +23,33 @@ public:
 class NvidiaTeslaDeviceAccessor : public NvidiaTeslaDevice<MockTeslaCommunicationProvider> {
 public:
 	NvidiaTeslaDeviceAccessor( void ) :
-	NvidiaTeslaDevice<MockTeslaCommunicationProvider>{ "0", {} } {
+	NvidiaTeslaDevice<MockTeslaCommunicationProvider>{ "0", { {"PowerManagementCapable", "false"} } } {
 	}
 
 	using NvidiaTeslaDevice<MockTeslaCommunicationProvider>::communicationProvider;
 };
 
-TEST( NvidiaTeslaTestSuite, DISABLED_setPowerLimitArgumentCorectnessTest ) {
+
+class NvidiaTeslaTestSuite : public ::testing::Test {
+protected:
+	static void SetUpTestCase() {
+		ConfigLoaderAccessor::setInitialized( false );
+		ConfigLoaderAccessor::clearConfig();
+
+		auto& config = ConfigLoaderAccessor::getConfig();
+		config[ "NVML_history_size" ] = "100";
+		config[ "NVML_interval" ] = "10";
+
+		ConfigLoaderAccessor::setInitialized( true );
+	}
+
+	static void TearDownTestCase() {
+		ConfigLoaderAccessor::setInitialized( false );
+		ConfigLoaderAccessor::clearConfig();
+	}
+};
+
+TEST_F( NvidiaTeslaTestSuite, setPowerLimitArgumentCorectnessTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
 	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )
@@ -45,7 +66,7 @@ TEST( NvidiaTeslaTestSuite, DISABLED_setPowerLimitArgumentCorectnessTest ) {
 	ASSERT_NO_THROW( device.setPowerLimit( devices::Power{ 150 } ) );
 }
 
-TEST( NvidiaTeslaTestSuite, DISABLED_setPowerLimitPercentageArgumentCorectnessTest ) {
+TEST_F( NvidiaTeslaTestSuite, setPowerLimitPercentageArgumentCorectnessTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
 	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )
@@ -61,7 +82,7 @@ TEST( NvidiaTeslaTestSuite, DISABLED_setPowerLimitPercentageArgumentCorectnessTe
 	ASSERT_NO_THROW( device.setPowerLimit( devices::Percentage{ .5f } ) );
 }
 
-TEST( NvidiaTeslaTestSuite, DISABLED_setPowerLimitPercentageTest ) {
+TEST_F( NvidiaTeslaTestSuite, setPowerLimitPercentageTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
 	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )
@@ -77,7 +98,7 @@ TEST( NvidiaTeslaTestSuite, DISABLED_setPowerLimitPercentageTest ) {
 	ASSERT_NO_THROW( device.setPowerLimit( devices::Percentage{ 1.f } ) );
 }
 
-TEST( NvidiaTeslaTestSuite, DISABLED_getCurrentPowerLimitPercentageTest ) {
+TEST_F( NvidiaTeslaTestSuite, getCurrentPowerLimitPercentageTest ) {
 	NvidiaTeslaDeviceAccessor device;
 
 	EXPECT_CALL( device.communicationProvider, getPowerLimitConstraints() )

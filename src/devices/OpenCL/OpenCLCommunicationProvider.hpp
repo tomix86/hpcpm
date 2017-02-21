@@ -7,8 +7,7 @@
 
 namespace devices {
 
-//TODO: ogarnac co w przypadku gdy jest wiecej niz jedna platforma, trzeba to jakos obslugiwac bo przy funkcji match moze zwrocic wiele wynikow...
-// prawdopodobnie tylko platforma Nvidia ICD bedzie obslugiawala roszerzenie potrzebne do pborania pci bus id
+//TODO: handle the case when there are multiple opencl platforms present. Most likely only the Nvidia ICD will provide the extensions required to query it for pci bus id
 
 class OpenCLCommunicationProvider {
 public:
@@ -37,7 +36,7 @@ public:
 
 private:
 	static OpenCLProxy proxy;
-	static bool enabled; //TODO: brzydki wytrych, zmienic to
+	static bool enabled; //TODO: ugly trick, get rid of it
 
 	static const size_t QUERY_BUFFER_SIZE = 1024;
 
