@@ -47,7 +47,7 @@ def add_arguments_to_parser(parser):
     parser.add_argument('-p', '--port',
                         action='store',
                         type=int,
-                        default=8080,
+                        default=8081,
                         help='port on which API will be exposed')
 
 
