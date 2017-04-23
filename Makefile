@@ -16,7 +16,7 @@ run-server:
 	nodemon server/server.js
 
 deps:
-	$(APTGI) nodejs nodejs-legacy npm openjdk-7-jdk
+	$(APTGI) nodejs nodejs-legacy npm 
 	sudo npm install bower jshint nodemon grunt-cli karma -g
 deps-local:
 	npm install

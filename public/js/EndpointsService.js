@@ -19,7 +19,7 @@ angular.module('hpcpm-ui').factory('EndpointsService', function() {
         'get_power_limit_constraints': 'nodes/computation_node',
         'get_rule_types': 'rule_types'
     };
-    var _baseUrl = 'http://vps.lel.lu:8080/api/hpcpm/';
+    var _baseUrl = 'http://localhost:8081/api/hpcpm/';
 
     var o = {};
 

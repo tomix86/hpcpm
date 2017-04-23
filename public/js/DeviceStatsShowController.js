@@ -11,6 +11,11 @@ function deviceStatsShowController($scope, $rootScope, DataService, $stateParams
   $scope.labels = [];
   $scope.data = [[]];
 
+  $scope.refreshTime = function() {
+    $('#statsStartTime').data("DateTimePicker").date(moment().utc().subtract(1, 'hours'));
+    $('#statsEndTime').data("DateTimePicker").date(moment().utc());
+  };
+
   $scope.getStats = function() {
     $scope.date.start = $('#statsStartTime').data('DateTimePicker').date();
     $scope.date.end = $('#statsEndTime').data('DateTimePicker').date();
