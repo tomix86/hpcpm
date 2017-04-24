@@ -60,13 +60,26 @@ function removePowerLimitModalController($scope, $rootScope, $modalInstance, toa
         DataService.removeDevicePowerLimitRule($scope.name, $scope.deviceId).then(function (response) {
             $scope.response = response;
             toaster.pop('success', 'Success', 'Device' + $scope.deviceId + ' power limit rule on node ' + $scope.name + ' removed successfully');
-            $rootScope.$broadcast('RefreshNodeDetails');
         },
         function (error) {
           toaster.pop('error', 'Error ' + error.status, 'Cannot remove power limit rule from device: ' + $scope.deviceId);
         });
-        $modalInstance.close();
+    };
+    $scope.removePowerLimit = function () {
+        DataService.removeDevicePowerLimit($scope.name, $scope.deviceId).then(function (response) {
+            $scope.response = response;
+            toaster.pop('success', 'Success', 'Device' + $scope.deviceId + ' power limit on node ' + $scope.name + ' removed successfully');
+            $rootScope.$broadcast('RefreshNodeDetails');
+        },
+        function (error) {
+          toaster.pop('error', 'Error ' + error.status, 'Cannot remove power limit from device: ' + $scope.deviceId);
+        });
     };
 
+    $scope.removeRuleAndLimit = function () {
+      $scope.removePowerLimitRule();
+      $scope.removePowerLimit();
+      $modalInstance.close();
+    };
 
 }

@@ -321,7 +321,7 @@
           <div class="alert alert-danger">
               <p>Do you wish to remove power limit rule for device <strong>{{deviceId}}</strong> on node <strong>{{name}}</strong>?</p>
           </div>
-          <button class="btn btn-danger" type="button" ng-click="removePowerLimitRule()">Remove</button>
+          <button class="btn btn-danger" type="button" ng-click="removeRuleAndLimit()">Remove</button>
         </div>
         <div ng-if='error != ""'>
             <p><strong>{{error}}</strong></p>
