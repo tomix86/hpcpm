@@ -13,6 +13,7 @@ class Database:  # pylint: disable=too-many-public-methods
         self.statistics_data_collection = None
         self.statistics_intervals_collection = None
         self.rules_collection = None
+        self.soft_limit_collection = None
 
     def configure(self, config):
         self.client = MongoClient(config.get('host'), int(config.get('port')))
@@ -22,6 +23,7 @@ class Database:  # pylint: disable=too-many-public-methods
         self.statistics_data_collection = self.database[config.get('statistics_data_collection')]
         self.statistics_intervals_collection = self.database[config.get('statistics_intervals_collection')]
         self.rules_collection = self.database[config.get('rules_collection')]
+        self.soft_limit_collection = self.database[config.get('soft_limit_collection')]
 
     def get_computation_node_info(self, name):
         return self.computation_nodes_collection.find_one({'name': name}, {'_id': False})
@@ -31,6 +33,9 @@ class Database:  # pylint: disable=too-many-public-methods
 
     def get_power_limit_for_device(self, name, device_id):
         return self.power_limit_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False})
+
+    def get_soft_limit_for_device(self, name, device_id):
+        return self.soft_limit_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False})
 
     def get_list_of_nodes(self, sorting_order=None, name_filter=None, pagination=None, address=None):
         sort_direction = ASCENDING
@@ -63,6 +68,9 @@ class Database:  # pylint: disable=too-many-public-methods
     def replace_power_limit_for_device(self, name, device_id, power_limit):
         return self.power_limit_collection.replace_one({'name': name, 'device_id': device_id}, power_limit, True)
 
+    def replace_soft_limit_for_device(self, name, device_id, soft_limit):
+        return self.soft_limit_collection.replace_one({'name': name, 'device_id': device_id}, soft_limit, True)
+
     def delete_computation_node_info(self, name):
         return self.computation_nodes_collection.find_one_and_delete({'name': name})
 
@@ -71,6 +79,9 @@ class Database:  # pylint: disable=too-many-public-methods
 
     def delete_power_limit_info(self, name, device_id):
         return self.power_limit_collection.find_one_and_delete({'name': name, 'device_id': device_id}, {'_id': False})
+
+    def delete_soft_limit_info(self, name, device_id):
+        return self.soft_limit_collection.find_one_and_delete({'name': name, 'device_id': device_id}, {'_id': False})
 
     def replace_stats_interval_info(self, name, device_id, interval_info):
         return self.statistics_intervals_collection.replace_one({'name': name, 'device_id': device_id}, interval_info,

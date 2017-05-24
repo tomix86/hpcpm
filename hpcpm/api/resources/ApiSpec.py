@@ -4,6 +4,7 @@ from flask_restful_swagger import swagger
 from hpcpm.api.resources.endpoints.Status import Status
 from hpcpm.api.resources.endpoints.nodes.computation_node.ComputationNode import ComputationNode
 from hpcpm.api.resources.endpoints.nodes.computation_node.PowerLimit import PowerLimit
+from hpcpm.api.resources.endpoints.nodes.computation_node.SoftLimit import SoftLimit
 from hpcpm.api.resources.endpoints.nodes.computation_node.AllComputationNodes import AllComputationNodes
 from hpcpm.api.resources.endpoints.nodes.computation_node.StatisticsInterval import StatisticsInterval
 from hpcpm.api.resources.endpoints.nodes.computation_node.StatisticsData import StatisticsData
@@ -24,6 +25,7 @@ class ApiSpec:  # pylint: disable=too-few-public-methods
         api.add_resource(Status, '/status')
         api.add_resource(ComputationNode, '/nodes/computation_node/<string:name>')
         api.add_resource(PowerLimit, '/nodes/computation_node/<string:name>/<string:device_id>/power_limit')
+        api.add_resource(SoftLimit, '/nodes/computation_node/<string:name>/<string:device_id>/soft_limit')
         api.add_resource(PowerLimitConstraints,
                          '/nodes/computation_node/<string:name>/<string:device_id>/power_limit_constraints')
         api.add_resource(PowerUsage, '/nodes/computation_node/<string:name>/<string:device_id>/power_usage')

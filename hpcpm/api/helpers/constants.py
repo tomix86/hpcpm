@@ -112,6 +112,15 @@ DEVICE_POWER_LIMIT_PARAM = {
     'paramType': 'query'
 }
 
+DEVICE_SOFT_LIMIT_PARAM = {
+    'name': 'soft_limit',
+    'description': 'Soft limit',
+    'required': True,
+    'allowMultiple': False,
+    'dataType': 'int',
+    'paramType': 'query'
+}
+
 STATISTICS_INTERVAL_PARAM = {
     'name': 'statistics_interval',
     'description': 'Statistics gathering interval in minutes',
@@ -180,9 +189,19 @@ DEVICE_POWER_LIMIT_SET_RESPONSE = {
     'message': 'Power limit set successfully'
 }
 
+DEVICE_SOFT_LIMIT_SET_RESPONSE = {
+    'code': 201,
+    'message': 'Soft limit set successfully'
+}
+
 DEVICE_POWER_LIMIT_SET_RESPONSE_FAILURE = {
     'code': 406,
     'message': 'Power limit could not be set successfully'
+}
+
+DEVICE_SOFT_LIMIT_SET_RESPONSE_FAILURE = {
+    'code': 406,
+    'message': 'Soft limit could not be set successfully'
 }
 
 RULE_SET_RESPONSE = {
