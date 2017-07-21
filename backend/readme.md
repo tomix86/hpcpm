@@ -4,8 +4,6 @@ An agent written in C++, that exposes REST interface allowing to:
 * list computational devices (NVIDIA GPUs and Intel Xeon Phi accelerators)
 * monitor and control power usage of these devices
 
-For a detailed description see the [engineer's degree thesis (in polish)](Podsystem-do-zarzadzania-zuzyciem-energii-dla-heterogenicznego-srodowiska-obliczen-wysokiej-wydajnosci.pdf)
-
 # Building
 ## External dependencies
 * [Easylogging++](https://github.com/easylogging/easyloggingpp)
