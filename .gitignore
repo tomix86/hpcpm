@@ -1,9 +1,0 @@
-bower_components
-node_modules
-screenshots
-deployment-config.json
-phantomjsdriver.log
-test_report
-.idea
-dist/*
-.tmp/*
