@@ -1,0 +1,41 @@
+{
+  "name": "HPCPM-UI",
+  "version": "1.0.0",
+  "authors": [
+    ""
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "underscore": "~1.8.3",
+    "restangular": "~1.5.1",
+    "angular": "angularjs#~1.4.8",
+    "angular-resource": "~1.4.6",
+    "angular-ui-router": "~0.2.15",
+    "angular-bootstrap": "~0.14.0",
+    "ng-table": "~0.8.3",
+    "angularjs-toaster": "~0.4.15",
+    "bootstrap": "~3.3.5",
+    "json-formatter": "~0.4.0",
+    "angular-chart.js": "~0.8.5",
+    "Chart.js": "~1.0.2",
+    "moment": "~2.10.6",
+    "angular-moment": "~0.10.3",
+    "angular-mocks": "~1.4.7",
+    "eonasdan-bootstrap-datetimepicker": "~4.17.37"
+  },
+  "resolutions": {
+    "angular": "~1.4.7"
+  }
+}

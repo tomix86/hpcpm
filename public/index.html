@@ -1,0 +1,491 @@
+<!doctype html>
+<html ng-app="hpcpm-ui">
+
+<head>
+    <meta charset="utf-8">
+    <title>HPC Power Management</title>
+</head>
+
+<script type="text/ng-template" id="/NodeDetails.html">
+  <div class="col-md-8" style="padding-top: 30px" ng-controller="NodeDetailsController">
+    <div class="page-header">
+        <h1>Node: {{selectedNode}}</h1>
+    </div>
+    <div>
+        <div style="padding-bottom: 30px">
+            <div class="col-md-12 row">
+              <dl class="dl-horizontal" ng-repeat="(key, value) in simpleDetails">
+                <dt>{{key}}</dt>
+                <dd>{{value}}</dd>
+              </dl>
+              <dl class="dl-horizontal">
+                <dd>
+                  <button class="btn btn-danger btn-xl" type="button"
+                        ng-click="openRawDetailsModal(rawNodeData)">Raw data
+                  </button>
+                </dd>
+              </dl>
+            </div>
+        </div>
+        <table ng-table="tableParams" show-filter="true"
+               class="table table-condensed table-bordered table-striped">
+              <tr ng-repeat="device in $data.backend_info.devices">
+                <td data-title="'Name'">{{device.info.Name}}</td>
+                <td data-title="'Type'">{{device.Type}}</td>
+                <td data-title="'ID'">{{device.id}}</td>
+                <td data-title="'Current power limit'">{{device.power_limit}}</td>
+                <td data-title="'Current power usage'">{{device.power_usage}}</td>
+                <td data-title="'Action'">
+                    <button class="btn btn-danger btn-xs" type="button"
+                        ng-click="openSetPowerLimitModal(selectedNode, device.id)">Set power limit rule</button>
+                    <button class="btn btn-danger btn-xs" type="button"
+                        ng-click="openRemovePowerLimitModal(selectedNode, device.id)">Remove power limit rule</button>
+                    <button class="btn btn-danger btn-xs" type="button"
+                        ng-click="openDeviceStatsIntervalModal(selectedNode, device.id)">Stats interval</button>
+                    <a class="btn btn-danger btn-xs" ui-sref="device_stats_show({node_name: selectedNode, device_id: device.id})">Stats</a>
+                </td>
+              </tr>
+        </table>
+    </div>
+  </div>
+  <div class="col-md-2"></div>
+</script>
+
+<script type="text/ng-template" id="/DeviceStatsShow.html">
+  <div class="col-md-8" style="padding-top: 30px" ng-controller="DeviceStatsShowController">
+    <div class="page-header">
+        <h1>Statistics chart for: {{node_name}}:{{device_id}}</h1>
+    </div>
+    <div>
+      <div class="col-md-8">
+        <span title="Format: DD / MM / YY   HH:mm">Begin date (UTC):</span>
+        <br />
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="input-group date" id="statsStartTime">
+                    <input type="text" class="form-control" name="startdatetime" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <span title="Format: DD / MM / YY   HH:mm">End date (UTC):</span>
+        <br />
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="input-group date" id="statsEndTime">
+                    <input type="text" class="form-control" name="enddatetime" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-danger btn-xs" type="button" ng-click="getStats()">Get stats</button>
+        <button class="btn btn-danger btn-xs" type="button" ng-click="refreshTime()">Refresh time</button>
+      </div>
+      <div class="col-md-12" style="padding-top: 30px">
+        {{error}}
+        <canvas id="bar" class="chart chart-bar" chart-options="chartOptions" chart-series="series" chart-data="data" chart-labels="labels" chart-legend="true" style="display: none">
+        </canvas>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="NodeDetailsModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Raw node details</h3>
+    </div>
+    <div class="modal-body">
+        <div>
+            <div>
+              <pre style="outline: 1px solid #e9e9e9; padding: 5px; margin: 5px;">
+                <json-formatter json="nodeData.backend_info" open="1" ></json-formatter>
+              </pre>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-info" type="button" ng-click="copy()">Copy raw JSON</button>
+                <button class="btn btn-warning" type="button" ng-click="close()">Close</button>
+                <div id="detailsModal"></div>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="PowerLimitModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Set power rule limit for {{name}}:{{deviceId}}</h3>
+    </div>
+    <div class="modal-body">
+        <div ng-if="errorConstraints === ''">
+            <p><strong>Power limit range:</strong></p>
+            <dl class="dl-horizontal">
+                <dt>Lower limit:</dt><dd>{{deviceConstraints.lower}}</dd>
+                <dt>Upper limit:</dt><dd>{{deviceConstraints.upper}}</dd>
+            </dl>
+        </div>
+        <div ng-if="errorConstraints != ''">
+            <p><strong>{{errorConstraints}}</strong></p>
+        </div>
+        <div ng-if="error === ''">
+          <label class="control-label">Current rule:</label>
+          <div ng-switch on="ruleData.rule_type">
+              <p>Type: <strong>{{ruleData.rule_type}}</strong></p>
+              <div ng-switch-when="TimeBased">
+                <ul style="list-style: none;">
+                  <li ng-repeat-start="(key, value) in ruleFormatted">
+                      <strong>Subrule {{key}}</strong>
+                  </li>
+                  <li ng-repeat-end>
+                      <dl class="dl-horizontal">
+                          <dt>Start date:</dt><dd>{{value.start}}</dd>
+                          <dt>End date:</dt><dd>{{value.end}}</dd>
+                          <dt>Power limit:</dt><dd>{{value.limit}}</dd>
+                      </dl>
+                  </li>
+                </ul>
+              </div>
+              <div ng-switch-when="HardLimit">
+                <ul style="list-style: none;">
+                  <li ng-repeat-start="(key, value) in ruleFormatted">
+                      <strong>Subrule {{key}}</strong>
+                  </li>
+                  <li ng-repeat-end>
+                      <dl class="dl-horizontal">
+                          <dt>Power limit:</dt><dd>{{value.limit}}</dd>
+                      </dl>
+                  </li>
+                </ul>
+              </div>
+          </div>
+          <br />
+          <button class="btn btn-danger" type="button" ng-click="removeCurrentRule()">Remove</button>
+        </div>
+        <div ng-if='error != ""'>
+            <p><strong>{{error}}</strong></p>
+        </div>
+        <hr />
+        <div>
+          <select class="form-control" ng-model="selectedRule" ng-options="item for item in supportedRules"></select>
+          <div class="alert alert-warning">
+            <p><strong>Note:</strong> Setting new power limit rule will remove previous one!</p>
+          </div>
+        </div>
+        <div ng-switch on="selectedRule" ng-show="errorConstraints ===''" style="padding-top:20px;">
+          <div ng-switch-default class="alert alert-info">
+            <p>Select rule type</p>
+          </div>
+          <div ng-switch-when="TimeBased">
+            <form name="powerLimitForm" novalidate>
+                <button class="btn btn-success" type="button" ng-click="addSubrule()">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </button>
+                <div ng-repeat="subrule in subrules" class="form-group" style="padding-top: 20px;"
+                     ng-class="{ 'has-error': powerLimitForm.powerLimit.$invalid }" on-last-repeat>
+                    <div id="{{subrule.index}}">
+                        <label class="control-label">New power limit subrule</label>
+                        <button class="btn btn-danger" type="button" ng-click="removeSubrule(subrule.index)" style="float: right;">
+                          <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                        </button>
+                        <br />
+                        <p>Start:</p>
+                            <div class="container-fluid">
+                                <div class="form-group">
+                                    <div class="input-group date" id="{{ 'startTime' + $index }}">
+                                        <input type="text" class="form-control" name="ruleStartDatetime_{{$index}}" />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        <p>End:</p>
+                            <div class="container-fluid">
+                                <div class="form-group">
+                                    <div class="input-group date" id="{{ 'endTime' + $index }}">
+                                        <input type="text" class="form-control" name="ruleEndDatetime_{{$index}}" />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        <p>Limit (watts):</p><input type="text" name="powerLimit_{{$index}}" class="form-control" ng-model="subrule.powerLimit"
+                                            valid-limit="deviceConstraints" required>
+                        <span ng-show="powerLimitForm.powerLimit_{{$index}}.$error.validLimit">Enter correct power limit!</span>
+                        <span ng-show="powerLimitForm.powerLimit_{{$index}}.$error.required">Enter value of power limit!</span>
+                    </div>
+                </div>
+                <div class="modal-footer" style="margin-top: 10px;">
+                    <button class="btn btn-success" type="button" ng-disabled="powerLimitForm.$invalid" ng-hide="emptySubrules"
+                            ng-click="setPowerLimitRule()">Set
+                    </button>
+                </div>
+            </form>
+          </div>
+          <div ng-switch-when="HardLimit">
+            <form name="powerLimitForm" novalidate>
+              <div class="form-group" style="padding-top: 20px;" ng-class="{ 'has-error': powerLimitForm.powerLimit.$invalid }">
+                <label class="control-label">New power limit subrule</label>
+                <p>Limit (watts):</p><input type="text" name="powerLimit" class="form-control" ng-model="powerLimit.value"
+                                    valid-limit="deviceConstraints" required>
+                <span ng-show="powerLimitForm.powerLimit.$error.validLimit">Enter correct power limit!</span>
+                <span ng-show="powerLimitForm.powerLimit.$error.required">Enter value of power limit!</span>
+              </div>
+              <div class="modal-footer" style="margin-top: 10px;">
+                  <button class="btn btn-success" type="button" ng-disabled="powerLimitForm.$invalid" ng-click="setPowerLimitRule()">Set
+                  </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="DeviceStatsIntervalModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Set device gathering interval for {{name}}:{{deviceId}}</h3>
+    </div>
+    <div class="modal-body">
+        <div>
+          <label class="control-label">Current interval: {{currentInterval}}</label>
+          <br />
+          <button class="btn btn-danger" type="button" ng-click="removeCurrentInterval()">Remove</button>
+        </div>
+        <hr />
+        <div>
+            <form name="statsIntervalForm" novalidate>
+                <div class="form-group" ng-class="{ 'has-error': statsIntervalForm.newInterval.$invalid }">
+                    <label class="control-label">New device statistics data interval (in MINUTES)</label>
+                    <input type="text" name="powerLimit" class="form-control" ng-model="newInterval" required/>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" type="button" ng-disabled="statsIntervalForm.$invalid"
+                            ng-click="setNewInterval()">Set
+                    </button>
+                    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="RemovePowerLimitModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Remove device power limit for {{name}}:{{deviceId}}</h3>
+    </div>
+    <div class="modal-body">
+        <div ng-if='error === ""'>
+        <label class="control-label">Current rule:</label>
+        <div ng-switch on="ruleData.rule_type">
+            <p>Type: <strong>{{ruleData.rule_type}}</strong></p>
+            <div ng-switch-when="TimeBased">
+              <ul style="list-style: none;">
+                <li ng-repeat-start="(key, value) in ruleFormatted">
+                    <strong>Subrule {{key}}</strong>
+                </li>
+                <li ng-repeat-end>
+                    <dl class="dl-horizontal">
+                        <dt>Start date:</dt><dd>{{value.start}}</dd>
+                        <dt>End date:</dt><dd>{{value.end}}</dd>
+                        <dt>Power limit:</dt><dd>{{value.limit}}</dd>
+                    </dl>
+                </li>
+              </ul>
+            </div>
+            <div ng-switch-when="HardLimit">
+              <ul style="list-style: none;">
+                <li ng-repeat-start="(key, value) in ruleFormatted">
+                    <strong>Subrule {{key}}</strong>
+                </li>
+                <li ng-repeat-end>
+                    <dl class="dl-horizontal">
+                        <dt>Power limit:</dt><dd>{{value.limit}}</dd>
+                    </dl>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <br />
+          <div class="alert alert-danger">
+              <p>Do you wish to remove power limit rule for device <strong>{{deviceId}}</strong> on node <strong>{{name}}</strong>?</p>
+          </div>
+          <button class="btn btn-danger" type="button" ng-click="removeRuleAndLimit()">Remove</button>
+        </div>
+        <div ng-if='error != ""'>
+            <p><strong>{{error}}</strong></p>
+        </div>
+        <div>
+            <div class="modal-footer">
+                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="/Nodes.html">
+      <div class="col-md-8" style="padding-top: 30px">
+          <div class="page-header">
+              <h1>Computation nodes</h1>
+          </div>
+          <div ng-controller="NodesController">
+              <table ng-table="tableParams" show-filter="true"
+                     class="table table-condensed table-bordered table-striped">
+                  <tr ng-repeat="row in $data">
+                      <td data-title="'Name'" filter="{name: 'text'}" sortable="'name'"><a ui-sref="node_details({node_name: row.name, node: row})">{{row.name}}</a></td>
+                      <td data-title="'Address'" filter="{address: 'text'}" sortable="'address'">{{row.address}}</td>
+                      <td data-title="'Port'" filter="{port: 'number'}" sortable="'port'">{{row.port}}</td>
+                      <td data-title="'Action'">
+                          <button class="btn btn-danger btn-xs" type="button"
+                                  ng-click="OpenRemoveNodeModal(row.name)">Remove
+                          </button>
+                      </td>
+                  </tr>
+              </table>
+          </div>
+      </div>
+      <div class="col-md-2"></div>
+</script>
+
+<script type="text/ng-template" id="NewNode.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Add new computation node</h3>
+    </div>
+    <div class="modal-body">
+        <div>
+            <form name="newNodeForm" novalidate>
+                <div class="form-group" ng-class="{ 'has-error': newNodeForm.name.$invalid }">
+                    <label class="control-label">Name</label>
+                    <input type="text" name="name" class="form-control" ng-model="node.name" required/>
+                </div>
+                <div class="form-group" ng-class="{ 'has-error': newNodeForm.address.$invalid }">
+                    <label class="control-label">Address</label>
+                    <input type="text" name="address" class="form-control" ng-model="node.address" required/>
+                </div>
+                <div class="form-group" ng-class="{ 'has-error': newNodeForm.port.$invalid }">
+                    <label class="control-label">Port</label>
+                    <input type="text" name="port" class="form-control" ng-model="node.port" required/>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" type="button" ng-disabled="newNodeForm.$invalid"
+                            ng-click="addNode()">Add
+                    </button>
+                    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="RemoveNode.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Remove computation node</h3>
+    </div>
+    <div class="modal-body">
+        <div>
+            <div class="alert alert-danger">
+                <p>Do you wish to remove computation node <strong>{{name}}</strong> from database?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" type="button" ng-click="removeNode()">
+                    Remove
+                </button>
+                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<body ng-controller="BodyController" style="padding-top: 30px">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#/">HPC Power Management</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li>
+                <p class="navbar-btn">
+                    <button type="button" class="btn btn-default" ng-click="OpenNewNodeModal()">Add computation
+                        node
+                    </button>
+                </p>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="row">
+    <div class="col-md-2">
+        <toaster-container></toaster-container>
+    </div>
+    <div ui-view>
+    </div>
+</div>
+
+<!-- build:js(.) public/js/lib.min.js -->
+<script src="bower_components/angular/angular.min.js"></script>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/json-formatter/dist/json-formatter.min.js"></script>
+<script src="bower_components/angular-animate/angular-animate.min.js"></script>
+<script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+<script src="bower_components/angular-resource/angular-resource.min.js"></script>
+<script src="bower_components/restangular/dist/restangular.min.js"></script>
+<script src="bower_components/underscore/underscore-min.js"></script>
+<script src="bower_components/ng-table/dist/ng-table.min.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+<script src="bower_components/angularjs-toaster/toaster.min.js"></script>
+<script src="bower_components/Chart.js/Chart.min.js"></script>
+<script src="bower_components/angular-chart.js/dist/angular-chart.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/moment/min/moment-with-locales.min.js"></script>
+<script src="bower_components/angular-moment/angular-moment.min.js"></script>
+<script src="bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+<!-- endbuild -->
+
+<!-- build:js public/js/HPCPM.min.js -->
+<script src="js/HomeControllers.js"></script>
+<script src="js/DataService.js"></script>
+<script src="js/DeviceStatsShowController.js"></script>
+<script src="js/EndpointsService.js"></script>
+<script src="js/NewNodeController.js"></script>
+<script src="js/RemoveNodeController.js"></script>
+<script src="js/NodeDetailsController.js"></script>
+<script src="js/NodeDetailsModalController.js"></script>
+<script src="js/PowerLimitModalController.js"></script>
+<script src="js/RemovePowerLimitModalController.js"></script>
+<script src="js/DeviceStatsIntervalModalController.js"></script>
+<!-- endbuild -->
+
+<!-- build:css(.) public/css/style.min.css -->
+<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="bower_components/ng-table/dist/ng-table.min.css">
+<link rel="stylesheet" type="text/css" href="bower_components/angularjs-toaster/toaster.min.css">
+<link rel="stylesheet" type="text/css" href="bower_components/json-formatter/dist/json-formatter.css">
+<link rel="stylesheet" type="text/css" href="bower_components/angular-chart.js/dist/angular-chart.min.css">
+<link rel="stylesheet" type="text/css" href="bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+<!-- endbuild -->
+
+</body>
+</html>
