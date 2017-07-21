@@ -1,0 +1,9 @@
+coverage
+pep8
+pyflakes
+pylint
+pytest
+pytest-cov
+wheel
+mock
+flask-testing

@@ -1,0 +1,15 @@
+# Python pre-compiled scripts
+*.pyc
+*.whl
+*.egg-info/
+.coverage
+coverage.xml
+htmlcov/
+venv/
+build/
+dist/
+#pycharm
+*.idea
+#vim
+*.swp
+*.log

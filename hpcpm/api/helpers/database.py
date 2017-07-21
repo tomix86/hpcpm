@@ -1,0 +1,131 @@
+import re
+from pymongo import MongoClient, ASCENDING, DESCENDING
+from bson.regex import Regex
+
+
+class Database:  # pylint: disable=too-many-public-methods
+
+    def __init__(self):
+        self.client = None
+        self.database = None
+        self.computation_nodes_collection = None
+        self.power_limit_collection = None
+        self.statistics_data_collection = None
+        self.statistics_intervals_collection = None
+        self.rules_collection = None
+        self.soft_limit_collection = None
+
+    def configure(self, config):
+        self.client = MongoClient(config.get('host'), int(config.get('port')))
+        self.database = self.client[config.get('db')]
+        self.computation_nodes_collection = self.database[config.get('computation_nodes_collection')]
+        self.power_limit_collection = self.database[config.get('power_limit_collection')]
+        self.statistics_data_collection = self.database[config.get('statistics_data_collection')]
+        self.statistics_intervals_collection = self.database[config.get('statistics_intervals_collection')]
+        self.rules_collection = self.database[config.get('rules_collection')]
+        self.soft_limit_collection = self.database[config.get('soft_limit_collection')]
+
+    def get_computation_node_info(self, name):
+        return self.computation_nodes_collection.find_one({'name': name}, {'_id': False})
+
+    def get_computation_node_info_by_address(self, address, port):  # pylint: disable=invalid-name
+        return self.computation_nodes_collection.find_one({'address': address, 'port': port}, {'_id': False})
+
+    def get_power_limit_for_device(self, name, device_id):
+        return self.power_limit_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False})
+
+    def get_soft_limit_for_device(self, name, device_id):
+        return self.soft_limit_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False})
+
+    def get_list_of_nodes(self, sorting_order=None, name_filter=None, pagination=None, address=None):
+        sort_direction = ASCENDING
+        filter_object = {}
+        skip_count = 0
+        skip_limit = 0
+
+        if sorting_order:
+            if sorting_order['name'].lower() == 'asc':
+                sort_direction = ASCENDING
+            elif sorting_order['name'].lower() == 'desc':
+                sort_direction = DESCENDING
+        if name_filter:
+            name_pattern = Regex.from_native(re.compile('^' + name_filter['name']))
+            filter_object = {'name': name_pattern}
+        if pagination:
+            skip_count = int(pagination['skip'])
+            skip_limit = int(pagination['limit'])
+        if address:
+            filter_object['address'] = address
+
+        return list(
+            self.computation_nodes_collection.find(filter_object,
+                                                   {'name': True, 'address': True, 'port': True, '_id': False},
+                                                   sort=[('name', sort_direction)], skip=skip_count, limit=skip_limit))
+
+    def replace_computation_node_info(self, name, data):
+        return self.computation_nodes_collection.replace_one({'name': name}, data, True)
+
+    def replace_power_limit_for_device(self, name, device_id, power_limit):
+        return self.power_limit_collection.replace_one({'name': name, 'device_id': device_id}, power_limit, True)
+
+    def replace_soft_limit_for_device(self, name, device_id, soft_limit):
+        return self.soft_limit_collection.replace_one({'name': name, 'device_id': device_id}, soft_limit, True)
+
+    def delete_computation_node_info(self, name):
+        return self.computation_nodes_collection.find_one_and_delete({'name': name})
+
+    def delete_power_limit_infos(self, name):
+        return self.power_limit_collection.delete_many({'name': name})
+
+    def delete_power_limit_info(self, name, device_id):
+        return self.power_limit_collection.find_one_and_delete({'name': name, 'device_id': device_id}, {'_id': False})
+
+    def delete_soft_limit_info(self, name, device_id):
+        return self.soft_limit_collection.find_one_and_delete({'name': name, 'device_id': device_id}, {'_id': False})
+
+    def replace_stats_interval_info(self, name, device_id, interval_info):
+        return self.statistics_intervals_collection.replace_one({'name': name, 'device_id': device_id}, interval_info,
+                                                                True)
+
+    def delete_stats_interval_info(self, name, device_id):
+        return self.statistics_intervals_collection.find_one_and_delete({'name': name, 'device_id': device_id},
+                                                                        {'_id': False})
+
+    def get_stats_interval_info(self, name, device_id):
+        return self.statistics_intervals_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False})
+
+    def check_stats_present(self, name, device_id):
+        return self.statistics_data_collection.find_one({'name': name, 'device_id': device_id})
+
+    def replace_stats_data(self, name, device_id, stats_data):
+        return self.statistics_data_collection.replace_one({'name': name, 'device_id': device_id}, stats_data, True)
+
+    def update_stats_data(self, name, device_id, stats_data):
+        return self.statistics_data_collection.update_one({'name': name, 'device_id': device_id}, {'$set': stats_data})
+
+    def get_stats_data(self, name, device_id):
+        return self.statistics_data_collection.find_one({'name': name, 'device_id': device_id},
+                                                        {'_id': False, 'name': False, 'device_id': False})
+
+    def get_stats_data_for_time(self, name, device_id, date_time):
+        return self.statistics_data_collection.find_one({'name': name, 'device_id': device_id},
+                                                        {date_time: True, '_id': False})
+
+    def delete_stats_for_time(self, name, device_id, stats_data):
+        return self.statistics_data_collection.update_one({'name': name, 'device_id': device_id},
+                                                          {'$unset': stats_data})
+
+    def get_rule_for_device(self, name, device_id):
+        return self.rules_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False})
+
+    def replace_rule_for_device(self, name, device_id, rule):
+        return self.rules_collection.replace_one({'name': name, 'device_id': device_id}, rule, True)
+
+    def delete_rule(self, name, device_id):
+        return self.rules_collection.find_one_and_delete({'name': name, 'device_id': device_id}, {'_id': False})
+
+    def get_last_power_usage(self, name, device_id):
+        return self.statistics_data_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False},
+                                                        sort=[('_id', ASCENDING)])
+
+database = Database()  # pylint: disable=invalid-name
