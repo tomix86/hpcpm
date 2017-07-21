@@ -1,8 +1,0 @@
-bin
-build
-extlibs
-deploy
-
-CMakeLists.txt.user
-CMakeListsKASK.txt
-*.tar.gz
