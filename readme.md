@@ -1,3 +1,11 @@
+# What is it?
+An agent written in C++, that exposes REST interface allowing to:
+* retrieve basic OS information
+* list computational devices (NVIDIA GPUs and Intel Xeon Phi accelerators)
+* monitor and control power usage of these devices
+
+For a detailed description see the [engineer's degree thesis (in polish)](Podsystem-do-zarzadzania-zuzyciem-energii-dla-heterogenicznego-srodowiska-obliczen-wysokiej-wydajnosci.pdf)
+
 # Building
 ## External dependencies
 * [Easylogging++](https://github.com/easylogging/easyloggingpp)
@@ -8,7 +16,7 @@
 * [Google Test](https://github.com/google/googletest)
 * [Boost](http://www.boost.org/)
 * [OpenSSL](https://www.openssl.org/)
-* [OpenCL] - Provided by Nvidia
+* OpenCL - Provided by Nvidia
 
 ## Libraries version used to compile and run test builds:
 * Easylogging++ - 9.80
