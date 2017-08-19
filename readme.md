@@ -1,5 +1,5 @@
 # What is it?
-A centralized power management system for a distributed environment consisting of NVIDIA GPUs and Intel Xeon Phi coprosessors. It was developed as a part of engineer's degree thesis, for which an abstract is given down below.
+A centralized power management system for a distributed environment consisting of NVIDIA GPUs and Intel Xeon Phi coprocessors. It was developed as a part of engineer's degree thesis, for which an abstract is given down below.
 
 ## Authors
 * [Tomasz Gajger](https://github.com/tomix86)
