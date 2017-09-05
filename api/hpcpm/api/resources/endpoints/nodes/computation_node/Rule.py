@@ -5,8 +5,8 @@ import requests
 
 from hpcpm.api import log
 from hpcpm.api.helpers.database import database
-from hpcpm.api.helpers.utils import abort_when_node_not_found
-from hpcpm.api.helpers.requests import delete_power_limit
+from hpcpm.api.helpers.utils import abort_when_node_not_found, get_com_node_and_dev_type
+from hpcpm.api.helpers.requests import delete_power_limit, get_constraints
 from hpcpm.api.helpers.constants import COMPUTATION_NODE_PARAM_NAME, COMPUTATION_NODE_NOT_FOUND_RESPONSE, \
     COMPUTATION_NODE_FETCHED_RESPONSE, DEVICE_IDENTIFIER_PARAM, RULE_TYPE_PARAM, RULE_PARAMS_PARAM, \
     RULE_SET_RESPONSE, DEVICE_NOT_FOUND_RESPONSE, \
@@ -28,7 +28,7 @@ class Rule(Resource):
             RULE_SET_RESPONSE
         ]
     )
-    def put(self, name, device_id):
+    def put(self, name: str, device_id: str):
         rule_type = request.args.get('rule_type')
         rule_params = request.json
         if rule_type not in AVAILABLE_RULE_TYPES:
@@ -38,6 +38,21 @@ class Rule(Resource):
         if not any(d['id'] == device_id for d in computation_node['backend_info']['devices']):
             log.error('There is no such device: %s', device_id)
             abort(404)
+
+        limit = rule_params.get("limit")
+        if limit in {"HIGH", "MEDIUM", "LOW"}:
+            computation_node, dev_type = get_com_node_and_dev_type(name, device_id)
+            constraints = get_constraints(
+                computation_node['address'],
+                computation_node['port'], device_id, dev_type).json()[0]["PowerLimitConstraints"]
+            lower = constraints["lower"]
+            upper = constraints["upper"]
+            if limit == "HIGH":
+                rule_params["limit"] = upper
+            elif limit == "MEDIUM":
+                rule_params["limit"] = (upper + lower) / 2
+            elif limit == "LOW":
+                rule_params["limit"] = lower
 
         if rule_type == "Withdrawable":
             previous_rule = database.get_rule_for_device(name, device_id)
