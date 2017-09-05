@@ -1,3 +1,5 @@
+from typing import Dict
+
 import requests
 
 
@@ -36,4 +38,13 @@ class ApiRequests:
 
     def get_rule_for_device(self, node_name, device_id):
         return requests.get(
+            'http://{0}/nodes/computation_node/{1}/{2}/rule'.format(self.base_uri, node_name, device_id))
+
+    def put_rule_for_device(self, node_name: str, device_id: str, rule: Dict):
+        return requests.put(
+            'http://{0}/nodes/computation_node/{1}/{2}/rule?rule_type={3}'.format(
+                self.base_uri, node_name, device_id, rule["rule_type"]), json=rule["rule_params"])
+
+    def delete_rule_for_device(self, node_name: str, device_id: str):
+        return requests.delete(
             'http://{0}/nodes/computation_node/{1}/{2}/rule'.format(self.base_uri, node_name, device_id))

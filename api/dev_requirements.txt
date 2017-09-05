@@ -1,9 +1,8 @@
 coverage
-pep8
-pyflakes
+flake8
+mypy
 pylint
 pytest
 pytest-cov
 wheel
-mock
 flask-testing

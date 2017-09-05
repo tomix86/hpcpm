@@ -3,7 +3,7 @@ from pymongo import MongoClient, ASCENDING, DESCENDING
 from bson.regex import Regex
 
 
-class Database:  # pylint: disable=too-many-public-methods
+class Database:  # pylint: disable=too-many-public-methods,too-many-instance-attributes
 
     def __init__(self):
         self.client = None
@@ -127,5 +127,6 @@ class Database:  # pylint: disable=too-many-public-methods
     def get_last_power_usage(self, name, device_id):
         return self.statistics_data_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False},
                                                         sort=[('_id', ASCENDING)])
+
 
 database = Database()  # pylint: disable=invalid-name

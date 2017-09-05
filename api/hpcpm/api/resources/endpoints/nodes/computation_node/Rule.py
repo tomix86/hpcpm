@@ -39,6 +39,13 @@ class Rule(Resource):
             log.error('There is no such device: %s', device_id)
             abort(404)
 
+        if rule_type == "Withdrawable":
+            previous_rule = database.get_rule_for_device(name, device_id)
+            if previous_rule:
+                if previous_rule["rule_type"] == "Withdrawable":
+                    previous_rule = previous_rule["rule_params"].get("previous_rule", None)
+                rule_params["previous_rule"] = previous_rule
+
         database.replace_rule_for_device(name, device_id, {'name': name, 'device_id': device_id, 'rule_type': rule_type,
                                                            'rule_params': rule_params})
         return 'Rule successfully set', 201

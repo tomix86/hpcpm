@@ -8,15 +8,15 @@ TEST_DIR=tests
 VENV?=venv
 
 VENV_BIN=$(VENV)/bin
-SYSTEM_PYTHON=$(shell which python3)
-PYTHON_VER=$(shell ls -la /usr/bin/python3 | awk '{print $$11}')
-VENV_PYLIB=lib/python3.4
+SYSTEM_PYTHON=$(shell which python3.6)
+PYTHON_VER=$(shell ls -la /usr/bin/python3.6 | awk '{print $$11}')
+VENV_PYLIB=lib/python3.6
 
 PYTHON=$(VENV_BIN)/python
 PIP=$(VENV_BIN)/pip
-PEP8=$(VENV_BIN)/pep8
+FLAKE8=$(VENV_BIN)/flake8
 PYLINT=$(VENV_BIN)/pylint
-PYFLAKES=$(VENV_BIN)/pyflakes
+MYPY=$(VENV_BIN)/mypy
 PYTEST=$(VENV_BIN)/py.test
 PYTESTOPTS=--cov $(PROJ_DIR) -v --cov-config coverage.rc --cov-report html --cov-report xml --cov-report term
 
@@ -73,16 +73,16 @@ dist: devenv
 	sed -i "s/__version__ = .*/__version__ = \"$(VERSION)\"/g" $(PROJ_DIR)/$(PROJ_NAME)/version.py
 	$(PYTHON) setup.py sdist --formats=gztar,zip bdist_wheel
 
-pep8: venv
-	$(PEP8) --config=pep8.cfg $(PY_FILES)
-
-lint_pyflakes: venv
-	$(PYFLAKES) $(PY_FILES)
+flake8: venv
+	$(FLAKE8) --config=flake8.cfg $(PY_FILES)
 
 lint_pylint: venv
 	$(PYLINT) --rcfile=pylintrc -r n $(PROJ_DIR) $(TEST_DIR)
 
-lint: pep8 lint_pyflakes lint_pylint
+mypy: venv
+	$(MYPY) --ignore-missing-imports $(PROJ_DIR)
+
+lint: flake8 lint_pyflakes lint_pylint mypy
 
 test: venv lint unit_tests
 

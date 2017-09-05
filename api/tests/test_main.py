@@ -77,7 +77,7 @@ class TestMain(unittest.TestCase):
         parser.add_argument.assert_called_with('-p', '--port',
                                                action='store',
                                                type=int,
-                                               default=8080,
+                                               default=8081,
                                                help='port on which API will be exposed')
 
     @mock.patch('hpcpm.api.main.configure_logging')

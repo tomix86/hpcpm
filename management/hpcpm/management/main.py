@@ -80,5 +80,6 @@ def run_app(config):
     application = App(config)
     application.run()
 
+
 if __name__ == '__main__':
     sys.exit(main())

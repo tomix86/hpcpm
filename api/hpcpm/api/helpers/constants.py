@@ -209,6 +209,11 @@ RULE_SET_RESPONSE = {
     'message': 'Rule set successfully'
 }
 
+RULE_WITHDRAWN_RESPONSE = {
+    'code': 201,
+    'message': 'Rule withdrawn successfully'
+}
+
 DEVICE_NOT_FOUND_RESPONSE = {
     'code': 404,
     'message': 'Device could not be found'
@@ -241,5 +246,6 @@ DEVICE_NOT_FOUND_AND_COMPUTATION_NODE_FETCHED_RESPONSES = [
 
 AVAILABLE_RULE_TYPES = [
     'TimeBased',
-    'HardLimit'
+    'HardLimit',
+    'Withdrawable'
 ]
