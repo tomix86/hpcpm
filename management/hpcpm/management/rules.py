@@ -82,8 +82,9 @@ class Withdrawable(Rule):
     def proceed(self, rule_params: Dict):
         log.debug("proceeding Withdrawable rule for %s:%s with params %s", self.node_name, self.device_id, rule_params)
         current_minute = datetime.utcnow().replace(second=0, microsecond=0)
-        deadline = datetime.strptime(rule_params.get("deadline"), '%Y-%m-%dT%H:%M')
-        if rule_params.get("withdraw", False) or deadline < current_minute:
+        deadline_str = rule_params.get("deadline")
+        deadline = datetime.strptime(deadline_str, '%Y-%m-%dT%H:%M') if deadline_str else None
+        if rule_params.get("withdraw", False) or deadline and deadline < current_minute:
             if rule_params.get("previous_rule"):
                 self.api_requests.put_rule_for_device(self.node_name, self.device_id, rule_params["previous_rule"])
             else:
