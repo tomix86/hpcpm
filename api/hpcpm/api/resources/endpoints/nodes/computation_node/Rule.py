@@ -40,19 +40,14 @@ class Rule(Resource):
             abort(404)
 
         limit = rule_params.get("limit")
-        if limit in {"HIGH", "MEDIUM", "LOW"}:
+        if isinstance(limit, float):
             computation_node, dev_type = get_com_node_and_dev_type(name, device_id)
             constraints = get_constraints(
                 computation_node['address'],
                 computation_node['port'], device_id, dev_type).json()[0]["PowerLimitConstraints"]
             lower = constraints["lower"]
             upper = constraints["upper"]
-            if limit == "HIGH":
-                rule_params["limit"] = upper
-            elif limit == "MEDIUM":
-                rule_params["limit"] = (upper + lower) / 2
-            elif limit == "LOW":
-                rule_params["limit"] = lower
+            rule_params["limit"] = int((upper - lower) * limit + lower)
 
         if rule_type == "Withdrawable":
             previous_rule = database.get_rule_for_device(name, device_id)
