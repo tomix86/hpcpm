@@ -209,6 +209,11 @@ RULE_SET_RESPONSE = {
     'message': 'Rule set successfully'
 }
 
+RULES_DELETED_RESPONSE = {
+    'code': 200,
+    'message': 'Rules deleted successfully'
+}
+
 RULE_WITHDRAWN_RESPONSE = {
     'code': 201,
     'message': 'Rule withdrawn successfully'

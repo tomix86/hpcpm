@@ -13,7 +13,9 @@ from hpcpm.api.resources.endpoints.nodes.computation_node.PowerUsage import Powe
 from hpcpm.api.resources.endpoints.nodes.computation_node.LastPowerUsage import LastPowerUsage
 from hpcpm.api.resources.endpoints.nodes.computation_node.PowerLimitConstraints import PowerLimitConstraints
 from hpcpm.api.resources.endpoints.nodes.computation_node.Rule import Rule
+from hpcpm.api.resources.endpoints.nodes.computation_node.AllRules import AllRules
 from hpcpm.api.resources.endpoints.nodes.computation_node.WithdrawRule import WithdrawRule
+from hpcpm.api.resources.endpoints.nodes.computation_node.WithdrawAll import WithdrawAll
 
 from hpcpm.api.resources.endpoints.RuleTypes import RuleTypes
 
@@ -40,4 +42,6 @@ class ApiSpec:  # pylint: disable=too-few-public-methods
         api.add_resource(LastPowerUsage, '/nodes/computation_node/<string:name>/<string:device_id>/last_power_usage')
         api.add_resource(RuleTypes, '/rule_types')
         api.add_resource(Rule, '/nodes/computation_node/<string:name>/<string:device_id>/rule')
+        api.add_resource(AllRules, '/nodes/computation_node/rules')
         api.add_resource(WithdrawRule, '/nodes/computation_node/<string:name>/<string:device_id>/rule/withdraw')
+        api.add_resource(WithdrawAll, '/nodes/computation_node/rules/withdraw')

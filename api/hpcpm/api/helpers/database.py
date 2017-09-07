@@ -115,6 +115,12 @@ class Database:  # pylint: disable=too-many-public-methods,too-many-instance-att
         return self.statistics_data_collection.update_one({'name': name, 'device_id': device_id},
                                                           {'$unset': stats_data})
 
+    def get_rules(self):
+        return self.rules_collection.find()
+
+    def get_rules_of_type(self, rule_type: str):
+        return self.rules_collection.find({"rule_type": rule_type})
+
     def get_rule_for_device(self, name, device_id):
         return self.rules_collection.find_one({'name': name, 'device_id': device_id}, {'_id': False})
 
